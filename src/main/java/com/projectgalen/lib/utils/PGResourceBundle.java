@@ -6,6 +6,7 @@ import java.util.Enumeration;
 import java.util.ResourceBundle;
 
 public class PGResourceBundle extends ResourceBundle {
+
     private final ResourceBundle bundle;
 
     private PGResourceBundle(@NotNull String bundleName) {
@@ -18,8 +19,8 @@ public class PGResourceBundle extends ResourceBundle {
 
     @Override
     protected Object handleGetObject(@NotNull String key) {
-        try { return bundle.getObject(key); }
-        catch(Exception e) { return null; }
+        try { return Macro.replaceMacros(bundle.getString(key), bundle::getString); }
+        catch(Exception ignore) { return null; }
     }
 
     @NotNull
@@ -28,7 +29,7 @@ public class PGResourceBundle extends ResourceBundle {
         return bundle.getKeys();
     }
 
-    public static synchronized PGResourceBundle getInstance(@NotNull String bundleName) {
+    public static synchronized PGResourceBundle getSharedBundle(@NotNull String bundleName) {
         PGResourceBundle bundle = CacheHolder.CACHE.get(bundleName, PGResourceBundle.class);
         if(bundle != null) return bundle;
         bundle = new PGResourceBundle(bundleName);
@@ -36,5 +37,7 @@ public class PGResourceBundle extends ResourceBundle {
         return bundle;
     }
 
-    private static final class CacheHolder { private static final ObjCache CACHE = new ObjCache(); }
+    private static final class CacheHolder {
+        private static final ObjCache CACHE = new ObjCache();
+    }
 }

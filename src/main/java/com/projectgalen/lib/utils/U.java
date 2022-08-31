@@ -5,8 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
-import java.util.Base64;
-import java.util.Calendar;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class U {
@@ -58,5 +57,27 @@ public class U {
 
     public static boolean nz(String str) {
         return !z(str);
+    }
+
+    public static @NotNull Calendar toCalendar(@NotNull Date dt, @NotNull TimeZone tz, @NotNull Locale locale) {
+        Calendar c = Calendar.getInstance(tz, locale);
+        c.setTime(dt);
+        return c;
+    }
+
+    public static @NotNull Calendar toCalendar(@NotNull Date dt, @NotNull Locale locale) {
+        return toCalendar(dt, TimeZone.getDefault(), locale);
+    }
+
+    public static @NotNull Calendar toCalendar(@NotNull Date dt, @NotNull TimeZone tz) {
+        return toCalendar(dt, tz, Locale.getDefault());
+    }
+
+    public static @NotNull Calendar toCalendar(@NotNull Date dt) {
+        return toCalendar(dt, TimeZone.getDefault(), Locale.getDefault());
+    }
+
+    public static @NotNull Date toDate(@NotNull Calendar c) {
+        return new Date(c.getTimeInMillis());
     }
 }

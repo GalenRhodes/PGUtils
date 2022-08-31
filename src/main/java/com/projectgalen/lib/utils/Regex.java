@@ -1,5 +1,8 @@
 package com.projectgalen.lib.utils;
 
+import org.intellij.lang.annotations.Language;
+import org.intellij.lang.annotations.RegExp;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Matcher;
@@ -10,12 +13,14 @@ public class Regex {
     private Regex() {
     }
 
-    public static @NotNull String replaceWithDelegate(@NotNull String pattern, @NotNull CharSequence input, @NotNull Regex.ReplacementDelegate delegate) {
+    public static @NotNull String replaceUsingDelegate(@NotNull @Language("RegExp") @RegExp @NonNls String pattern,
+                                                       @NotNull CharSequence input,
+                                                       @NotNull Regex.ReplacementDelegate delegate) {
         Pattern p = Pattern.compile(pattern);
-        return replaceWithDelegate(p, input, delegate);
+        return replaceUsingDelegate(p, input, delegate);
     }
 
-    public static @NotNull String replaceWithDelegate(@NotNull Pattern pattern, @NotNull CharSequence input, @NotNull ReplacementDelegate delegate) {
+    public static @NotNull String replaceUsingDelegate(@NotNull Pattern pattern, @NotNull CharSequence input, @NotNull ReplacementDelegate delegate) {
         Matcher m = pattern.matcher(input);
 
         if(!m.find()) return input.toString();
