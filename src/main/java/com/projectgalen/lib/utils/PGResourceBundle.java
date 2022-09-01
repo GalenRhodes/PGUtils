@@ -1,5 +1,6 @@
 package com.projectgalen.lib.utils;
 
+import com.projectgalen.lib.utils.macro.Macro;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Enumeration;

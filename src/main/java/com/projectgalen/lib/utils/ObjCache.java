@@ -1,5 +1,6 @@
 package com.projectgalen.lib.utils;
 
+import com.projectgalen.lib.utils.concurrency.Locks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,7 +9,7 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-@SuppressWarnings({ "UnusedReturnValue", "unused" })
+@SuppressWarnings({ "UnusedReturnValue", "unused", "unchecked" })
 public class ObjCache {
 
     private final Map<String, Object> cache = new TreeMap<>();
@@ -19,32 +20,23 @@ public class ObjCache {
     }
 
     public @Nullable <T> T get(@NotNull String key, @NotNull Class<T> cls) {
-        lock.lock();
-        try { return cls.cast(cache.get(key)); } finally { lock.unlock(); }
+        return Locks.getWithLock(lock, () -> cls.cast(cache.get(key)));
     }
 
     public @Nullable Object get(@NotNull String key) {
-        lock.lock();
-        try { return cache.get(key); } finally { lock.unlock(); }
+        return Locks.getWithLock(lock, () -> cache.get(key));
     }
 
     public @Nullable <T> T remove(@NotNull String key, @NotNull Class<T> cls) {
-        lock.lock();
-        try { return cls.cast(cache.remove(key)); } finally { lock.unlock(); }
+        return Locks.getWithLock(lock, () -> cls.cast(cache.remove(key)));
     }
 
     public @Nullable Object remove(@NotNull String key) {
-        lock.lock();
-        try { return cache.remove(key); } finally { lock.unlock(); }
+        return Locks.getWithLock(lock, () -> cache.remove(key));
     }
 
     public @Nullable <T> T store(@NotNull String key, @NotNull T obj) {
-        lock.lock();
-        try {
-            //noinspection unchecked
-            return ((Class<T>)obj.getClass()).cast(cache.put(key, obj));
-        }
-        finally { lock.unlock(); }
+        return Locks.getWithLock(lock, () -> ((Class<T>)obj.getClass()).cast(cache.put(key, obj)));
     }
 
     public static ObjCache getInstance() {

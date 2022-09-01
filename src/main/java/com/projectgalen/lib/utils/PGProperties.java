@@ -1,6 +1,7 @@
 package com.projectgalen.lib.utils;
 
 import com.projectgalen.lib.utils.errors.InvalidPropertyKeyValuePair;
+import com.projectgalen.lib.utils.macro.Macro;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,7 @@ import java.util.*;
 @SuppressWarnings("unused")
 public class PGProperties extends Properties {
 
-    private static final PGResourceBundle _msgs         = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.messages");
+    private static final PGResourceBundle _msgs         = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
     private static final int              DEFAULT_LIMIT = -1;
 
     public static final @Language("RegExp") String DEFAULT_LIST_SEPARATOR_PATTERN = "\\s*,\\s*";

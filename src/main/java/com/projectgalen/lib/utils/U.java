@@ -1,5 +1,6 @@
 package com.projectgalen.lib.utils;
 
+import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +18,27 @@ public class U {
         return Base64.getEncoder().encodeToString(data);
     }
 
+    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
+            Calendar.JANUARY,
+            Calendar.FEBRUARY,
+            Calendar.MARCH,
+            Calendar.APRIL,
+            Calendar.MAY,
+            Calendar.JUNE,
+            Calendar.JULY,
+            Calendar.AUGUST,
+            Calendar.SEPTEMBER,
+            Calendar.OCTOBER,
+            Calendar.NOVEMBER,
+            Calendar.DECEMBER,
+            Calendar.UNDECIMBER
+    }) int month, int date, int hour24, int minute, int second, int ms, @NotNull TimeZone tz, @NotNull Locale locale) {
+        Calendar c = Calendar.getInstance(tz, locale);
+        c.set(year, month, date, hour24, minute, second);
+        c.set(Calendar.MILLISECOND, ms);
+        return c;
+    }
+
     public static @NotNull <T extends Throwable> T getThrowable(@NotNull String msg, @NotNull Class<T> throwableClass) {
         try { return throwableClass.getConstructor(String.class).newInstance(msg); }
         catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) { throw new RuntimeException(ex); }
@@ -30,29 +52,8 @@ public class U {
         return ((obj == null) ? defaultValue : obj);
     }
 
-    public static @NotNull <T extends Throwable> T wrapThrowable(@Nullable String msg, @NotNull Throwable t, @NotNull Class<T> throwableClass) {
-        try { return throwableClass.getConstructor(String.class, Throwable.class).newInstance(((msg == null) ? t.getMessage() : msg), t); }
-        catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) { throw new RuntimeException(ex); }
-    }
-
-    public static @NotNull <T extends Throwable> T wrapThrowable(@NotNull Throwable t, @NotNull Class<T> throwableClass) {
-        return wrapThrowable(null, t, throwableClass);
-    }
-
-    public static String tr(String str) {
-        return ((str == null) ? null : str.trim());
-    }
-
     public static String lc(String str) {
         return ((str == null) ? null : str.toLowerCase());
-    }
-
-    public static String uc(String str) {
-        return ((str == null) ? null : str.toUpperCase());
-    }
-
-    public static boolean z(String str) {
-        return ((str == null) || (str.trim().length() == 0));
     }
 
     public static boolean nz(String str) {
@@ -79,5 +80,26 @@ public class U {
 
     public static @NotNull Date toDate(@NotNull Calendar c) {
         return new Date(c.getTimeInMillis());
+    }
+
+    public static String tr(String str) {
+        return ((str == null) ? null : str.trim());
+    }
+
+    public static String uc(String str) {
+        return ((str == null) ? null : str.toUpperCase());
+    }
+
+    public static @NotNull <T extends Throwable> T wrapThrowable(@Nullable String msg, @NotNull Throwable t, @NotNull Class<T> throwableClass) {
+        try { return throwableClass.getConstructor(String.class, Throwable.class).newInstance(((msg == null) ? t.getMessage() : msg), t); }
+        catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) { throw new RuntimeException(ex); }
+    }
+
+    public static @NotNull <T extends Throwable> T wrapThrowable(@NotNull Throwable t, @NotNull Class<T> throwableClass) {
+        return wrapThrowable(null, t, throwableClass);
+    }
+
+    public static boolean z(String str) {
+        return ((str == null) || (str.trim().length() == 0));
     }
 }

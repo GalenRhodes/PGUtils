@@ -1,9 +1,10 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.macro;
 
+import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.errors.InvalidPropertyMacro;
+import com.projectgalen.lib.utils.regex.Regex;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,12 +39,8 @@ public class Macro {
         return Regex.replaceUsingDelegate(_rx0, input.replaceAll(_rx1, _rx2), (m) -> getMacroReplacement(m.group(1), deadManSet, delegate)).replaceAll(_rx2, _rx1);
     }
 
-    public interface MacroDelegate {
-        @Nullable String getMacroValue(@NotNull String macroName);
-    }
-
     static {
-        _msgs = ResourceBundle.getBundle("com.projectgalen.lib.utils.messages");
+        _msgs = ResourceBundle.getBundle("com.projectgalen.lib.utils.pg_messages");
         try(InputStream inputStream = PGProperties.class.getResourceAsStream(PG_PROPERTIES)) {
             _props = new Properties();
             _props.load(inputStream);
