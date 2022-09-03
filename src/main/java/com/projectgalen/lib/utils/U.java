@@ -18,6 +18,65 @@ public class U {
         return Base64.getEncoder().encodeToString(data);
     }
 
+    public static byte @NotNull [] base64Decode(@NotNull String encStr) {
+        return Base64.getDecoder().decode(encStr);
+    }
+
+    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
+            Calendar.JANUARY,
+            Calendar.FEBRUARY,
+            Calendar.MARCH,
+            Calendar.APRIL,
+            Calendar.MAY,
+            Calendar.JUNE,
+            Calendar.JULY,
+            Calendar.AUGUST,
+            Calendar.SEPTEMBER,
+            Calendar.OCTOBER,
+            Calendar.NOVEMBER,
+            Calendar.DECEMBER,
+            Calendar.UNDECIMBER
+    }) int month, int date) {
+        return createCalendar(year, month, date, TimeZone.getDefault(), Locale.getDefault());
+    }
+
+    @NotNull
+    public static Calendar createCalendar(int year, @MagicConstant(intValues = {
+            Calendar.JANUARY,
+            Calendar.FEBRUARY,
+            Calendar.MARCH,
+            Calendar.APRIL,
+            Calendar.MAY,
+            Calendar.JUNE,
+            Calendar.JULY,
+            Calendar.AUGUST,
+            Calendar.SEPTEMBER,
+            Calendar.OCTOBER,
+            Calendar.NOVEMBER,
+            Calendar.DECEMBER,
+            Calendar.UNDECIMBER
+    }) int month, int date, TimeZone tz, Locale locale) {
+        return createCalendar(year, month, date, 0, 0, 0, 0, tz, locale);
+    }
+
+    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
+            Calendar.JANUARY,
+            Calendar.FEBRUARY,
+            Calendar.MARCH,
+            Calendar.APRIL,
+            Calendar.MAY,
+            Calendar.JUNE,
+            Calendar.JULY,
+            Calendar.AUGUST,
+            Calendar.SEPTEMBER,
+            Calendar.OCTOBER,
+            Calendar.NOVEMBER,
+            Calendar.DECEMBER,
+            Calendar.UNDECIMBER
+    }) int month, int date, int hour24, int minute, int second, int ms) {
+        return createCalendar(year, month, date, hour24, minute, second, ms, TimeZone.getDefault(), Locale.getDefault());
+    }
+
     public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
             Calendar.JANUARY,
             Calendar.FEBRUARY,
