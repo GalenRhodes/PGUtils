@@ -1,12 +1,10 @@
 package com.projectgalen.lib.utils;
 
-import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.Base64;
 
 @SuppressWarnings("unused")
 public class U {
@@ -14,107 +12,29 @@ public class U {
     private U() {
     }
 
-    public static @NotNull String base64Encode(byte[] data) {
-        return Base64.getEncoder().encodeToString(data);
+    public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, Object... args) {
+        return sb.append(String.format(format, args));
+    }
+
+    public static @NotNull StringBuffer appendFormat(@NotNull StringBuffer sb, @NotNull String format, Object... args) {
+        return sb.append(String.format(format, args));
     }
 
     public static byte @NotNull [] base64Decode(@NotNull String encStr) {
         return Base64.getDecoder().decode(encStr);
     }
 
-    public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, Object... args) {
-        sb.append(String.format(format, args));
-        return sb;
+    public static @NotNull String base64Encode(byte[] data) {
+        return Base64.getEncoder().encodeToString(data);
     }
 
-    public static @NotNull StringBuffer appendFormat(@NotNull StringBuffer sb, @NotNull String format, Object... args) {
-        sb.append(String.format(format, args));
-        return sb;
-    }
-
-    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY,
-            Calendar.FEBRUARY,
-            Calendar.MARCH,
-            Calendar.APRIL,
-            Calendar.MAY,
-            Calendar.JUNE,
-            Calendar.JULY,
-            Calendar.AUGUST,
-            Calendar.SEPTEMBER,
-            Calendar.OCTOBER,
-            Calendar.NOVEMBER,
-            Calendar.DECEMBER,
-            Calendar.UNDECIMBER
-    }) int month, int date) {
-        return createCalendar(year, month, date, TimeZone.getDefault(), Locale.getDefault());
-    }
-
-    @NotNull
-    public static Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY,
-            Calendar.FEBRUARY,
-            Calendar.MARCH,
-            Calendar.APRIL,
-            Calendar.MAY,
-            Calendar.JUNE,
-            Calendar.JULY,
-            Calendar.AUGUST,
-            Calendar.SEPTEMBER,
-            Calendar.OCTOBER,
-            Calendar.NOVEMBER,
-            Calendar.DECEMBER,
-            Calendar.UNDECIMBER
-    }) int month, int date, TimeZone tz, Locale locale) {
-        return createCalendar(year, month, date, 0, 0, 0, 0, tz, locale);
-    }
-
-    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY,
-            Calendar.FEBRUARY,
-            Calendar.MARCH,
-            Calendar.APRIL,
-            Calendar.MAY,
-            Calendar.JUNE,
-            Calendar.JULY,
-            Calendar.AUGUST,
-            Calendar.SEPTEMBER,
-            Calendar.OCTOBER,
-            Calendar.NOVEMBER,
-            Calendar.DECEMBER,
-            Calendar.UNDECIMBER
-    }) int month, int date, int hour24, int minute, int second, int ms) {
-        return createCalendar(year, month, date, hour24, minute, second, ms, TimeZone.getDefault(), Locale.getDefault());
-    }
-
-    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY,
-            Calendar.FEBRUARY,
-            Calendar.MARCH,
-            Calendar.APRIL,
-            Calendar.MAY,
-            Calendar.JUNE,
-            Calendar.JULY,
-            Calendar.AUGUST,
-            Calendar.SEPTEMBER,
-            Calendar.OCTOBER,
-            Calendar.NOVEMBER,
-            Calendar.DECEMBER,
-            Calendar.UNDECIMBER
-    }) int month, int date, int hour24, int minute, int second, int ms, @NotNull TimeZone tz, @NotNull Locale locale) {
-        Calendar c = Calendar.getInstance(tz, locale);
-        c.set(year, month, date, hour24, minute, second);
-        c.set(Calendar.MILLISECOND, ms);
-        return c;
+    public static @NotNull String capitalize(@NotNull String str) {
+        return (str.isBlank() ? str : String.format("%C%s", str.charAt(0), str.substring(1)));
     }
 
     public static @NotNull <T extends Throwable> T getThrowable(@NotNull String msg, @NotNull Class<T> throwableClass) {
         try { return throwableClass.getConstructor(String.class).newInstance(msg); }
         catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) { throw new RuntimeException(ex); }
-    }
-
-    public static @NotNull Timestamp getTimestamp() {
-        return new Timestamp(Calendar.getInstance().getTimeInMillis());
     }
 
     public static @NotNull <T> T ifNull(@Nullable T obj, @NotNull T defaultValue) {
@@ -125,30 +45,8 @@ public class U {
         return ((str == null) ? null : str.toLowerCase());
     }
 
-    public static boolean nz(String str) {
-        return !z(str);
-    }
-
-    public static @NotNull Calendar toCalendar(@NotNull Date dt, @NotNull TimeZone tz, @NotNull Locale locale) {
-        Calendar c = Calendar.getInstance(tz, locale);
-        c.setTime(dt);
-        return c;
-    }
-
-    public static @NotNull Calendar toCalendar(@NotNull Date dt, @NotNull Locale locale) {
-        return toCalendar(dt, TimeZone.getDefault(), locale);
-    }
-
-    public static @NotNull Calendar toCalendar(@NotNull Date dt, @NotNull TimeZone tz) {
-        return toCalendar(dt, tz, Locale.getDefault());
-    }
-
-    public static @NotNull Calendar toCalendar(@NotNull Date dt) {
-        return toCalendar(dt, TimeZone.getDefault(), Locale.getDefault());
-    }
-
-    public static @NotNull Date toDate(@NotNull Calendar c) {
-        return new Date(c.getTimeInMillis());
+    public static boolean nz(@Nullable String str) {
+        return ((str != null) && (str.trim().length() > 0));
     }
 
     public static String tr(String str) {
@@ -168,7 +66,7 @@ public class U {
         return wrapThrowable(null, t, throwableClass);
     }
 
-    public static boolean z(String str) {
+    public static boolean z(@Nullable String str) {
         return ((str == null) || (str.trim().length() == 0));
     }
 }

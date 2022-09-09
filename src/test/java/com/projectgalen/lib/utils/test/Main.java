@@ -2,15 +2,59 @@ package com.projectgalen.lib.utils.test;
 
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
+import com.projectgalen.lib.utils.Reflection;
+import com.projectgalen.lib.utils.test.casting.TestClass;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Main {
     public Main() {
     }
 
     public static void main(String[] args) {
+        Class<TestClass> cls     = TestClass.class;
+        Method[]         methods = cls.getDeclaredMethods();
+        List<String>     list    = new ArrayList<>();
+
+        for(Method m : methods) {
+            Class<?>   rt = m.getReturnType();
+            Class<?>[] pt = m.getParameterTypes();
+
+            if(rt == void.class && pt.length == 1) {
+                list.add(String.format("Setter \"void %s(%s)\"", m.getName(), pt[0].getSimpleName()));
+            }
+            else if(rt != void.class && pt.length == 0) {
+                list.add(String.format("Getter \"%s %s()\"", rt.getSimpleName(), m.getName()));
+            }
+        }
+
+        list.sort(String::compareTo);
+        for(String s : list) System.out.println(s);
+    }
+
+    private static void checkAssignability(Field[] fields) {
+        for(Field field : fields) {
+            System.out.printf("Field \"%s\" is type \"%s\" and %s primitive.%n", field.getName(), field.getType().getName(), field.getType().isPrimitive() ? "is" : "is not");
+            for(Field f1 : fields) {
+                boolean flag = Reflection.isNumericallyAssignable(field.getType(), f1.getType());
+                System.out.printf("\tAssignable from \"%s\"? %s%n", f1.getType().getName(), flag ? "YES" : "NO");
+            }
+        }
+    }
+
+    private static void numbersTest() {
+        Class<TestClass> cls    = TestClass.class;
+        Field[]          fields = cls.getDeclaredFields();
+
+        checkAssignability(fields);
+    }
+
+    private static void propsTest() {
         PGResourceBundle bundle = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.test.main_messages");
         PGProperties     props  = PGProperties.getSharedInstanceForNamedResource("main_settings.properties", Main.class);
 
