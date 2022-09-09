@@ -22,6 +22,16 @@ public class U {
         return Base64.getDecoder().decode(encStr);
     }
 
+    public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, Object... args) {
+        sb.append(String.format(format, args));
+        return sb;
+    }
+
+    public static @NotNull StringBuffer appendFormat(@NotNull StringBuffer sb, @NotNull String format, Object... args) {
+        sb.append(String.format(format, args));
+        return sb;
+    }
+
     public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
             Calendar.JANUARY,
             Calendar.FEBRUARY,

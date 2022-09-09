@@ -1,24 +1,22 @@
 package com.projectgalen.lib.utils;
 
-import org.jetbrains.annotations.Nullable;
-
 public class PRef<T> {
 
-    protected @Nullable T value;
+    protected T value;
 
     public PRef() {
         this.value = null;
     }
 
-    public PRef(@Nullable T initialValue) {
+    public PRef(T initialValue) {
         this.value = initialValue;
     }
 
-    public @Nullable T getValue() {
+    public T getValue() {
         return value;
     }
 
-    public void setValue(@Nullable T value) {
+    public void setValue(T value) {
         this.value = value;
     }
 }
