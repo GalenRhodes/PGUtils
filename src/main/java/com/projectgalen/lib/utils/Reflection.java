@@ -142,23 +142,10 @@ public class Reflection {
         Class<?> l = objectClassForPrimitive(leftHandClass);
         Class<?> r = objectClassForPrimitive(rightHandClass);
 
-        return ((l != null) &&
-                (r != null) &&
-                (l != Boolean.class) &&
-                (r != Boolean.class) &&
-                (l.isAssignableFrom(r) ||
-                 ((l == Short.class) ?
-                  _xa(r) :
-                  ((l == Character.class) ?
-                   _xb(r) :
-                   ((l == Integer.class) ?
-                    _xc(r) :
-                    ((l == Long.class) ?
-                     _xd(r) :
-                     ((l == Float.class) ? _xe(r) : ((l == Double.class) ? _xf(r) : ((l == BigInteger.class) ? _xe(r) : ((l == BigDecimal.class) && _xg(r)))))))))));
+        return _isNumericallyAssignable(l, r);
     }
 
-    public static @Nullable Class<?> objectClassForPrimitive(@NotNull Class<?> cls) {
+    public static @NotNull Class<?> objectClassForPrimitive(@NotNull Class<?> cls) {
         if(!cls.isPrimitive()) return cls;
         if(cls == char.class) return Character.class;
         if(cls == byte.class) return Byte.class;
@@ -167,8 +154,23 @@ public class Reflection {
         if(cls == long.class) return Long.class;
         if(cls == float.class) return Float.class;
         if(cls == double.class) return Double.class;
-        if(cls == boolean.class) return Boolean.class;
-        return null;
+        return Boolean.class;
+    }
+
+    protected static boolean _isNumericallyAssignable(Class<?> l, Class<?> r) {
+        return ((l != Boolean.class) && (r != Boolean.class) && (l.isAssignableFrom(r) || ((l == Short.class) ?
+                                                                                           _xa(r) :
+                                                                                           ((l == Character.class) ?
+                                                                                            _xb(r) :
+                                                                                            ((l == Integer.class) ?
+                                                                                             _xc(r) :
+                                                                                             ((l == Long.class) ?
+                                                                                              _xd(r) :
+                                                                                              ((l == Float.class) ?
+                                                                                               _xe(r) :
+                                                                                               ((l == Double.class) ?
+                                                                                                _xf(r) :
+                                                                                                ((l == BigInteger.class) ? _xe(r) : ((l == BigDecimal.class) && _xg(r)))))))))));
     }
 
     public static @Nullable Class<?> primitiveClassForObject(@NotNull Class<?> cls) {

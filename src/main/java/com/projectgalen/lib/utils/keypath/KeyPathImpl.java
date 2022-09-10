@@ -1,0 +1,183 @@
+package com.projectgalen.lib.utils.keypath;
+
+import com.projectgalen.lib.utils.PGProperties;
+import com.projectgalen.lib.utils.PGResourceBundle;
+import com.projectgalen.lib.utils.Reflection;
+import com.projectgalen.lib.utils.U;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Map;
+
+public class KeyPathImpl {
+
+    private static final PGResourceBundle msgs  = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final PGProperties     props = PGProperties.getSharedInstanceForNamedResource("pg_properties.properties", PGProperties.class);
+
+    private KeyPathImpl() {
+    }
+
+    public static @Nullable <T> T getValueForKeyPath(@NotNull String keyPath, @Nullable Object target) {
+        int idx = keyPath.lastIndexOf('.');
+        return ((idx < 0) ? getValueForKey(keyPath, target) : getValueForKey(keyPath.substring(idx + 1), getValueForKeyPath(keyPath.substring(0, idx), target)));
+    }
+
+    public static void setValueForKeyPath(@NotNull String keyPath, @Nullable Object value, @Nullable Object target) {
+        int idx = keyPath.lastIndexOf('.');
+        setValueForKey(((idx < 0) ? keyPath : keyPath.substring(idx + 1)), value, ((idx < 0) ? target : getValueForKeyPath(keyPath.substring(0, idx), target)));
+    }
+
+    private static String getFieldNameFormat(int i) {
+        return props.getProperty(String.format("keypath.field.format%d", i));
+    }
+
+    private static @Nullable Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls) {
+        return getFieldNamed(name, cls, null, false);
+    }
+
+    private static @Nullable Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> type, boolean exact) {
+        if(cls == null) return null;
+        for(Field f : cls.getDeclaredFields()) if(f.getName().equals(name)) if((type == null) || isAssignable(exact, f.getType(), type)) return f;
+        return getFieldNamed(name, cls.getSuperclass(), type, exact);
+    }
+
+    @SuppressWarnings("unchecked") private static <T> T getFromGetter(@NotNull String key, @NotNull Object target, Class<?> tClass) {
+        int    i   = 0;
+        String fmt = getGetterNameFormat(++i);
+
+        while(fmt != null) {
+            Method method = getGetterNamed(String.format(fmt, key.charAt(0), key.substring(1), key), tClass);
+            if(method != null) {
+                try {
+                    method.setAccessible(true);
+                    return (T)method.invoke(target);
+                }
+                catch(Exception e) {
+                    throw new KeyPathException(String.format(msgs.getString("msg.err.keypath_elem_error_invoking_getter"), key, tClass.getName()), e);
+                }
+            }
+            fmt = getGetterNameFormat(++i);
+        }
+
+        throw new KeyPathException(String.format(msgs.getString("msg.err.keypath_elem_not_found"), key, tClass.getName()));
+    }
+
+    private static String getGetterNameFormat(int i) {
+        return props.getProperty(String.format("keypath.getter.format%d", i));
+    }
+
+    private static @Nullable Method getGetterNamed(@NotNull String name, @Nullable Class<?> cls) {
+        if(cls == null) return null;
+        for(Method m : cls.getDeclaredMethods()) if((m.getReturnType() != void.class) && (m.getParameterCount() == 0) && m.getName().equals(name)) return m;
+        return getGetterNamed(name, cls.getSuperclass());
+    }
+
+    private static String getSetterNameFormat(int i) {
+        return props.getProperty(String.format("keypath.setter.format%d", i));
+    }
+
+    private static @Nullable Method getSetterNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> paramCls, boolean exact) {
+        if(cls == null) return null;
+        for(Method m : cls.getDeclaredMethods()) {
+            Class<?>[] params = m.getParameterTypes();
+            if((m.getReturnType() == void.class) && (params.length == 1) && m.getName().equals(name) && ((paramCls == null) || isAssignable(exact, params[0], paramCls))) return m;
+        }
+        return getSetterNamed(name, cls.getSuperclass(), paramCls, exact);
+    }
+
+    @SuppressWarnings("unchecked") private static <T> T getValueForKey(@NotNull String key, @Nullable Object target) {
+        if(target == null) return null;
+        if(key.length() == 0) throw new KeyPathException(msgs.getString("msg.err.keypath_elem_empty"));
+        return ((target instanceof Map) ? ((Map<Object, T>)target).get(key) : getValueForKey(key, target, target.getClass()));
+    }
+
+    @SuppressWarnings("unchecked") private static <T> T getValueForKey(@NotNull String key, @NotNull Object target, Class<?> cls) {
+        int    i   = 0;
+        String fmt = getFieldNameFormat(++i);
+
+        while(fmt != null) {
+            Field field = getFieldNamed(String.format(fmt, key), cls);
+            if(field != null) {
+                try {
+                    field.setAccessible(true);
+                    return (T)field.get(target);
+                }
+                catch(Exception e) {
+                    throw new KeyPathException(String.format(msgs.getString("msg.err.keypath_elem_error_reading_field"), key, cls.getName()), e);
+                }
+            }
+            fmt = getFieldNameFormat(++i);
+        }
+
+        return getFromGetter(key, target, cls);
+    }
+
+    private static boolean isAssignable(boolean exact, Class<?> lht, @NotNull Class<?> rht) {
+        Class<?> _lht = Reflection.objectClassForPrimitive(lht);
+        Class<?> _rht = Reflection.objectClassForPrimitive(rht);
+        return (exact ? (_lht == _rht) : (_lht.isAssignableFrom(_rht) || Reflection.isNumericallyAssignable(_lht, _rht)));
+    }
+
+    @SuppressWarnings("unchecked") private static void setValueForKey(@NotNull String key, @Nullable Object value, @Nullable Object target) {
+        if(target != null) {
+            if(target instanceof Map) {
+                ((Map<Object, Object>)target).put(key, value);
+            }
+            else {
+                Class<?> tClass = target.getClass();
+                Class<?> pClass = U.getIfNotNull(value, Object::getClass);
+                if(!setValueForKey(key, value, pClass, target, tClass, true)) setValueForKey(key, value, pClass, target, tClass, false);
+            }
+        }
+    }
+
+    private static boolean setValueForKey(@NotNull String key, @Nullable Object value, Class<?> vClass, @NotNull Object target, Class<?> tClass, boolean exact) {
+        return (setViaField(key, value, vClass, target, tClass, exact) || setViaSetter(key, value, vClass, target, tClass, exact));
+    }
+
+    private static boolean setViaField(@NotNull String key, @Nullable Object value, Class<?> vClass, @NotNull Object target, Class<?> tClass, boolean exact) {
+        int    i   = 0;
+        String fmt = getFieldNameFormat(++i);
+
+        while(fmt != null) {
+            Field field = getFieldNamed(key, tClass, vClass, exact);
+            if(field != null) {
+                try {
+                    field.setAccessible(true);
+                    field.set(target, value);
+                    return true;
+                }
+                catch(Exception e) {
+                    throw new KeyPathException();
+                }
+            }
+            fmt = getFieldNameFormat(++i);
+        }
+
+        return false;
+    }
+
+    private static boolean setViaSetter(@NotNull String key, @Nullable Object value, Class<?> vClass, @NotNull Object target, Class<?> tClass, boolean exact) {
+        int    i   = 0;
+        String fmt = getSetterNameFormat(++i);
+
+        while(fmt != null) {
+            Method method = getSetterNamed(key, tClass, vClass, exact);
+            if(method != null) {
+                try {
+                    method.setAccessible(true);
+                    method.invoke(target, value);
+                    return true;
+                }
+                catch(Exception e) {
+                    throw new KeyPathException();
+                }
+            }
+            fmt = getSetterNameFormat(++i);
+        }
+
+        return false;
+    }
+}

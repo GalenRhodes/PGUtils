@@ -1,5 +1,7 @@
 package com.projectgalen.lib.utils;
 
+import com.projectgalen.lib.utils.delegates.DoIfNotNullReturning;
+import com.projectgalen.lib.utils.delegates.DoIfNotNullVoid;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,5 +70,13 @@ public class U {
 
     public static boolean z(@Nullable String str) {
         return ((str == null) || (str.trim().length() == 0));
+    }
+
+    public static <P> void doIfNotNull(@Nullable P value, @NotNull DoIfNotNullVoid<P> delegate) {
+        if(value != null) delegate.action(value);
+    }
+
+    public static <P, R> R getIfNotNull(@Nullable P value, @NotNull DoIfNotNullReturning<P, R> delegate) {
+        return ((value == null) ? null : delegate.action(value));
     }
 }
