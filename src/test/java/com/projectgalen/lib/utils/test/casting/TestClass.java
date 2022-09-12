@@ -5,23 +5,23 @@ import java.math.BigInteger;
 
 public class TestClass {
 
-    public byte   byteField;
-    public short  shortField;
-    public char   charField;
-    public int    intField;
-    public long   longField;
-    public float  floatField;
-    public double doubleField;
+    private byte   byteField;
+    private short  shortField;
+    private char   charField;
+    private int    intField;
+    private long   longField;
+    private float  floatField;
+    private double doubleField;
 
-    public Byte       byteObjField;
-    public Short      shortObjField;
-    public Character  charObjField;
-    public Integer    intObjField;
-    public Long       longObjField;
-    public Float      floatObjField;
-    public Double     doubleObjField;
-    public BigInteger bigIntField;
-    public BigDecimal bigDecField;
+    private Byte       byteObjField;
+    private Short      shortObjField;
+    private Character  charObjField;
+    private Integer    intObjField;
+    private Long       longObjField;
+    private Float      floatObjField;
+    private Double     doubleObjField;
+    private BigInteger bigIntField;
+    private BigDecimal bigDecField;
 
     public TestClass() {
     }

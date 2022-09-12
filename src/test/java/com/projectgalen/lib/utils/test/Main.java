@@ -17,24 +17,26 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Class<TestClass> cls     = TestClass.class;
-        Method[]         methods = cls.getDeclaredMethods();
-        List<String>     list    = new ArrayList<>();
+        try {
+            TestClass obj = new TestClass();
+            Field     f   = TestClass.class.getDeclaredField("longObjField");
 
-        for(Method m : methods) {
-            Class<?>   rt = m.getReturnType();
-            Class<?>[] pt = m.getParameterTypes();
+            f.setAccessible(true);
+            f.set(obj, (long)1);
+            System.out.printf("longObjField value: %d%n", obj.getLongObjField());
+            f.set(obj, (long)((byte)2));
+            System.out.printf("longObjField value: %d%n", obj.getLongObjField());
 
-            if(rt == void.class && pt.length == 1) {
-                list.add(String.format("Setter \"void %s(%s)\"", m.getName(), pt[0].getSimpleName()));
-            }
-            else if(rt != void.class && pt.length == 0) {
-                list.add(String.format("Getter \"%s %s()\"", rt.getSimpleName(), m.getName()));
-            }
+            f = TestClass.class.getDeclaredField("longField");
+            f.setAccessible(true);
+            f.set(obj, Long.valueOf(3));
+            System.out.printf("longField value: %d%n", obj.getLongField());
+            f.set(obj, Long.valueOf((byte)4));
+            System.out.printf("longField value: %d%n", obj.getLongField());
         }
-
-        list.sort(String::compareTo);
-        for(String s : list) System.out.println(s);
+        catch(Exception e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     private static void checkAssignability(Field[] fields) {
@@ -77,5 +79,26 @@ public class Main {
             Date d = props.getDateProperty("set.test.date." + i, props.getProperty("set.test.date.format." + i, PGProperties.DEFAULT_DATETIME_FORMAT), null);
             System.out.printf("Settings Test         Date %d: %s%n", i, d == null ? "-N/A-" : sdf.format(d));
         }
+    }
+
+    private static void showMethods() {
+        Class<TestClass> cls     = TestClass.class;
+        Method[]         methods = cls.getDeclaredMethods();
+        List<String>     list    = new ArrayList<>();
+
+        for(Method m : methods) {
+            Class<?>   rt = m.getReturnType();
+            Class<?>[] pt = m.getParameterTypes();
+
+            if(rt == void.class && pt.length == 1) {
+                list.add(String.format("Setter \"void %s(%s)\"", m.getName(), pt[0].getSimpleName()));
+            }
+            else if(rt != void.class && pt.length == 0) {
+                list.add(String.format("Getter \"%s %s()\"", rt.getSimpleName(), m.getName()));
+            }
+        }
+
+        list.sort(String::compareTo);
+        for(String s : list) System.out.println(s);
     }
 }
