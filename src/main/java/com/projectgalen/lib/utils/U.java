@@ -79,4 +79,15 @@ public class U {
     public static <P, R> R getIfNotNull(@Nullable P value, @NotNull DoIfNotNullReturning<P, R> delegate) {
         return ((value == null) ? null : delegate.action(value));
     }
+
+    public static @NotNull String join(char separator, @NotNull Object... args) {
+        return join(Character.toString(separator), args);
+    }
+
+    public static @NotNull String join(@NotNull String separator, @NotNull Object... args) {
+        if(args.length == 0) return "";
+        StringBuilder sb = new StringBuilder().append(args[0]);
+        for(int i = 1; i < args.length; i++) sb.append(separator).append(args[i]);
+        return sb.toString();
+    }
 }
