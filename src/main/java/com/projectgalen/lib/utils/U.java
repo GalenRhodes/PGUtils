@@ -14,6 +14,15 @@ public class U {
     private U() {
     }
 
+    public static @NotNull String capitalize(@NotNull String str) {
+        return ((str.length() == 0) ? str : ((str.length() == 1) ? str.toUpperCase() : (str.substring(0, 1).toUpperCase() + str.substring(1))));
+    }
+
+    public static @NotNull String[] splitDotPath(@NotNull String path) {
+        int i = path.lastIndexOf('.');
+        return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
+    }
+
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, Object... args) {
         return sb.append(String.format(format, args));
     }
@@ -28,10 +37,6 @@ public class U {
 
     public static @NotNull String base64Encode(byte[] data) {
         return Base64.getEncoder().encodeToString(data);
-    }
-
-    public static @NotNull String capitalize(@NotNull String str) {
-        return (str.isBlank() ? str : String.format("%C%s", str.charAt(0), str.substring(1)));
     }
 
     public static @NotNull <T extends Throwable> T getThrowable(@NotNull String msg, @NotNull Class<T> throwableClass) {

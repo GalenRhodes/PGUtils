@@ -2,7 +2,7 @@ package com.projectgalen.lib.utils.test;
 
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
-import com.projectgalen.lib.utils.Reflection;
+import com.projectgalen.lib.utils.reflection.Reflection;
 import com.projectgalen.lib.utils.test.casting.TestClass;
 
 import java.lang.reflect.Field;

@@ -2,8 +2,8 @@ package com.projectgalen.lib.utils.keypath;
 
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
-import com.projectgalen.lib.utils.Reflection;
 import com.projectgalen.lib.utils.U;
+import com.projectgalen.lib.utils.reflection.Reflection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

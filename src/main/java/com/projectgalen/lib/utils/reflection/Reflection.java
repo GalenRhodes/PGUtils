@@ -1,15 +1,14 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.reflection;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Reflection {
@@ -81,12 +80,8 @@ public class Reflection {
         return a;
     }
 
-    public static boolean isBooleanMismatch(Class<?> aClass, Class<?> bClass) {
-        return ((bClass == boolean.class) && (aClass == Boolean.class)) || ((bClass == Boolean.class) && (aClass == boolean.class));
-    }
-
-    public static boolean isNumericPrimitive(@NotNull Class<?> cls) {
-        return isAnyType(cls, byte.class, short.class, char.class, int.class, long.class, float.class, double.class);
+    public static @NotNull TypeInfo getFieldTypeInfo(@NotNull Field field) {
+        return new TypeInfo(field.getGenericType());
     }
 
     public static @NotNull @SafeVarargs List<Field> getFieldsWithAllAnnotations(@NotNull Class<?> cls, Class<? extends Annotation>... annotationClasses) {
@@ -125,6 +120,28 @@ public class Reflection {
         return methods;
     }
 
+    public static @NotNull List<TypeInfo> getParameterTypeInfo(@NotNull Method method) {
+        List<TypeInfo> list = new ArrayList<>();
+        for(Type t : method.getGenericParameterTypes()) list.add(new TypeInfo(t));
+        return list;
+    }
+
+    public static @NotNull List<Type> getParameterizedFieldTypes(@NotNull Field field) {
+        return getActualTypeArguments(field.getGenericType());
+    }
+
+    public static @NotNull List<Type> getParameterizedParameterTypes(@NotNull Method method, int parameterIndex) {
+        return getActualTypeArguments(method.getGenericParameterTypes()[parameterIndex]);
+    }
+
+    public static @NotNull List<Type> getParameterizedReturnTypes(@NotNull Method method) {
+        return getActualTypeArguments(method.getGenericReturnType());
+    }
+
+    public static @NotNull TypeInfo getReturnTypeInfo(@NotNull Method method) {
+        return new TypeInfo(method.getGenericReturnType());
+    }
+
     public static @SafeVarargs boolean hasAllAnnotations(@NotNull AnnotatedElement annotatedElement, Class<? extends Annotation>... annotationClasses) {
         for(Class<? extends Annotation> ac : annotationClasses) if(annotatedElement.getAnnotation(ac) == null) return false;
         return true;
@@ -135,8 +152,8 @@ public class Reflection {
         return false;
     }
 
-    public static boolean isNumericallyAssignable(@NotNull Class<?> leftHandClass, @NotNull Class<?> rightHandClass) {
-        return _isNumericallyAssignable(objectClassForPrimitive(leftHandClass), objectClassForPrimitive(rightHandClass));
+    public static boolean isBooleanMismatch(Class<?> aClass, Class<?> bClass) {
+        return ((bClass == boolean.class) && (aClass == Boolean.class)) || ((bClass == Boolean.class) && (aClass == boolean.class));
     }
 
     public static boolean isNumeric(@NotNull Class<?> cls) {
@@ -147,25 +164,12 @@ public class Reflection {
         return (Number.class.isAssignableFrom(cls) || (cls == Character.class));
     }
 
-    private static boolean _isNumericallyAssignable(Class<?> l, Class<?> r) {
-        if(!(isNumericObject(l) && isNumericObject(r))) return false;
-        if((l == r) || (l == BigDecimal.class)) return true;
-        if(l == BigInteger.class) return isAnyType(r, BigDecimal.class, Double.class, Float.class);
-        if(l == Short.class) return (r == Byte.class);
-        if(l == Character.class) return isAnyType(r, Short.class, Byte.class);
-        if(l == Integer.class) return isAnyType(r, Character.class, Short.class, Byte.class);
-        if(l == Long.class) return isAnyType(r, Integer.class, Character.class, Short.class, Byte.class);
-        if(l == Float.class) return isAnyType(r, Long.class, Integer.class, Character.class, Short.class, Byte.class);
-        if(l == Double.class) return isAnyType(r, Float.class, Long.class, Integer.class, Character.class, Short.class, Byte.class);
-        return false;
+    public static boolean isNumericPrimitive(@NotNull Class<?> cls) {
+        return isAnyType(cls, byte.class, short.class, char.class, int.class, long.class, float.class, double.class);
     }
 
-    private static void forEach(@NotNull Class<?> cls, @NotNull Foo001 lambda) {
-        Class<?> _cls = cls;
-        while(_cls != null) {
-            lambda.action(_cls);
-            _cls = _cls.getSuperclass();
-        }
+    public static boolean isNumericallyAssignable(@NotNull Class<?> leftHandClass, @NotNull Class<?> rightHandClass) {
+        return _isNumericallyAssignable(objectClassForPrimitive(leftHandClass), objectClassForPrimitive(rightHandClass));
     }
 
     public static @NotNull Class<?> objectClassForPrimitive(@NotNull Class<?> cls) {
@@ -191,6 +195,33 @@ public class Reflection {
         if(cls == Double.class) return double.class;
         if(cls == Boolean.class) return boolean.class;
         return null;
+    }
+
+    private static boolean _isNumericallyAssignable(Class<?> l, Class<?> r) {
+        if(!(isNumericObject(l) && isNumericObject(r))) return false;
+        if((l == r) || (l == BigDecimal.class)) return true;
+        if(l == BigInteger.class) return isAnyType(r, BigDecimal.class, Double.class, Float.class);
+        if(l == Short.class) return (r == Byte.class);
+        if(l == Character.class) return isAnyType(r, Short.class, Byte.class);
+        if(l == Integer.class) return isAnyType(r, Character.class, Short.class, Byte.class);
+        if(l == Long.class) return isAnyType(r, Integer.class, Character.class, Short.class, Byte.class);
+        if(l == Float.class) return isAnyType(r, Long.class, Integer.class, Character.class, Short.class, Byte.class);
+        if(l == Double.class) return isAnyType(r, Float.class, Long.class, Integer.class, Character.class, Short.class, Byte.class);
+        return false;
+    }
+
+    private static void forEach(@NotNull Class<?> cls, @NotNull Foo001 lambda) {
+        Class<?> _cls = cls;
+        while(_cls != null) {
+            lambda.action(_cls);
+            _cls = _cls.getSuperclass();
+        }
+    }
+
+    private static @NotNull List<Type> getActualTypeArguments(@NotNull Type type) {
+        List<Type> list = new ArrayList<>();
+        if(type instanceof ParameterizedType) list.addAll(Arrays.asList(((ParameterizedType)type).getActualTypeArguments()));
+        return list;
     }
 
     private static boolean isAnyType(@NotNull Class<?> cls, Class<?>... others) {
