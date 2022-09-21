@@ -7,7 +7,7 @@ public class Null {
     private Null() {
     }
 
-    @Override public String toString() {
+    public @Override String toString() {
         return "null";
     }
 

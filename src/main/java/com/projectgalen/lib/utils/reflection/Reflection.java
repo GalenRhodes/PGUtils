@@ -1,5 +1,7 @@
 package com.projectgalen.lib.utils.reflection;
 
+import com.projectgalen.lib.utils.PGProperties;
+import com.projectgalen.lib.utils.U;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Reflection {
+    private static final PGProperties props = PGProperties.getSharedInstanceForNamedResource("pg_properties.properties", PGProperties.class);
+
     private Reflection() {
     }
 
@@ -100,6 +104,38 @@ public class Reflection {
             cls = cls.getSuperclass();
         }
         return fields;
+    }
+
+    /**
+     * This method functions like {@link Class#getMethod(String, Class...)} except that it will also search private, protected, and package member methods as well as public member
+     * methods. In this respect it behaves similar to {@link Class#getDeclaredMethod(String, Class...)}.
+     *
+     * @param cls            The class that will be searched for the specified method.
+     * @param methodName     The name of the method.
+     * @param parameterTypes The parameter types.
+     * @return The method.
+     * @throws NoSuchMethodException If the method cannot be found.
+     */
+    public static @NotNull Method getMethod(@NotNull Class<?> cls, @NotNull String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
+        Method method = getMethodOrNull(cls, methodName, parameterTypes);
+        if(method != null) return method;
+        String msg = props.format("reflect.nosuchmethod.msg.format", cls.getName(), methodName, U.join(", ", U.translate(Object.class, Class::getName, parameterTypes)));
+        throw new NoSuchMethodException(msg);
+    }
+
+    /**
+     * This method is exactly like {@link Reflection#getMethod(Class, String, Class[])} except that instead of throwing a NoSuchMethodException exception if the method is not found
+     * it simply returns null.
+     *
+     * @param cls            The class that will be searched for the specified method.
+     * @param methodName     The name of the method.
+     * @param parameterTypes The parameter types.
+     * @return The method.
+     */
+    public static @Nullable Method getMethodOrNull(@NotNull Class<?> cls, @NotNull String methodName, Class<?>... parameterTypes) {
+        Class<?> c = cls;
+        while(c != null) { try { return c.getMethod(methodName, parameterTypes); } catch(NoSuchMethodException ignore) { c = c.getSuperclass(); } }
+        return null;
     }
 
     public static @NotNull @SafeVarargs List<Method> getMethodsWithAllAnnotations(@NotNull Class<?> cls, Class<? extends Annotation>... annotationClasses) {

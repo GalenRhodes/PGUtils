@@ -7,6 +7,7 @@ import com.projectgalen.lib.utils.test.casting.TestClass;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.TypeVariable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,21 +19,18 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            TestClass obj = new TestClass();
-            Field     f   = TestClass.class.getDeclaredField("longObjField");
+            List<String>                       myList   = new ArrayList<>();
+            Class<?>                           cls      = myList.getClass();
+            TypeVariable<? extends Class<?>>[] typeVars = cls.getTypeParameters();
 
-            f.setAccessible(true);
-            f.set(obj, (long)1);
-            System.out.printf("longObjField value: %d%n", obj.getLongObjField());
-            f.set(obj, (long)((byte)2));
-            System.out.printf("longObjField value: %d%n", obj.getLongObjField());
+            System.out.printf("%15s: %s%n", "Name", cls.getName());
+            System.out.printf("%15s: %s%n", "Type name", cls.getTypeName());
+            System.out.printf("%15s: %s%n", "Generic String", cls.toGenericString());
 
-            f = TestClass.class.getDeclaredField("longField");
-            f.setAccessible(true);
-            f.set(obj, Long.valueOf(3));
-            System.out.printf("longField value: %d%n", obj.getLongField());
-            f.set(obj, Long.valueOf((byte)4));
-            System.out.printf("longField value: %d%n", obj.getLongField());
+            int i = 0;
+            for(TypeVariable<? extends Class<?>> tv : typeVars) {
+                System.out.printf("%15s: %s%n", String.format("Type Var #%d", ++i), tv.getTypeName());
+            }
         }
         catch(Exception e) {
             e.printStackTrace(System.err);
@@ -100,5 +98,23 @@ public class Main {
 
         list.sort(String::compareTo);
         for(String s : list) System.out.println(s);
+    }
+
+    @SuppressWarnings("UnnecessaryBoxing") private static void test01() throws NoSuchFieldException, IllegalAccessException {
+        TestClass obj = new TestClass();
+        Field     f   = TestClass.class.getDeclaredField("longObjField");
+
+        f.setAccessible(true);
+        f.set(obj, (long)1);
+        System.out.printf("longObjField value: %d%n", obj.getLongObjField());
+        f.set(obj, (long)((byte)2));
+        System.out.printf("longObjField value: %d%n", obj.getLongObjField());
+
+        f = TestClass.class.getDeclaredField("longField");
+        f.setAccessible(true);
+        f.set(obj, Long.valueOf(3));
+        System.out.printf("longField value: %d%n", obj.getLongField());
+        f.set(obj, Long.valueOf((byte)4));
+        System.out.printf("longField value: %d%n", obj.getLongField());
     }
 }

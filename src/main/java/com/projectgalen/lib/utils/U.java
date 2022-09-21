@@ -2,9 +2,11 @@ package com.projectgalen.lib.utils;
 
 import com.projectgalen.lib.utils.delegates.DoIfNotNullReturning;
 import com.projectgalen.lib.utils.delegates.DoIfNotNullVoid;
+import com.projectgalen.lib.utils.delegates.TranslatingDelegate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Base64;
 
@@ -12,15 +14,6 @@ import java.util.Base64;
 public class U {
 
     private U() {
-    }
-
-    public static @NotNull String capitalize(@NotNull String str) {
-        return ((str.length() == 0) ? str : ((str.length() == 1) ? str.toUpperCase() : (str.substring(0, 1).toUpperCase() + str.substring(1))));
-    }
-
-    public static @NotNull String[] splitDotPath(@NotNull String path) {
-        int i = path.lastIndexOf('.');
-        return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
     }
 
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, Object... args) {
@@ -39,6 +32,18 @@ public class U {
         return Base64.getEncoder().encodeToString(data);
     }
 
+    public static @NotNull String capitalize(@NotNull String str) {
+        return ((str.length() == 0) ? str : ((str.length() == 1) ? str.toUpperCase() : (str.substring(0, 1).toUpperCase() + str.substring(1))));
+    }
+
+    public static <P> void doIfNotNull(@Nullable P value, @NotNull DoIfNotNullVoid<P> delegate) {
+        if(value != null) delegate.action(value);
+    }
+
+    public static <P, R> R getIfNotNull(@Nullable P value, @NotNull DoIfNotNullReturning<P, R> delegate) {
+        return ((value == null) ? null : delegate.action(value));
+    }
+
     public static @NotNull <T extends Throwable> T getThrowable(@NotNull String msg, @NotNull Class<T> throwableClass) {
         try { return throwableClass.getConstructor(String.class).newInstance(msg); }
         catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) { throw new RuntimeException(ex); }
@@ -48,12 +53,28 @@ public class U {
         return ((obj == null) ? defaultValue : obj);
     }
 
+    public static @NotNull String join(char separator, @NotNull Object... args) {
+        return join(Character.toString(separator), args);
+    }
+
+    public static @NotNull String join(@NotNull String separator, @NotNull Object... args) {
+        if(args.length == 0) return "";
+        StringBuilder sb = new StringBuilder().append(args[0]);
+        for(int i = 1; i < args.length; i++) sb.append(separator).append(args[i]);
+        return sb.toString();
+    }
+
     public static String lc(String str) {
         return ((str == null) ? null : str.toLowerCase());
     }
 
     public static boolean nz(@Nullable String str) {
         return ((str != null) && (str.trim().length() > 0));
+    }
+
+    public static @NotNull String[] splitDotPath(@NotNull String path) {
+        int i = path.lastIndexOf('.');
+        return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
     }
 
     public static String tr(String str) {
@@ -77,22 +98,10 @@ public class U {
         return ((str == null) || (str.trim().length() == 0));
     }
 
-    public static <P> void doIfNotNull(@Nullable P value, @NotNull DoIfNotNullVoid<P> delegate) {
-        if(value != null) delegate.action(value);
-    }
-
-    public static <P, R> R getIfNotNull(@Nullable P value, @NotNull DoIfNotNullReturning<P, R> delegate) {
-        return ((value == null) ? null : delegate.action(value));
-    }
-
-    public static @NotNull String join(char separator, @NotNull Object... args) {
-        return join(Character.toString(separator), args);
-    }
-
-    public static @NotNull String join(@NotNull String separator, @NotNull Object... args) {
-        if(args.length == 0) return "";
-        StringBuilder sb = new StringBuilder().append(args[0]);
-        for(int i = 1; i < args.length; i++) sb.append(separator).append(args[i]);
-        return sb.toString();
+    public static @SafeVarargs <P, R> R[] translate(Class<R> cls, TranslatingDelegate<P, R> delegate, P... args) {
+        //noinspection unchecked
+        R[] out = (R[])Array.newInstance(cls, args.length);
+        for(int i = 0; i < args.length; i++) out[i] = delegate.translate(args[i]);
+        return out;
     }
 }

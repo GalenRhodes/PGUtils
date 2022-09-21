@@ -2,17 +2,39 @@ package com.projectgalen.lib.utils.reflection;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.io.Serializable;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class TypeInfo {
+public class TypeInfo implements Comparable<TypeInfo>, Serializable {
     public final          boolean        isParameterizedType;
     public final @NotNull String         typeName;
     public final @NotNull List<TypeInfo> argTypes;
+
+    public TypeInfo(@NotNull Class<?> cls) {
+        TypeVariable<? extends Class<?>>[] typeVars = cls.getTypeParameters();
+        this.isParameterizedType = (typeVars.length > 0);
+        this.typeName            = cls.getName();
+        this.argTypes            = new ArrayList<>();
+        for(TypeVariable<? extends Class<?>> tv : typeVars) this.argTypes.add(new TypeInfo(tv));
+    }
+
+    public TypeInfo(@NotNull Field field) {
+        this(field.getGenericType());
+    }
+
+    /**
+     * This constructor creates a {@link TypeInfo} object from the given method's return type. If you want the {@link TypeInfo} from the method's parameters then use the static
+     * method {@link TypeInfo#getParameterTypeInfo(Method)}
+     *
+     * @param method The method to get the return {@link TypeInfo} from.
+     */
+    public TypeInfo(@NotNull Method method) {
+        this(method.getGenericReturnType());
+    }
 
     public TypeInfo(@NotNull Type type) {
         isParameterizedType = (type instanceof ParameterizedType);
@@ -31,6 +53,10 @@ public class TypeInfo {
         }
     }
 
+    public @Override int compareTo(@NotNull TypeInfo o) {
+        return toString().compareTo(o.toString());
+    }
+
     public Class<?> getTypeClass() throws ClassNotFoundException {
         switch(typeName) { //@f:0
             case "boolean": return boolean.class;
@@ -45,18 +71,15 @@ public class TypeInfo {
         } //@f:1
     }
 
-    @Override public int hashCode() {
+    public @Override int hashCode() {
         return Objects.hash(isParameterizedType, typeName, argTypes);
     }
 
-    @Override public boolean equals(Object o) {
-        if(this == o) return true;
-        if(!(o instanceof TypeInfo)) return false;
-        TypeInfo typeInfo = (TypeInfo)o;
-        return isParameterizedType == typeInfo.isParameterizedType && typeName.equals(typeInfo.typeName) && argTypes.equals(typeInfo.argTypes);
+    public @Override boolean equals(Object o) {
+        return ((this == o) || ((o instanceof TypeInfo) && _equals((TypeInfo)o)));
     }
 
-    @Override public String toString() {
+    public @Override String toString() {
         StringBuilder sb = new StringBuilder();
 
         sb.append(typeName);
@@ -72,5 +95,15 @@ public class TypeInfo {
         }
 
         return sb.toString();
+    }
+
+    private boolean _equals(@NotNull TypeInfo other) {
+        return ((isParameterizedType == other.isParameterizedType) && typeName.equals(other.typeName) && argTypes.equals(other.argTypes));
+    }
+
+    public static @NotNull TypeInfo[] getParameterTypeInfo(@NotNull Method method) {
+        List<TypeInfo> list = new ArrayList<>();
+        for(Type pType : method.getGenericParameterTypes()) list.add(new TypeInfo(pType));
+        return list.toArray(new TypeInfo[0]);
     }
 }
