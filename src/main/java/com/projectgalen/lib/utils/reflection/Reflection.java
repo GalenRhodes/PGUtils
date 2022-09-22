@@ -84,6 +84,42 @@ public class Reflection {
         return a;
     }
 
+    public static Field getAccessibleField(Class<?> cls, String name) throws NoSuchFieldException {
+        Field field = getField(cls, name);
+        field.setAccessible(true);
+        return field;
+    }
+
+    public static Field getAccessibleFieldOrNull(Class<?> cls, String name) {
+        Field field = getFieldOrNull(cls, name);
+        if(field != null) field.setAccessible(true);
+        return field;
+    }
+
+    public static @NotNull Method getAccessibleMethod(@NotNull Class<?> cls, @NotNull String name, Class<?>... parameterTypes) throws NoSuchMethodException {
+        Method method = getMethod(cls, name, parameterTypes);
+        method.setAccessible(true);
+        return method;
+    }
+
+    public static @Nullable Method getAccessibleMethodOrNull(@NotNull Class<?> cls, @NotNull String name, Class<?>... parameterTypes) {
+        Method method = getMethodOrNull(cls, name, parameterTypes);
+        if(method != null) method.setAccessible(true);
+        return method;
+    }
+
+    public static @NotNull Field getField(@NotNull Class<?> cls, @NotNull String name) throws NoSuchFieldException {
+        Field field = getFieldOrNull(cls, name);
+        if(field == null) throw new NoSuchFieldException(name);
+        return field;
+    }
+
+    public static @Nullable Field getFieldOrNull(@NotNull Class<?> cls, @NotNull String name) {
+        Class<?> c = cls;
+        while(c != null) { try { return cls.getDeclaredField(name); } catch(NoSuchFieldException e) { c = c.getSuperclass(); } }
+        return null;
+    }
+
     public static @NotNull TypeInfo getFieldTypeInfo(@NotNull Field field) {
         return new TypeInfo(field.getGenericType());
     }
@@ -111,15 +147,15 @@ public class Reflection {
      * methods. In this respect it behaves similar to {@link Class#getDeclaredMethod(String, Class...)}.
      *
      * @param cls            The class that will be searched for the specified method.
-     * @param methodName     The name of the method.
+     * @param name           The name of the method.
      * @param parameterTypes The parameter types.
      * @return The method.
      * @throws NoSuchMethodException If the method cannot be found.
      */
-    public static @NotNull Method getMethod(@NotNull Class<?> cls, @NotNull String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
-        Method method = getMethodOrNull(cls, methodName, parameterTypes);
+    public static @NotNull Method getMethod(@NotNull Class<?> cls, @NotNull String name, Class<?>... parameterTypes) throws NoSuchMethodException {
+        Method method = getMethodOrNull(cls, name, parameterTypes);
         if(method != null) return method;
-        String msg = props.format("reflect.nosuchmethod.msg.format", cls.getName(), methodName, U.join(", ", U.translate(Object.class, Class::getName, parameterTypes)));
+        String msg = props.format("reflect.nosuchmethod.msg.format", cls.getName(), name, U.join(", ", U.translate(Object.class, Class::getName, parameterTypes)));
         throw new NoSuchMethodException(msg);
     }
 
@@ -128,13 +164,13 @@ public class Reflection {
      * it simply returns null.
      *
      * @param cls            The class that will be searched for the specified method.
-     * @param methodName     The name of the method.
+     * @param name           The name of the method.
      * @param parameterTypes The parameter types.
      * @return The method.
      */
-    public static @Nullable Method getMethodOrNull(@NotNull Class<?> cls, @NotNull String methodName, Class<?>... parameterTypes) {
+    public static @Nullable Method getMethodOrNull(@NotNull Class<?> cls, @NotNull String name, Class<?>... parameterTypes) {
         Class<?> c = cls;
-        while(c != null) { try { return c.getMethod(methodName, parameterTypes); } catch(NoSuchMethodException ignore) { c = c.getSuperclass(); } }
+        while(c != null) try { return c.getDeclaredMethod(name, parameterTypes); } catch(NoSuchMethodException ignore) { c = c.getSuperclass(); }
         return null;
     }
 
@@ -179,12 +215,12 @@ public class Reflection {
     }
 
     public static @SafeVarargs boolean hasAllAnnotations(@NotNull AnnotatedElement annotatedElement, Class<? extends Annotation>... annotationClasses) {
-        for(Class<? extends Annotation> ac : annotationClasses) if(annotatedElement.getAnnotation(ac) == null) return false;
+        for(Class<? extends Annotation> ac : annotationClasses) if(!annotatedElement.isAnnotationPresent(ac)) return false;
         return true;
     }
 
     public static @SafeVarargs boolean hasAnyAnnotation(@NotNull AnnotatedElement annotatedElement, Class<? extends Annotation>... annotationClasses) {
-        for(Class<? extends Annotation> ac : annotationClasses) if(annotatedElement.getAnnotation(ac) != null) return true;
+        for(Class<? extends Annotation> ac : annotationClasses) if(annotatedElement.isAnnotationPresent(ac)) return true;
         return false;
     }
 
