@@ -2,6 +2,7 @@ package com.projectgalen.lib.utils.reflection;
 
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.U;
+import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +66,7 @@ public class Reflection {
     public static @NotNull List<Method> findSettersForTypes(@NotNull Class<?> cls, boolean exact, Class<?>... pTypes) {
         List<Method> a      = new ArrayList<>();
         boolean      getAll = (pTypes.length == 0);
-        forEach(cls, c -> {
+        forEachSuperclass(cls, c -> {
             for(Method m : c.getDeclaredMethods()) {
                 Class<?>[] mParamTypes = m.getParameterTypes();
 
@@ -80,6 +81,7 @@ public class Reflection {
                     }
                 }
             }
+            return false;
         });
         return a;
     }
@@ -282,11 +284,25 @@ public class Reflection {
         return false;
     }
 
-    private static void forEach(@NotNull Class<?> cls, @NotNull Foo001 lambda) {
-        Class<?> _cls = cls;
-        while(_cls != null) {
-            lambda.action(_cls);
-            _cls = _cls.getSuperclass();
+    public static void forEachField(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Field, Boolean> delegate) {
+        forEachSuperclass(cls, c -> {
+            for(Field field : c.getDeclaredFields()) if(U.ifNull(delegate.action(field), false)) return true;
+            return false;
+        });
+    }
+
+    public static void forEachMethod(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Method, Boolean> delegate) {
+        forEachSuperclass(cls, c -> {
+            for(Method method : c.getDeclaredMethods()) if(U.ifNull(delegate.action(method), false)) return true;
+            return false;
+        });
+    }
+
+    public static void forEachSuperclass(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Class<?>, Boolean> delegate) {
+        Class<?> c = cls;
+        while(c != null) {
+            if(U.ifNull(delegate.action(c), false)) break;
+            c = c.getSuperclass();
         }
     }
 
@@ -310,7 +326,4 @@ public class Reflection {
         return false;
     }
 
-    private interface Foo001 {
-        void action(@NotNull Class<?> cls);
-    }
 }

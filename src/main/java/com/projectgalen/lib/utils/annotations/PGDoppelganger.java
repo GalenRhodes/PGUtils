@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface PGDoppelganger {
     String className();
 
-    String[] fieldNames();
+    String[] fieldNames() default {};
 
     String idField();
 }

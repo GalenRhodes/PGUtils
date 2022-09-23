@@ -1,8 +1,8 @@
 package com.projectgalen.lib.utils;
 
-import com.projectgalen.lib.utils.delegates.DoIfNotNullReturning;
-import com.projectgalen.lib.utils.delegates.DoIfNotNullVoid;
+import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
 import com.projectgalen.lib.utils.delegates.TranslatingDelegate;
+import com.projectgalen.lib.utils.delegates.WithValueDelegate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,11 +36,11 @@ public class U {
         return ((str.length() == 0) ? str : ((str.length() == 1) ? str.toUpperCase() : (str.substring(0, 1).toUpperCase() + str.substring(1))));
     }
 
-    public static <P> void doIfNotNull(@Nullable P value, @NotNull DoIfNotNullVoid<P> delegate) {
+    public static <P> void doIfNotNull(@Nullable P value, @NotNull WithValueDelegate<P> delegate) {
         if(value != null) delegate.action(value);
     }
 
-    public static <P, R> R getIfNotNull(@Nullable P value, @NotNull DoIfNotNullReturning<P, R> delegate) {
+    public static <P, R> R getIfNotNull(@Nullable P value, @NotNull GetWithValueDelegate<P, R> delegate) {
         return ((value == null) ? null : delegate.action(value));
     }
 
