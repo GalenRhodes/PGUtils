@@ -86,6 +86,28 @@ public class Reflection {
         return a;
     }
 
+    public static void forEachField(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Field, Boolean> delegate) {
+        forEachSuperclass(cls, c -> {
+            for(Field field : c.getDeclaredFields()) if(U.ifNull(delegate.action(field), false)) return true;
+            return false;
+        });
+    }
+
+    public static void forEachMethod(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Method, Boolean> delegate) {
+        forEachSuperclass(cls, c -> {
+            for(Method method : c.getDeclaredMethods()) if(U.ifNull(delegate.action(method), false)) return true;
+            return false;
+        });
+    }
+
+    public static void forEachSuperclass(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Class<?>, Boolean> delegate) {
+        Class<?> c = cls;
+        while(c != null) {
+            if(U.ifNull(delegate.action(c), false)) break;
+            c = c.getSuperclass();
+        }
+    }
+
     public static Field getAccessibleField(Class<?> cls, String name) throws NoSuchFieldException {
         Field field = getField(cls, name);
         field.setAccessible(true);
@@ -108,6 +130,18 @@ public class Reflection {
         Method method = getMethodOrNull(cls, name, parameterTypes);
         if(method != null) method.setAccessible(true);
         return method;
+    }
+
+    public static @Nullable <T extends Annotation> T getAnnotation(@NotNull AnnotatedElement element, @NotNull Class<T> annotationClass) {
+        T a = element.getAnnotation(annotationClass);
+        if((a != null) || (element.getClass() != Class.class)) return a;
+        Class<?> cls = ((Class<?>)element).getSuperclass();
+        while(cls != null) {
+            a = cls.getAnnotation(annotationClass);
+            if(a != null) return a;
+            cls = cls.getSuperclass();
+        }
+        return null;
     }
 
     public static @NotNull Field getField(@NotNull Class<?> cls, @NotNull String name) throws NoSuchFieldException {
@@ -284,28 +318,6 @@ public class Reflection {
         return false;
     }
 
-    public static void forEachField(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Field, Boolean> delegate) {
-        forEachSuperclass(cls, c -> {
-            for(Field field : c.getDeclaredFields()) if(U.ifNull(delegate.action(field), false)) return true;
-            return false;
-        });
-    }
-
-    public static void forEachMethod(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Method, Boolean> delegate) {
-        forEachSuperclass(cls, c -> {
-            for(Method method : c.getDeclaredMethods()) if(U.ifNull(delegate.action(method), false)) return true;
-            return false;
-        });
-    }
-
-    public static void forEachSuperclass(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Class<?>, Boolean> delegate) {
-        Class<?> c = cls;
-        while(c != null) {
-            if(U.ifNull(delegate.action(c), false)) break;
-            c = c.getSuperclass();
-        }
-    }
-
     private static @NotNull List<Type> getActualTypeArguments(@NotNull Type type) {
         List<Type> list = new ArrayList<>();
         if(type instanceof ParameterizedType) list.addAll(Arrays.asList(((ParameterizedType)type).getActualTypeArguments()));
@@ -325,5 +337,4 @@ public class Reflection {
         for(Class<?> r : pTypes) if(isTypeMatch(exact, l, r)) return true;
         return false;
     }
-
 }
