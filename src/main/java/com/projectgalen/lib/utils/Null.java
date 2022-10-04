@@ -3,8 +3,20 @@ package com.projectgalen.lib.utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Null {
+public class Null implements Cloneable {
     private Null() {
+    }
+
+    public @Override int hashCode() {
+        return 0;
+    }
+
+    public @SuppressWarnings("EqualsWhichDoesntCheckParameterClass") @Override boolean equals(Object obj) {
+        return (obj == NULL());
+    }
+
+    protected @Override Object clone() throws CloneNotSupportedException {
+        return NULL();
     }
 
     public @Override String toString() {

@@ -41,7 +41,7 @@ public class JSON2JPA {
             for(String fld : tgtInfo.fieldNames) {
                 Field tgtFld = Reflection.getAccessibleField(tgtCls, fld);
                 Field srcFld = Reflection.getAccessibleField(srcCls, fld);
-                copyFieldValue(tgtFld, tgtInfo.target, srcFld, src, cache);
+                Reflection.setFieldValue(tgtFld, tgtInfo.target, translate(tgtFld, srcFld, cache, Reflection.getFieldValue(srcFld, src)));
             }
             return tgtInfo.target;
         }
@@ -53,31 +53,12 @@ public class JSON2JPA {
         }
     }
 
-    private static void copyFieldValue(@NotNull Field tgtFld, @NotNull Object tgt, @NotNull Field srcFld, @NotNull Object src, @NotNull Map<String, Object> cache) {
-        @Nullable Object srcVal = null;
-        @Nullable Object tgtVal = null;
-        try {
-            srcVal = srcFld.get(src);
-        }
-        catch(Exception e) {
-            throw new RuntimeException(msgs.format("msg.err.json2jpa.get_fld_val_failed", srcFld.getName(), src.getClass().getName(), e), e);
-        }
-        try {
-            tgtVal = translate(new TypeInfo(tgtFld), new TypeInfo(srcFld), srcVal, cache);
-        }
-        catch(Exception e) {
-            throw new RuntimeException(msgs.format("msg.err.json2jpa.xlate_value_failed", srcFld.getType().getName(), tgtFld.getType().getName(), e), e);
-        }
-        try {
-            tgtFld.set(tgt, tgtVal);
-        }
-        catch(Exception e) {
-            throw new RuntimeException(msgs.format("msg.err.json2jpa.set_fld_val_failed", tgtFld.getType(), tgt.getClass().getName(), e), e);
-        }
+    private static @NotNull String getXlateFailedMsg(@NotNull Field tgtFld, @NotNull Field srcFld, Exception e) {
+        return msgs.format("msg.err.json2jpa.xlate_value_failed", srcFld.getType().getName(), tgtFld.getType().getName(), e);
     }
 
     private static boolean isTranslatableArray(@NotNull Class<?> tgtCls, @NotNull Class<?> srcCls) {
-        return srcCls.isArray() && tgtCls.isArray() && !srcCls.getComponentType().isPrimitive() && !tgtCls.getComponentType().isPrimitive();
+        return (srcCls.isArray() && tgtCls.isArray() && !srcCls.getComponentType().isPrimitive() && !tgtCls.getComponentType().isPrimitive());
     }
 
     private static boolean isTranslatableList(@NotNull TypeInfo tgtTp, @NotNull TypeInfo srcTp, @NotNull Object srcVal) throws ClassNotFoundException {
@@ -89,6 +70,11 @@ public class JSON2JPA {
                 (tgtTp.argTypes.size() == 1));
     }
 
+    private static @Nullable Object translate(@NotNull Field tgtFld, @NotNull Field srcFld, @NotNull Map<String, Object> cache, @Nullable Object srcVal) {
+        try { return translate(new TypeInfo(tgtFld), new TypeInfo(srcFld), srcVal, cache); }
+        catch(Exception e) { throw new RuntimeException(getXlateFailedMsg(tgtFld, srcFld, e), e); }
+    }
+
     private static Object translate(@NotNull TypeInfo tgtTp, @NotNull TypeInfo srcTp, @Nullable Object srcVal, @NotNull Map<String, Object> cache) throws Exception {
         Class<?> tgtCls = tgtTp.getTypeClass();
         Class<?> srcCls = srcTp.getTypeClass();
@@ -97,7 +83,7 @@ public class JSON2JPA {
 
         if(tgtTp.equals(srcTp)) return ((srcVal instanceof List) ? new ArrayList<Object>((List<?>)srcVal) : srcVal);
 
-        if(srcCls.isAnnotationPresent(PGDoppelganger.class) && tgtCls.isAnnotationPresent(PGDoppelganger.class)) return convert(null, srcVal, cache);
+        if(Reflection.isAnnotationPresent(srcCls, PGDoppelganger.class) && Reflection.isAnnotationPresent(tgtCls, PGDoppelganger.class)) return convert(null, srcVal, cache);
 
         if(isTranslatableList(tgtTp, srcTp, srcVal)) return translateList(tgtTp, srcTp, (List<?>)srcVal, cache);
 

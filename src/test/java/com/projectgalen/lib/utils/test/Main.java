@@ -4,6 +4,7 @@ import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
 import com.projectgalen.lib.utils.reflection.Reflection;
 import com.projectgalen.lib.utils.test.casting.TestClass;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -19,22 +20,31 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            List<String>                       myList   = new ArrayList<>();
-            Class<?>                           cls      = myList.getClass();
-            TypeVariable<? extends Class<?>>[] typeVars = cls.getTypeParameters();
-
-            System.out.printf("%15s: %s%n", "Name", cls.getName());
-            System.out.printf("%15s: %s%n", "Type name", cls.getTypeName());
-            System.out.printf("%15s: %s%n", "Generic String", cls.toGenericString());
-
-            int i = 0;
-            for(TypeVariable<? extends Class<?>> tv : typeVars) {
-                System.out.printf("%15s: %s%n", String.format("Type Var #%d", ++i), tv.getTypeName());
-            }
+            testMethod(3);
         }
         catch(Exception e) {
             e.printStackTrace(System.err);
         }
+    }
+
+    private static void testGenerics() {
+        List<String>                       myList   = new ArrayList<>();
+        Class<?>                           cls      = myList.getClass();
+        TypeVariable<? extends Class<?>>[] typeVars = cls.getTypeParameters();
+
+        System.out.printf("%15s: %s%n", "Name", cls.getName());
+        System.out.printf("%15s: %s%n", "Type name", cls.getTypeName());
+        System.out.printf("%15s: %s%n", "Generic String", cls.toGenericString());
+
+        int i = 0;
+        for(TypeVariable<? extends Class<?>> tv : typeVars) {
+            System.out.printf("%15s: %s%n", String.format("Type Var #%d", ++i), tv.getTypeName());
+        }
+    }
+
+    private static void testMethod(@NotNull Object o) {
+        System.out.printf("%n%n       Parameter Class Type: %s%n", o.getClass().getName());
+        System.out.printf("Parameter Class isPrimitive: %s%n%n", o.getClass().isPrimitive());
     }
 
     private static void checkAssignability(Field[] fields) {

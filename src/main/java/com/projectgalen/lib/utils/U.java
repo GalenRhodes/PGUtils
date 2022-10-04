@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Base64;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings("unused")
 public class U {
@@ -22,6 +23,11 @@ public class U {
 
     public static @NotNull StringBuffer appendFormat(@NotNull StringBuffer sb, @NotNull String format, Object... args) {
         return sb.append(String.format(format, args));
+    }
+
+    public static boolean atomicSet(@NotNull AtomicBoolean atomicBoolean, boolean value) {
+        atomicBoolean.set(value);
+        return value;
     }
 
     public static byte @NotNull [] base64Decode(@NotNull String encStr) {
