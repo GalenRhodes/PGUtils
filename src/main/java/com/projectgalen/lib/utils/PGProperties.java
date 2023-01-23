@@ -1,4 +1,24 @@
 package com.projectgalen.lib.utils;
+// ===========================================================================
+//     PROJECT: PGUtils
+//    FILENAME: PGProperties.java
+//         IDE: IntelliJ
+//      AUTHOR: Galen Rhodes
+//        DATE: January 05, 2023
+//
+//
+// Permission to use, copy, modify, and distribute this software for any
+// purpose with or without fee is hereby granted, provided that the above
+// copyright notice and this permission notice appear in all copies.
+//
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+// SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+// IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+// ===========================================================================
 
 import com.projectgalen.lib.utils.errors.InvalidPropertyKeyValuePair;
 import com.projectgalen.lib.utils.macro.Macro;
@@ -14,26 +34,39 @@ import java.util.*;
 @SuppressWarnings("unused")
 public class PGProperties extends Properties {
 
-    private static final PGResourceBundle _msgs         = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
-    private static final int              DEFAULT_LIMIT = -1;
-
-    public static final @Language("RegExp") String DEFAULT_LIST_SEPARATOR_PATTERN = "\\s*,\\s*";
-    public static final @Language("RegExp") String DEFAULT_MAP_KV_PATTERN         = "\\s*:\\s*";
-    public static final                     String DEFAULT_DATE_FORMAT            = "yyyy-MM-dd";
-    public static final                     String DEFAULT_TIME_FORMAT            = "HH:mm:ss.SSSZ";
-    public static final                     String DEFAULT_DATETIME_FORMAT        = String.format("%s'T'%s", DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT);
+    public static final @Language("RegExp") String           DEFAULT_LIST_SEPARATOR_PATTERN = "\\s*,\\s*";
+    public static final @Language("RegExp") String           DEFAULT_MAP_KV_PATTERN         = "\\s*:\\s*";
+    public static final                     String           DEFAULT_DATE_FORMAT            = "yyyy-MM-dd";
+    public static final                     String           DEFAULT_TIME_FORMAT            = "HH:mm:ss.SSSZ";
+    public static final                     String           DEFAULT_DATETIME_FORMAT        = String.format("%s'T'%s", DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT);
+    private static final                    PGResourceBundle _msgs                          = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final                    int              DEFAULT_LIMIT                  = -1;
 
     public <T extends Throwable> PGProperties(@Nullable InputStream inputStream, Class<T> errorClass) throws T {
         super();
         try {
             if(inputStream == null) throw U.getThrowable(_msgs.getString("msg.err.no_input_stream"), errorClass);
-            try(inputStream) { load(inputStream); }
+            try(inputStream) {load(inputStream);}
         }
-        catch(Exception e) { throw U.wrapThrowable(_msgs.getString("msg.err.props_load_failed"), e, errorClass); }
+        catch(Exception e) {throw U.wrapThrowable(_msgs.getString("msg.err.props_load_failed"), e, errorClass);}
     }
 
     public PGProperties(@Nullable InputStream inputStream) throws IllegalArgumentException {
         this(inputStream, IllegalArgumentException.class);
+    }
+
+    public static @NotNull PGProperties getSharedInstanceForNamedResource(@NotNull @NonNls String resourceName, @NotNull Class<?> refClass) {
+        String       key   = String.format("%s|%s", refClass.getName(), resourceName);
+        PGProperties props = CacheHolder.CACHE.get(key, PGProperties.class);
+
+        if(props != null) return props;
+        props = new PGProperties(refClass.getResourceAsStream(resourceName));
+        CacheHolder.CACHE.store(key, props);
+        return props;
+    }
+
+    public static @NotNull PGProperties getSharedInstanceForNamedResource(@NotNull @NonNls String resourceName) {
+        return getSharedInstanceForNamedResource(resourceName.startsWith("/") ? resourceName : ("/" + resourceName), PGProperties.class);
     }
 
     public String format(@NotNull @NonNls String key, Object... args) {
@@ -42,14 +75,11 @@ public class PGProperties extends Properties {
     }
 
     public boolean getBooleanProperty(@NotNull @NonNls String key, boolean defaultBoolean) {
-        switch(getProperty(key, Boolean.toString(defaultBoolean)).trim()) {
-            case "true":
-                return true;
-            case "false":
-                return false;
-            default:
-                return defaultBoolean;
-        }
+        switch(getProperty(key, Boolean.toString(defaultBoolean)).trim()) {/*@f0*/
+            case "true":  return true;
+            case "false": return false;
+            default:      return defaultBoolean;
+        }/*@f1*/
     }
 
     public boolean getBooleanProperty(@NotNull @NonNls String key) {
@@ -66,15 +96,15 @@ public class PGProperties extends Properties {
     }
 
     public byte getByteProperty(@NotNull @NonNls String key) {
-        return getByteProperty(key, (byte)0);
+        return getByteProperty(key, (byte) 0);
     }
 
     public Date getDateProperty(@NotNull @NonNls String key, @NotNull @NonNls String format, @Nullable Date defaultDate) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         String           val = getProperty(key);
         if(val == null) return defaultDate;
-        try { return sdf.parse(val); }
-        catch(Exception e) { return defaultDate; }
+        try {return sdf.parse(val);}
+        catch(Exception e) {return defaultDate;}
     }
 
     public Date getDateProperty(@NotNull @NonNls String key, @Nullable Date defaultDate) {
@@ -164,10 +194,7 @@ public class PGProperties extends Properties {
         return getLongProperty(key, 0);
     }
 
-    public Map<String, String> getMap(@NotNull @NonNls String key,
-                                      @NotNull @NonNls @Language("RegExp") String listSeparatorPattern,
-                                      @NotNull @NonNls @Language("RegExp") String kvSeparatorPattern,
-                                      @Nullable Map<String, String> defaultMap) {
+    public Map<String, String> getMap(@NotNull @NonNls String key, @NotNull @NonNls @Language("RegExp") String listSeparatorPattern, @NotNull @NonNls @Language("RegExp") String kvSeparatorPattern, @Nullable Map<String, String> defaultMap) {
         List<String> list = getList(key, listSeparatorPattern, 0, null);
         if(list == null) return defaultMap;
         Map<String, String> map = new LinkedHashMap<>();
@@ -204,7 +231,7 @@ public class PGProperties extends Properties {
     }
 
     public short getShortProperty(@NotNull @NonNls String key) {
-        return getShortProperty(key, (short)0);
+        return getShortProperty(key, (short) 0);
     }
 
     private String _gp(String key) {
@@ -213,20 +240,6 @@ public class PGProperties extends Properties {
 
     private String prepForNumber(@NotNull String value) {
         return value.replaceAll("_", "").replaceAll(",", "");
-    }
-
-    public static @NotNull PGProperties getSharedInstanceForNamedResource(@NotNull @NonNls String resourceName, @NotNull Class<?> refClass) {
-        String       key   = String.format("%s|%s", refClass.getName(), resourceName);
-        PGProperties props = CacheHolder.CACHE.get(key, PGProperties.class);
-
-        if(props != null) return props;
-        props = new PGProperties(refClass.getResourceAsStream(resourceName));
-        CacheHolder.CACHE.store(key, props);
-        return props;
-    }
-
-    public static @NotNull PGProperties getSharedInstanceForNamedResource(@NotNull @NonNls String resourceName) {
-        return getSharedInstanceForNamedResource(resourceName.startsWith("/") ? resourceName : ("/" + resourceName), PGProperties.class);
     }
 
     private static final class CacheHolder {

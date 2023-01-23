@@ -1,11 +1,12 @@
-package com.projectgalen.lib.utils.annotations;
+package com.projectgalen.lib.utils;
 // ===========================================================================
 //     PROJECT: PGUtils
-//    FILENAME: PGJPA.java
-//         IDE: IntelliJ
+//    FILENAME: X.java
+//         IDE: IntelliJ IDEA
 //      AUTHOR: Galen Rhodes
-//        DATE: January 05, 2023
+//        DATE: January 23, 2023
 //
+// Copyright © 2023 Project Galen. All rights reserved.
 //
 // Permission to use, copy, modify, and distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -20,11 +21,6 @@ package com.projectgalen.lib.utils.annotations;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Target({ ElementType.TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-public @interface PGJPA {}
+public class X {
+    public X() {}
+}
