@@ -1,7 +1,7 @@
 package com.projectgalen.lib.utils.delegates;
 // ===========================================================================
 //     PROJECT: PGUtils
-//    FILENAME: ReturningThrowingDelegate.java
+//    FILENAME: ReturningDelegate.java
 //         IDE: IntelliJ
 //      AUTHOR: Galen Rhodes
 //        DATE: January 05, 2023
@@ -20,6 +20,6 @@ package com.projectgalen.lib.utils.delegates;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-public interface ReturningThrowingDelegate<T> {
-    T action() throws Exception;
+public interface GetDelegate<T> {
+    T action();
 }

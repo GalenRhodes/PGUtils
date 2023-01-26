@@ -22,7 +22,6 @@ package com.projectgalen.lib.utils;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
-import com.projectgalen.lib.utils.delegates.TranslatingDelegate;
 import com.projectgalen.lib.utils.delegates.WithValueDelegate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -125,10 +124,10 @@ public class U {
         return ((str == null) || (str.trim().length() == 0));
     }
 
-    public static @SafeVarargs <P, R> R[] translate(Class<R> cls, TranslatingDelegate<P, R> delegate, P... args) {
+    public static @SafeVarargs <P, R> R[] translate(Class<R> cls, GetWithValueDelegate<P, R> delegate, P... args) {
         //noinspection unchecked
         R[] out = (R[]) Array.newInstance(cls, args.length);
-        for(int i = 0; i < args.length; i++) out[i] = delegate.translate(args[i]);
+        for(int i = 0; i < args.length; i++) out[i] = delegate.action(args[i]);
         return out;
     }
 }

@@ -1,7 +1,7 @@
 package com.projectgalen.lib.utils.delegates;
 // ===========================================================================
 //     PROJECT: PGUtils
-//    FILENAME: TranslatingDelegate.java
+//    FILENAME: VoidThrowingDelegate.java
 //         IDE: IntelliJ
 //      AUTHOR: Galen Rhodes
 //        DATE: January 05, 2023
@@ -20,6 +20,6 @@ package com.projectgalen.lib.utils.delegates;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-public interface TranslatingDelegate<P, R> {
-    R translate(P arg);
+public interface VoidThrowsDelegate {
+    void action() throws Exception;
 }
