@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils.macro;
+package com.projectgalen.lib.utils.delegates;
 // ===========================================================================
 //     PROJECT: PGUtils
 //    FILENAME: MacroDelegate.java

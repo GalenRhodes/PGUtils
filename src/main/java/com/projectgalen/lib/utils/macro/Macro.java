@@ -21,6 +21,7 @@ package com.projectgalen.lib.utils.macro;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.PGProperties;
+import com.projectgalen.lib.utils.delegates.MacroDelegate;
 import com.projectgalen.lib.utils.errors.InvalidPropertyMacro;
 import com.projectgalen.lib.utils.regex.Regex;
 import org.intellij.lang.annotations.Language;
