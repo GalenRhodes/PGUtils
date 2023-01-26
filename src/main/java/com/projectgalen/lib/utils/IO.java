@@ -105,11 +105,13 @@ public class IO {
         return readFile(new FileInputStream(file));
     }
 
-    public static @NotNull String readFile(@NotNull File file, @NotNull Charset cs) throws IOException {
+    @NotNull
+    public static String readFile(@NotNull File file, @NotNull Charset cs) throws IOException {
         return readFile(new FileInputStream(file), cs);
     }
 
-    public static @NotNull String readFile(@NotNull Reader reader) throws IOException {
+    @NotNull
+    public static String readFile(@NotNull Reader reader) throws IOException {
         StringWriter sw = new StringWriter();
         copy(reader, sw, true);
         return sw.toString();
@@ -121,7 +123,8 @@ public class IO {
         return outputStream.toByteArray();
     }
 
-    public static @NotNull String readFile(@NotNull InputStream inputStream, @NotNull Charset cs) throws IOException {
+    @NotNull
+    public static String readFile(@NotNull InputStream inputStream, @NotNull Charset cs) throws IOException {
         return readFile(new InputStreamReader(inputStream, cs));
     }
 

@@ -56,7 +56,8 @@ public class PGProperties extends Properties {
         this(inputStream, IllegalArgumentException.class);
     }
 
-    public static @NotNull PGProperties getSharedInstanceForNamedResource(@NotNull @NonNls String resourceName, @NotNull Class<?> refClass) {
+    @NotNull
+    public static PGProperties getSharedInstanceForNamedResource(@NotNull @NonNls String resourceName, @NotNull Class<?> refClass) {
         String       key   = String.format("%s|%s", refClass.getName(), resourceName);
         PGProperties props = CacheHolder.CACHE.get(key, PGProperties.class);
 
@@ -66,7 +67,8 @@ public class PGProperties extends Properties {
         return props;
     }
 
-    public static @NotNull PGProperties getSharedInstanceForNamedResource(@NotNull @NonNls String resourceName) {
+    @NotNull
+    public static PGProperties getSharedInstanceForNamedResource(@NotNull @NonNls String resourceName) {
         return getSharedInstanceForNamedResource(resourceName.startsWith("/") ? resourceName : ("/" + resourceName), PGProperties.class);
     }
 
@@ -158,7 +160,7 @@ public class PGProperties extends Properties {
     public List<String> getList(@NotNull @NonNls String key, @Nullable @Language("RegExp") String separatorPattern, int limit, @Nullable List<String> defaultList) {
         String str = getProperty(key);
         if(str == null) return defaultList;
-        String[] arr = str.split(U.ifNull(separatorPattern, DEFAULT_LIST_SEPARATOR_PATTERN), limit);
+        String[] arr = str.split(Null.ifNull(separatorPattern, DEFAULT_LIST_SEPARATOR_PATTERN), limit);
         return Arrays.asList(arr);
     }
 

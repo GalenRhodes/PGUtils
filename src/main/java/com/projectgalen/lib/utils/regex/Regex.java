@@ -32,14 +32,15 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public class Regex {
-    private Regex() {
-    }
+    private Regex() { }
 
-    public static @NotNull Matcher getMatcher(@NotNull @NonNls @Language("RegExp") String pattern, @NotNull @NonNls CharSequence input) {
+    @NotNull
+    public static Matcher getMatcher(@NotNull @NonNls @Language("RegExp") String pattern, @NotNull @NonNls CharSequence input) {
         return getMatcher(pattern, 0, input);
     }
 
-    public static @NotNull Matcher getMatcher(@NotNull @NonNls @Language("RegExp") String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, @NotNull @NonNls CharSequence input) {
+    @NotNull
+    public static Matcher getMatcher(@NotNull @NonNls @Language("RegExp") String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, @NotNull @NonNls CharSequence input) {
         String  key = String.format("♚%s♛%d", pattern, flags);
         Pattern p   = CacheHolder.CACHE.get(key, Pattern.class);
         if(p == null) {
@@ -49,12 +50,14 @@ public class Regex {
         return p.matcher(input);
     }
 
-    public static @NotNull String replaceUsingDelegate(@NotNull @Language("RegExp") @RegExp @NonNls String pattern, @NotNull CharSequence input, @NotNull ReplacementDelegate delegate) {
+    @NotNull
+    public static String replaceUsingDelegate(@NotNull @Language("RegExp") @RegExp @NonNls String pattern, @NotNull CharSequence input, @NotNull ReplacementDelegate delegate) {
         Pattern p = Pattern.compile(pattern);
         return replaceUsingDelegate(p, input, delegate);
     }
 
-    public static @NotNull String replaceUsingDelegate(@NotNull Pattern pattern, @NotNull CharSequence input, @NotNull ReplacementDelegate delegate) {
+    @NotNull
+    public static String replaceUsingDelegate(@NotNull Pattern pattern, @NotNull CharSequence input, @NotNull ReplacementDelegate delegate) {
         Matcher m = pattern.matcher(input);
 
         if(!m.find()) return input.toString();

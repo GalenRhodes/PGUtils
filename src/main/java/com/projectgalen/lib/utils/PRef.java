@@ -21,23 +21,35 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
+
 public class PRef<T> {
 
-    protected T value;
+    protected final @NotNull      Class<T> clazz;
+    protected @UnknownNullability T        value;
 
-    public PRef() {
+    public PRef(@NotNull Class<T> clazz) {
         this.value = null;
+        this.clazz = clazz;
     }
 
-    public PRef(T initialValue) {
+    public PRef(@NotNull Class<T> clazz, @UnknownNullability T initialValue) {
         this.value = initialValue;
+        this.clazz = clazz;
     }
 
+    @NotNull
+    public Class<T> getValueClass() {
+        return clazz;
+    }
+
+    @UnknownNullability
     public T getValue() {
         return value;
     }
 
-    public void setValue(T value) {
+    public void setValue(@UnknownNullability T value) {
         this.value = value;
     }
 }

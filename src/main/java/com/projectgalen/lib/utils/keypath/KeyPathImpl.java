@@ -20,9 +20,9 @@ package com.projectgalen.lib.utils.keypath;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.Null;
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
-import com.projectgalen.lib.utils.U;
 import com.projectgalen.lib.utils.reflection.Reflection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,14 +34,14 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class KeyPathImpl {
 
-    public static final  char             PATH_ELEM_SEP = '.';
+    private static final char             PATH_ELEM_SEP = '.';
     private static final PGResourceBundle msgs          = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
     private static final PGProperties     props         = PGProperties.getSharedInstanceForNamedResource("pg_properties.properties", PGProperties.class);
 
-    private KeyPathImpl() {
-    }
+    private KeyPathImpl() { }
 
-    public static @Nullable <T> T getValueForKeyPath(@NotNull String keyPath, @Nullable Object target) {
+    @Nullable
+    public static <T> T getValueForKeyPath(@NotNull String keyPath, @Nullable Object target) {
         int idx = keyPath.lastIndexOf(PATH_ELEM_SEP);
         return ((idx < 0) ? getValueForKey(keyPath, target) : getValueForKey(keyPath.substring(idx + 1), getValueForKeyPath(keyPath.substring(0, idx), target)));
     }
@@ -55,11 +55,13 @@ public class KeyPathImpl {
         return props.getProperty(String.format("keypath.field.format%d", i));
     }
 
-    private static @Nullable Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls) {
+    @Nullable
+    private static Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls) {
         return getFieldNamed(name, cls, null, false);
     }
 
-    private static @Nullable Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> type, boolean exact) {
+    @Nullable
+    private static Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> type, boolean exact) {
         if(cls == null) return null;
         for(Field f : cls.getDeclaredFields()) if(f.getName().equals(name)) if((type == null) || isAssignable(exact, f.getType(), type)) return f;
         return getFieldNamed(name, cls.getSuperclass(), type, exact);
@@ -92,7 +94,8 @@ public class KeyPathImpl {
         return props.getProperty(String.format("keypath.getter.format%d", i));
     }
 
-    private static @Nullable Method getGetterNamed(@NotNull String name, @Nullable Class<?> cls) {
+    @Nullable
+    private static Method getGetterNamed(@NotNull String name, @Nullable Class<?> cls) {
         if(cls == null) return null;
         for(Method m : cls.getDeclaredMethods()) if((m.getReturnType() != void.class) && (m.getParameterCount() == 0) && m.getName().equals(name)) return m;
         return getGetterNamed(name, cls.getSuperclass());
@@ -102,7 +105,8 @@ public class KeyPathImpl {
         return props.getProperty(String.format("keypath.setter.format%d", i));
     }
 
-    private static @Nullable Method getSetterNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> paramCls, boolean exact) {
+    @Nullable
+    private static Method getSetterNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> paramCls, boolean exact) {
         if(cls == null) return null;
         for(Method m : cls.getDeclaredMethods()) {
             Class<?>[] params = m.getParameterTypes();
@@ -148,7 +152,7 @@ public class KeyPathImpl {
         }
         catch(Exception e) {
             String mkey = ((value == null) ? "msg.err.keypath_elem_error_invoking_setter_null" : "msg.err.keypath_elem_error_invoking_setter");
-            throw new KeyPathException(msgs.format(mkey, key, target.getClass().getName(), U.getIfNotNull(value, Object::getClass)));
+            throw new KeyPathException(msgs.format(mkey, key, target.getClass().getName(), Null.getIfNotNull(value, Object::getClass)));
         }
     }
 
@@ -166,7 +170,7 @@ public class KeyPathImpl {
         }
         catch(Exception e) {
             String mKey = ((value == null) ? "msg.err.keypath_elem_error_setting_field_null" : "msg.err.keypath_elem_error_setting_field");
-            throw new KeyPathException(msgs.format(mKey, key, target.getClass().getName(), U.getIfNotNull(value, Object::getClass)));
+            throw new KeyPathException(msgs.format(mKey, key, target.getClass().getName(), Null.getIfNotNull(value, Object::getClass)));
         }
     }
 
@@ -186,7 +190,7 @@ public class KeyPathImpl {
         String fmt = getFieldNameFormat(++i);
 
         while(fmt != null) {
-            Field field = getFieldNamed(key, target.getClass(), U.getIfNotNull(value, Object::getClass), exact);
+            Field field = getFieldNamed(key, target.getClass(), Null.getIfNotNull(value, Object::getClass), exact);
             if(field != null) return setFieldValue(field, Reflection.castIfNumeric(value, field.getType()), target, key);
             fmt = getFieldNameFormat(++i);
         }
@@ -199,7 +203,7 @@ public class KeyPathImpl {
         String fmt = getSetterNameFormat(++i);
 
         while(fmt != null) {
-            Method method = getSetterNamed(key, target.getClass(), U.getIfNotNull(value, Object::getClass), exact);
+            Method method = getSetterNamed(key, target.getClass(), Null.getIfNotNull(value, Object::getClass), exact);
             if(method != null) return invokeSetter(method, Reflection.castIfNumeric(value, method.getParameterTypes()[0]), target, key);
             fmt = getSetterNameFormat(++i);
         }

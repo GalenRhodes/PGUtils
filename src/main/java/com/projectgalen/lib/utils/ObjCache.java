@@ -43,23 +43,28 @@ public class ObjCache {
         return ObjCacheHolder.INSTANCE;
     }
 
-    public @UnknownNullability <T> T get(@NotNull String key, @NotNull Class<T> cls) {
+    @UnknownNullability
+    public <T> T get(@NotNull String key, @NotNull Class<T> cls) {
         return Locks.getWithLock(lock, () -> cls.cast(cache.get(key)));
     }
 
-    public @UnknownNullability Object get(@NotNull String key) {
+    @UnknownNullability
+    public Object get(@NotNull String key) {
         return Locks.getWithLock(lock, () -> cache.get(key));
     }
 
-    public @UnknownNullability <T> T remove(@NotNull String key, @NotNull Class<T> cls) {
+    @UnknownNullability
+    public <T> T remove(@NotNull String key, @NotNull Class<T> cls) {
         return Locks.getWithLock(lock, () -> cls.cast(cache.remove(key)));
     }
 
-    public @UnknownNullability Object remove(@NotNull String key) {
+    @UnknownNullability
+    public Object remove(@NotNull String key) {
         return Locks.getWithLock(lock, () -> cache.remove(key));
     }
 
-    public @UnknownNullability <T> T store(@NotNull String key, @NotNull T obj) {
+    @UnknownNullability
+    public <T> T store(@NotNull String key, @NotNull T obj) {
         return Locks.getWithLock(lock, () -> ((Class<T>) obj.getClass()).cast(cache.put(key, obj)));
     }
 

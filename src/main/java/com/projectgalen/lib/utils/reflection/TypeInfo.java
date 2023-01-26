@@ -73,13 +73,15 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
         }
     }
 
-    public static @NotNull TypeInfo[] getParameterTypeInfo(@NotNull Method method) {
+    @NotNull
+    public static TypeInfo[] getParameterTypeInfo(@NotNull Method method) {
         List<TypeInfo> list = new ArrayList<>();
         for(Type pType : method.getGenericParameterTypes()) list.add(new TypeInfo(pType));
         return list.toArray(new TypeInfo[0]);
     }
 
-    public @Override int compareTo(@NotNull TypeInfo o) {
+    @Override
+    public int compareTo(@NotNull TypeInfo o) {
         return toString().compareTo(o.toString());
     }
 
@@ -97,15 +99,18 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
         } //@f:1
     }
 
-    public @Override int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(isParameterizedType, typeName, argTypes);
     }
 
-    public @Override boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         return ((this == o) || ((o instanceof TypeInfo) && _equals((TypeInfo) o)));
     }
 
-    public @Override String toString() {
+    @Override
+    public String toString() {
         StringBuilder sb = new StringBuilder();
 
         sb.append(typeName);

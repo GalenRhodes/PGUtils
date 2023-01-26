@@ -20,10 +20,16 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
+import com.projectgalen.lib.utils.delegates.GetWithValueThrowsDelegate;
+import com.projectgalen.lib.utils.delegates.WithValueDelegate;
+import com.projectgalen.lib.utils.delegates.WithValueThrowsDelegate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
-public class Null implements Cloneable {
+@SuppressWarnings("SameParameterValue")
+public final class Null implements Cloneable {
     private Null() { }
 
     public static Null NULL() {
@@ -36,24 +42,62 @@ public class Null implements Cloneable {
         return (T) o;
     }
 
-    public static @NotNull Object set(@Nullable Object o) {
-        return U.ifNull(o, NULL());
+    @NotNull
+    public static Object set(@Nullable Object o) {
+        return ifNull(o, NULL());
     }
 
-    public @Override int hashCode() {
+    @NotNull
+    public static <T> T ifNull(@Nullable T obj, @NotNull T defaultValue) {
+        return ((obj == null) ? defaultValue : obj);
+    }
+
+    public static <P> void doIfNotNull(@Nullable P value, @NotNull WithValueDelegate<P> delegate) {
+        if(value != null) delegate.action(value);
+    }
+
+    public static <P> void doIfNotNullThrows(@Nullable P value, @NotNull WithValueThrowsDelegate<P> delegate) throws Exception {
+        if(value != null) delegate.action(value);
+    }
+
+    @UnknownNullability
+    public static <P, R> R getIfNotNull(@Nullable P value, @NotNull GetWithValueDelegate<P, R> delegate) {
+        return getIfNotNull(value, null, delegate);
+    }
+
+    @UnknownNullability
+    public static <P, R> R getIfNotNull(@Nullable P value, @Nullable R defaultValue, @NotNull GetWithValueDelegate<P, R> delegate) {
+        return ((value == null) ? defaultValue : delegate.action(value));
+    }
+
+    @UnknownNullability
+    public static <P, R> R getIfNotNullThrows(@Nullable P value, @NotNull GetWithValueThrowsDelegate<P, R> delegate) throws Exception {
+        return getIfNotNullThrows(value, null, delegate);
+    }
+
+    @UnknownNullability
+    public static <P, R> R getIfNotNullThrows(@Nullable P value, @Nullable R defaultValue, @NotNull GetWithValueThrowsDelegate<P, R> delegate) throws Exception {
+        return ((value == null) ? defaultValue : delegate.action(value));
+    }
+
+    @Override
+    public int hashCode() {
         return 0;
     }
 
-    public @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-    @Override boolean equals(Object obj) {
-        return (obj == NULL());
+    @Override
+    public boolean equals(Object obj) {
+        return ((obj instanceof Null) && (obj == NULL()));
     }
 
-    protected @Override Object clone() throws CloneNotSupportedException {
+    @SuppressWarnings("RedundantThrows")
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
         return NULL();
     }
 
-    public @Override String toString() {
+    @Override
+    public String toString() {
         return "null";
     }
 

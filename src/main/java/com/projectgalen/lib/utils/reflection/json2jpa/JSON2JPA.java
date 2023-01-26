@@ -39,18 +39,20 @@ public class JSON2JPA {
 
     private static final PGResourceBundle msgs = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
 
-    private JSON2JPA() {
-    }
+    private JSON2JPA() { }
 
-    public static @NotNull <T> T convert(@NotNull Object source) {
+    @NotNull
+    public static <T> T convert(@NotNull Object source) {
         return (T) convert(null, source, new TreeMap<>());
     }
 
-    public static @NotNull <T> T convert(@NotNull T target, @NotNull Object source) {
+    @NotNull
+    public static <T> T convert(@NotNull T target, @NotNull Object source) {
         return (T) convert(target, source, new TreeMap<>());
     }
 
-    private static @NotNull Object convert(@Nullable Object tgt, @NotNull Object src, @NotNull Map<String, Object> cache) {
+    @NotNull
+    private static Object convert(@Nullable Object tgt, @NotNull Object src, @NotNull Map<String, Object> cache) {
         TargetInfo tgtInfo = new TargetInfo(tgt, src, cache);
         if(tgtInfo.isCachedValue) return tgtInfo.target;
 
@@ -73,7 +75,8 @@ public class JSON2JPA {
         }
     }
 
-    private static @NotNull String getXlateFailedMsg(@NotNull Field tgtFld, @NotNull Field srcFld, Exception e) {
+    @NotNull
+    private static String getXlateFailedMsg(@NotNull Field tgtFld, @NotNull Field srcFld, Exception e) {
         return msgs.format("msg.err.json2jpa.xlate_value_failed", srcFld.getType().getName(), tgtFld.getType().getName(), e);
     }
 
@@ -90,7 +93,8 @@ public class JSON2JPA {
                 && (tgtTp.argTypes.size() == 1));
     }
 
-    private static @Nullable Object translate(@NotNull Field tgtFld, @NotNull Field srcFld, @NotNull Map<String, Object> cache, @Nullable Object srcVal) {
+    @Nullable
+    private static Object translate(@NotNull Field tgtFld, @NotNull Field srcFld, @NotNull Map<String, Object> cache, @Nullable Object srcVal) {
         try { return translate(new TypeInfo(tgtFld), new TypeInfo(srcFld), srcVal, cache); }
         catch(Exception e) { throw new RuntimeException(getXlateFailedMsg(tgtFld, srcFld, e), e); }
     }
@@ -128,7 +132,8 @@ public class JSON2JPA {
         return arr;
     }
 
-    private static @NotNull List<Object> translateList(@NotNull TypeInfo tTp, @NotNull TypeInfo sTp, @NotNull List<?> srcLst, @NotNull Map<String, Object> cache) throws Exception {
+    @NotNull
+    private static List<Object> translateList(@NotNull TypeInfo tTp, @NotNull TypeInfo sTp, @NotNull List<?> srcLst, @NotNull Map<String, Object> cache) throws Exception {
         List<Object> list           = new ArrayList<>();
         TypeInfo     targetCompType = tTp.argTypes.get(0);
         TypeInfo     sourceCompType = sTp.argTypes.get(0);

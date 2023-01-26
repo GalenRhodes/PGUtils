@@ -93,22 +93,26 @@ public final class TargetInfo {
         }
     }
 
-    private static @NotNull Object createTarget(@NotNull Class<?> dCls, @NotNull Field idFld, @Nullable Object idVal) throws Exception {
+    @NotNull
+    private static Object createTarget(@NotNull Class<?> dCls, @NotNull Field idFld, @Nullable Object idVal) throws Exception {
         Object tgt = getTargetFromDao(dCls, idVal, idFld.getType());
         if(tgt == null) tgt = dCls.getConstructor().newInstance();
         return tgt;
     }
 
-    private static @NotNull String getDaoClassName(@NotNull Class<?> tgtCls) {
+    @NotNull
+    private static String getDaoClassName(@NotNull Class<?> tgtCls) {
         return props.format("json2jpa.dao.classname_format", tgtCls.getPackageName(), tgtCls.getSimpleName());
     }
 
-    private static @NotNull String[] getJpaFields(@NotNull Class<?> dCls) {
+    @NotNull
+    private static String[] getJpaFields(@NotNull Class<?> dCls) {
         List<Field> f = Reflection.getFieldsWithAnyAnnotation(dCls, Id.class, Column.class, ManyToOne.class, OneToOne.class, OneToMany.class, ManyToMany.class);
         return f.stream().map(Field::getName).toArray(String[]::new);
     }
 
-    private static @NotNull String[] getJsonFields(Class<?> dCls) {
+    @NotNull
+    private static String[] getJsonFields(Class<?> dCls) {
         List<String> names = new ArrayList<>();
         Reflection.forEachField(dCls, f -> {
             if(Reflection.isAnnotationPresent(f, JsonProperty.class)) names.add(f.getName());
@@ -117,7 +121,8 @@ public final class TargetInfo {
         return names.toArray(new String[0]);
     }
 
-    private static @Nullable Object getTargetFromDao(@NotNull Class<?> tgtCls, @Nullable Object idVal, @NotNull Class<?> idTp) throws Exception {
+    @Nullable
+    private static Object getTargetFromDao(@NotNull Class<?> tgtCls, @Nullable Object idVal, @NotNull Class<?> idTp) throws Exception {
         if(Reflection.isAnnotationPresent(tgtCls, PGJPA.class)) {
             try {
                 if(idVal == null) return tgtCls.getConstructor().newInstance();

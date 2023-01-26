@@ -56,10 +56,10 @@ public class Macro {
         }
     }
 
-    private Macro() {
-    }
+    private Macro() { }
 
-    public static @NotNull String replaceMacros(@NotNull String input, @NotNull MacroDelegate delegate) {
+    @NotNull
+    public static String replaceMacros(@NotNull String input, @NotNull MacroDelegate delegate) {
         return replaceMacros(input, new TreeSet<>(), delegate);
     }
 
@@ -70,7 +70,8 @@ public class Macro {
         return ((oval == null) ? null : replaceMacros(oval, deadManSet, delegate));
     }
 
-    private static @NotNull String replaceMacros(@NotNull String input, @NotNull Set<String> deadManSet, @NotNull MacroDelegate delegate) {
+    @NotNull
+    private static String replaceMacros(@NotNull String input, @NotNull Set<String> deadManSet, @NotNull MacroDelegate delegate) {
         return Regex.replaceUsingDelegate(_rx0, input.replaceAll(_rx1, _rx2), (m) -> getMacroReplacement(m.group(1), deadManSet, delegate)).replaceAll(_rx2, _rx1);
     }
 }
