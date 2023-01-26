@@ -32,7 +32,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
-public class KeyPathImpl {
+public final class KeyPathImpl {
 
     private static final char             PATH_ELEM_SEP = '.';
     private static final PGResourceBundle msgs          = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
@@ -70,7 +70,7 @@ public class KeyPathImpl {
     private static <T> T getFieldValue(@NotNull Field field, @NotNull Object target, @NotNull String key) {
         try {
             field.setAccessible(true);
-            return (T) field.get(target);
+            return (T)field.get(target);
         }
         catch(Exception e) {
             throw new KeyPathException(msgs.format("msg.err.keypath_elem_error_getting_field", key, target.getClass().getName()), e);
@@ -118,7 +118,7 @@ public class KeyPathImpl {
     private static <T> T getValueForKey(@NotNull String key, @Nullable Object target) {
         if(target == null) return null;
         if(key.length() == 0) throw new KeyPathException(msgs.getString("msg.err.keypath_elem_empty"));
-        return ((target instanceof Map) ? ((Map<Object, T>) target).get(key) : getValueForKey(key, target, target.getClass()));
+        return ((target instanceof Map) ? ((Map<Object, T>)target).get(key) : getValueForKey(key, target, target.getClass()));
     }
 
     private static <T> T getValueForKey(@NotNull String key, @NotNull Object target, Class<?> cls) {
@@ -137,7 +137,7 @@ public class KeyPathImpl {
     private static <T> T invokeGetter(@NotNull Method getterMethod, @NotNull Object target, @NotNull String key) {
         try {
             getterMethod.setAccessible(true);
-            return (T) getterMethod.invoke(target);
+            return (T)getterMethod.invoke(target);
         }
         catch(Exception e) {
             throw new KeyPathException(msgs.format("msg.err.keypath_elem_error_invoking_getter", key, target.getClass().getName()), e);
@@ -176,7 +176,7 @@ public class KeyPathImpl {
 
     private static void setValueForKey(@NotNull String key, @Nullable Object value, @Nullable Object target) {
         if(target != null) {
-            if(target instanceof Map) { ((Map<Object, Object>) target).put(key, value); }
+            if(target instanceof Map) { ((Map<Object, Object>)target).put(key, value); }
             else if(!setValueForKey(key, value, target, true)) setValueForKey(key, value, target, false);
         }
     }

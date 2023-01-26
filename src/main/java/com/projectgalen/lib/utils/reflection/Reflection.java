@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Reflection {
+public final class Reflection {
     private static final PGResourceBundle msgs  = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
     private static final PGProperties     props = PGProperties.getSharedInstanceForNamedResource("pg_properties.properties", PGProperties.class);
 
@@ -43,7 +43,7 @@ public class Reflection {
     @Nullable
     public static Object castIfNumeric(@Nullable Object value, @NotNull Class<?> targetClass) {
         if((value != null) && !targetClass.isAssignableFrom(value.getClass())) {
-            if(value instanceof Character) value = (int) ((Character) value);
+            if(value instanceof Character) value = (int)((Character)value);
 
             if(Number.class.isAssignableFrom(targetClass) && (value instanceof Number)) {
                 Class<?> l = objectClassForPrimitive(targetClass);
@@ -166,7 +166,7 @@ public class Reflection {
     @Nullable
     public static <T extends Annotation> T getAnnotation(@NotNull AnnotatedElement element, @NotNull Class<T> annotationClass) {
         if(element.getClass() == Class.class) {
-            Class<?> cls = (Class<?>) element;
+            Class<?> cls = (Class<?>)element;
             while(cls != null) {
                 T a = cls.getAnnotation(annotationClass);
                 if(a != null) return a;
@@ -321,7 +321,7 @@ public class Reflection {
     public static boolean isAnnotationPresent(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> annotationClass) {
         if(element.getClass() == Class.class) {
             AtomicBoolean found = new AtomicBoolean(false);
-            forEachSuperclass((Class<?>) element, cls -> U.atomicSet(found, cls.isAnnotationPresent(annotationClass)));
+            forEachSuperclass((Class<?>)element, cls -> U.atomicSet(found, cls.isAnnotationPresent(annotationClass)));
             return found.get();
         }
         return element.isAnnotationPresent(annotationClass);
@@ -406,7 +406,7 @@ public class Reflection {
     @NotNull
     private static List<Type> getActualTypeArguments(@NotNull Type type) {
         List<Type> list = new ArrayList<>();
-        if(type instanceof ParameterizedType) list.addAll(Arrays.asList(((ParameterizedType) type).getActualTypeArguments()));
+        if(type instanceof ParameterizedType) list.addAll(Arrays.asList(((ParameterizedType)type).getActualTypeArguments()));
         return list;
     }
 

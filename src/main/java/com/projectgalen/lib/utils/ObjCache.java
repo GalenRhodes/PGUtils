@@ -65,7 +65,7 @@ public class ObjCache {
 
     @UnknownNullability
     public <T> T store(@NotNull String key, @NotNull T obj) {
-        return Locks.getWithLock(lock, () -> ((Class<T>) obj.getClass()).cast(cache.put(key, obj)));
+        return Locks.getWithLock(lock, () -> ((Class<T>)obj.getClass()).cast(cache.put(key, obj)));
     }
 
     private static final class ObjCacheHolder {

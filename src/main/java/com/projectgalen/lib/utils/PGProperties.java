@@ -99,7 +99,7 @@ public class PGProperties extends Properties {
     }
 
     public byte getByteProperty(@NotNull @NonNls String key) {
-        return getByteProperty(key, (byte) 0);
+        return getByteProperty(key, (byte)0);
     }
 
     public Date getDateProperty(@NotNull @NonNls String key, @NotNull @NonNls String format, @Nullable Date defaultDate) {
@@ -234,7 +234,7 @@ public class PGProperties extends Properties {
     }
 
     public short getShortProperty(@NotNull @NonNls String key) {
-        return getShortProperty(key, (short) 0);
+        return getShortProperty(key, (short)0);
     }
 
     private String _gp(String key) {

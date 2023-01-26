@@ -29,12 +29,21 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class Dates {
+public final class Dates {
     private Dates() { }
 
     @NotNull
     public static Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST, Calendar.SEPTEMBER, Calendar.OCTOBER,
+            Calendar.JANUARY,
+            Calendar.FEBRUARY,
+            Calendar.MARCH,
+            Calendar.APRIL,
+            Calendar.MAY,
+            Calendar.JUNE,
+            Calendar.JULY,
+            Calendar.AUGUST,
+            Calendar.SEPTEMBER,
+            Calendar.OCTOBER,
             Calendar.NOVEMBER,
             Calendar.DECEMBER,
             Calendar.UNDECIMBER
@@ -50,7 +59,13 @@ public class Dates {
             Calendar.APRIL,
             Calendar.MAY,
             Calendar.JUNE,
-            Calendar.JULY, Calendar.AUGUST, Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER
+            Calendar.JULY,
+            Calendar.AUGUST,
+            Calendar.SEPTEMBER,
+            Calendar.OCTOBER,
+            Calendar.NOVEMBER,
+            Calendar.DECEMBER,
+            Calendar.UNDECIMBER
     }) int month, int date, TimeZone tz, Locale locale) {
         return createCalendar(year, month, date, 0, 0, 0, 0, tz, locale);
     }

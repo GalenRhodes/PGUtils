@@ -25,16 +25,16 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class PGMath {
+public final class PGMath {
     private PGMath() { }
 
     @NotNull
     public static BigDecimal getBigDecimal(@NotNull Number num) {
-        return ((num instanceof BigDecimal) ? (BigDecimal) num : ((num instanceof BigInteger) ? new BigDecimal((BigInteger) num) : BigDecimal.valueOf(num.doubleValue())));
+        return ((num instanceof BigDecimal) ? (BigDecimal)num : ((num instanceof BigInteger) ? new BigDecimal((BigInteger)num) : BigDecimal.valueOf(num.doubleValue())));
     }
 
     @NotNull
     public static BigInteger getBigInteger(@NotNull Number num) {
-        return ((num instanceof BigInteger) ? (BigInteger) num : ((num instanceof BigDecimal) ? ((BigDecimal) num).toBigInteger() : BigInteger.valueOf(num.longValue())));
+        return ((num instanceof BigInteger) ? (BigInteger)num : ((num instanceof BigDecimal) ? ((BigDecimal)num).toBigInteger() : BigInteger.valueOf(num.longValue())));
     }
 }

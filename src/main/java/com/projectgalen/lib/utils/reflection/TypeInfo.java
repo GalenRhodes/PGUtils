@@ -60,7 +60,7 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
         isParameterizedType = (type instanceof ParameterizedType);
 
         if(isParameterizedType) {
-            ParameterizedType pType = (ParameterizedType) type;
+            ParameterizedType pType = (ParameterizedType)type;
             this.typeName = pType.getRawType().getTypeName();
 
             List<TypeInfo> argTypes = new ArrayList<>();
@@ -106,7 +106,7 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return ((this == o) || ((o instanceof TypeInfo) && _equals((TypeInfo) o)));
+        return ((this == o) || ((o instanceof TypeInfo) && _equals((TypeInfo)o)));
     }
 
     @Override

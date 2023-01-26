@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @SuppressWarnings({ "unchecked" })
-public class JSON2JPA {
+public final class JSON2JPA {
 
     private static final PGResourceBundle msgs = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
 
@@ -43,12 +43,12 @@ public class JSON2JPA {
 
     @NotNull
     public static <T> T convert(@NotNull Object source) {
-        return (T) convert(null, source, new TreeMap<>());
+        return (T)convert(null, source, new TreeMap<>());
     }
 
     @NotNull
     public static <T> T convert(@NotNull T target, @NotNull Object source) {
-        return (T) convert(target, source, new TreeMap<>());
+        return (T)convert(target, source, new TreeMap<>());
     }
 
     @NotNull
@@ -105,11 +105,11 @@ public class JSON2JPA {
 
         if(srcVal == null) return null;
 
-        if(tgtTp.equals(srcTp)) return ((srcVal instanceof List) ? new ArrayList<Object>((List<?>) srcVal) : srcVal);
+        if(tgtTp.equals(srcTp)) return ((srcVal instanceof List) ? new ArrayList<Object>((List<?>)srcVal) : srcVal);
 
         if(Reflection.isAnnotationPresent(srcCls, PGDoppelganger.class) && Reflection.isAnnotationPresent(tgtCls, PGDoppelganger.class)) return convert(null, srcVal, cache);
 
-        if(isTranslatableList(tgtTp, srcTp, srcVal)) return translateList(tgtTp, srcTp, (List<?>) srcVal, cache);
+        if(isTranslatableList(tgtTp, srcTp, srcVal)) return translateList(tgtTp, srcTp, (List<?>)srcVal, cache);
 
         if(isTranslatableArray(tgtCls, srcCls)) return translateArray(tgtCls, srcCls, srcVal, cache);
 

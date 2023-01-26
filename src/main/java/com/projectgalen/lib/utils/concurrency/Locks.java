@@ -27,7 +27,7 @@ import com.projectgalen.lib.utils.delegates.VoidThrowsDelegate;
 
 import java.util.concurrent.locks.Lock;
 
-public class Locks {
+public final class Locks {
     private Locks() { }
 
     public static void doWithLock(Lock lock, VoidDelegate delegate) {

@@ -34,7 +34,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class Macro {
+public final class Macro {
     private static final                     Properties     _props;
     private static final                     ResourceBundle _msgs;
     private static final @Language("RegExp") String         _rx0;

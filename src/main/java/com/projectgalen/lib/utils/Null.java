@@ -39,7 +39,7 @@ public final class Null implements Cloneable {
     public static <T> T get(@NotNull Object o) {
         if(NULL().equals(o)) return null;
         //noinspection unchecked
-        return (T) o;
+        return (T)o;
     }
 
     @NotNull

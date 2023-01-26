@@ -123,7 +123,7 @@ public final class U {
     @NotNull
     public static <P, R> R @NotNull [] translate(@NotNull Class<R> cls, @NotNull GetWithValueDelegate<P, R> delegate, @NotNull P... args) {
         //noinspection unchecked
-        R[] out = (R[]) Array.newInstance(cls, args.length);
+        R[] out = (R[])Array.newInstance(cls, args.length);
         for(int i = 0; i < args.length; i++) out[i] = delegate.action(args[i]);
         return out;
     }

@@ -31,7 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
-public class Regex {
+public final class Regex {
     private Regex() { }
 
     @NotNull

@@ -26,7 +26,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 
 @SuppressWarnings({ "UnusedReturnValue", "unused" })
-public class IO {
+public final class IO {
 
     private static final PGProperties props = PGProperties.getSharedInstanceForNamedResource("pg_properties.properties", IO.class);
 
