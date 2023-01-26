@@ -41,6 +41,20 @@ public class Macro {
     private static final                     String         _rx2;
     private static final                     String         PG_PROPERTIES = "pg_properties.properties";
 
+    static {
+        _msgs = ResourceBundle.getBundle("com.projectgalen.lib.utils.pg_messages");
+        try(InputStream inputStream = PGProperties.class.getResourceAsStream(PG_PROPERTIES)) {
+            _props = new Properties();
+            _props.load(inputStream);
+            _rx0 = _props.getProperty("macro.regexp");
+            _rx1 = _props.getProperty("macro.double_slash.regexp");
+            _rx2 = _props.getProperty("macro.double_slash.replacement");
+        }
+        catch(IOException e) {
+            throw new RuntimeException(String.format(_msgs.getString("msg.err.missing_resource_file"), PG_PROPERTIES));
+        }
+    }
+
     private Macro() {
     }
 
@@ -57,19 +71,5 @@ public class Macro {
 
     private static @NotNull String replaceMacros(@NotNull String input, @NotNull Set<String> deadManSet, @NotNull MacroDelegate delegate) {
         return Regex.replaceUsingDelegate(_rx0, input.replaceAll(_rx1, _rx2), (m) -> getMacroReplacement(m.group(1), deadManSet, delegate)).replaceAll(_rx2, _rx1);
-    }
-
-    static {
-        _msgs = ResourceBundle.getBundle("com.projectgalen.lib.utils.pg_messages");
-        try(InputStream inputStream = PGProperties.class.getResourceAsStream(PG_PROPERTIES)) {
-            _props = new Properties();
-            _props.load(inputStream);
-            _rx0 = _props.getProperty("macro.regexp");
-            _rx1 = _props.getProperty("macro.double_slash.regexp");
-            _rx2 = _props.getProperty("macro.double_slash.replacement");
-        }
-        catch(IOException e) {
-            throw new RuntimeException(String.format(_msgs.getString("msg.err.missing_resource_file"), PG_PROPERTIES));
-        }
     }
 }

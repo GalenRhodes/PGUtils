@@ -39,9 +39,7 @@ public class Regex {
         return getMatcher(pattern, 0, input);
     }
 
-    public static @NotNull Matcher getMatcher(@NotNull @NonNls @Language("RegExp") String pattern,
-                                              @MagicConstant(flagsFromClass = Pattern.class) int flags,
-                                              @NotNull @NonNls CharSequence input) {
+    public static @NotNull Matcher getMatcher(@NotNull @NonNls @Language("RegExp") String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, @NotNull @NonNls CharSequence input) {
         String  key = String.format("♚%s♛%d", pattern, flags);
         Pattern p   = CacheHolder.CACHE.get(key, Pattern.class);
         if(p == null) {
@@ -51,9 +49,7 @@ public class Regex {
         return p.matcher(input);
     }
 
-    public static @NotNull String replaceUsingDelegate(@NotNull @Language("RegExp") @RegExp @NonNls String pattern,
-                                                       @NotNull CharSequence input,
-                                                       @NotNull ReplacementDelegate delegate) {
+    public static @NotNull String replaceUsingDelegate(@NotNull @Language("RegExp") @RegExp @NonNls String pattern, @NotNull CharSequence input, @NotNull ReplacementDelegate delegate) {
         Pattern p = Pattern.compile(pattern);
         return replaceUsingDelegate(p, input, delegate);
     }

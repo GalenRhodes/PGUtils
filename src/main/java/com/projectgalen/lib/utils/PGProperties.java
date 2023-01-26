@@ -34,21 +34,22 @@ import java.util.*;
 @SuppressWarnings("unused")
 public class PGProperties extends Properties {
 
-    public static final @Language("RegExp") String           DEFAULT_LIST_SEPARATOR_PATTERN = "\\s*,\\s*";
-    public static final @Language("RegExp") String           DEFAULT_MAP_KV_PATTERN         = "\\s*:\\s*";
-    public static final                     String           DEFAULT_DATE_FORMAT            = "yyyy-MM-dd";
-    public static final                     String           DEFAULT_TIME_FORMAT            = "HH:mm:ss.SSSZ";
-    public static final                     String           DEFAULT_DATETIME_FORMAT        = String.format("%s'T'%s", DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT);
-    private static final                    PGResourceBundle _msgs                          = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
-    private static final                    int              DEFAULT_LIMIT                  = -1;
+    public static final @Language("RegExp") String DEFAULT_LIST_SEPARATOR_PATTERN = "\\s*,\\s*";
+    public static final @Language("RegExp") String DEFAULT_MAP_KV_PATTERN         = "\\s*:\\s*";
+    public static final                     String DEFAULT_DATE_FORMAT            = "yyyy-MM-dd";
+    public static final                     String DEFAULT_TIME_FORMAT            = "HH:mm:ss.SSSZ";
+    public static final                     String DEFAULT_DATETIME_FORMAT        = String.format("%s'T'%s", DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT);
+
+    private static final PGResourceBundle _msgs         = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final int              DEFAULT_LIMIT = -1;
 
     public <T extends Throwable> PGProperties(@Nullable InputStream inputStream, Class<T> errorClass) throws T {
         super();
         try {
             if(inputStream == null) throw U.getThrowable(_msgs.getString("msg.err.no_input_stream"), errorClass);
-            try(inputStream) {load(inputStream);}
+            try(inputStream) { load(inputStream); }
         }
-        catch(Exception e) {throw U.wrapThrowable(_msgs.getString("msg.err.props_load_failed"), e, errorClass);}
+        catch(Exception e) { throw U.wrapThrowable(_msgs.getString("msg.err.props_load_failed"), e, errorClass); }
     }
 
     public PGProperties(@Nullable InputStream inputStream) throws IllegalArgumentException {
@@ -103,8 +104,8 @@ public class PGProperties extends Properties {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         String           val = getProperty(key);
         if(val == null) return defaultDate;
-        try {return sdf.parse(val);}
-        catch(Exception e) {return defaultDate;}
+        try { return sdf.parse(val); }
+        catch(Exception e) { return defaultDate; }
     }
 
     public Date getDateProperty(@NotNull @NonNls String key, @Nullable Date defaultDate) {

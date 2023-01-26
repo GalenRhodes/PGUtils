@@ -43,11 +43,11 @@ public class JSON2JPA {
     }
 
     public static @NotNull <T> T convert(@NotNull Object source) {
-        return (T)convert(null, source, new TreeMap<>());
+        return (T) convert(null, source, new TreeMap<>());
     }
 
     public static @NotNull <T> T convert(@NotNull T target, @NotNull Object source) {
-        return (T)convert(target, source, new TreeMap<>());
+        return (T) convert(target, source, new TreeMap<>());
     }
 
     private static @NotNull Object convert(@Nullable Object tgt, @NotNull Object src, @NotNull Map<String, Object> cache) {
@@ -82,12 +82,12 @@ public class JSON2JPA {
     }
 
     private static boolean isTranslatableList(@NotNull TypeInfo tgtTp, @NotNull TypeInfo srcTp, @NotNull Object srcVal) throws ClassNotFoundException {
-        return ((srcVal instanceof List) &&
-                List.class.isAssignableFrom(tgtTp.getTypeClass()) &&
-                srcTp.isParameterizedType &&
-                tgtTp.isParameterizedType &&
-                (srcTp.argTypes.size() == 1) &&
-                (tgtTp.argTypes.size() == 1));
+        return ((srcVal instanceof List)
+                && List.class.isAssignableFrom(tgtTp.getTypeClass())
+                && srcTp.isParameterizedType
+                && tgtTp.isParameterizedType
+                && (srcTp.argTypes.size() == 1)
+                && (tgtTp.argTypes.size() == 1));
     }
 
     private static @Nullable Object translate(@NotNull Field tgtFld, @NotNull Field srcFld, @NotNull Map<String, Object> cache, @Nullable Object srcVal) {
@@ -101,18 +101,19 @@ public class JSON2JPA {
 
         if(srcVal == null) return null;
 
-        if(tgtTp.equals(srcTp)) return ((srcVal instanceof List) ? new ArrayList<Object>((List<?>)srcVal) : srcVal);
+        if(tgtTp.equals(srcTp)) return ((srcVal instanceof List) ? new ArrayList<Object>((List<?>) srcVal) : srcVal);
 
         if(Reflection.isAnnotationPresent(srcCls, PGDoppelganger.class) && Reflection.isAnnotationPresent(tgtCls, PGDoppelganger.class)) return convert(null, srcVal, cache);
 
-        if(isTranslatableList(tgtTp, srcTp, srcVal)) return translateList(tgtTp, srcTp, (List<?>)srcVal, cache);
+        if(isTranslatableList(tgtTp, srcTp, srcVal)) return translateList(tgtTp, srcTp, (List<?>) srcVal, cache);
 
         if(isTranslatableArray(tgtCls, srcCls)) return translateArray(tgtCls, srcCls, srcVal, cache);
 
         return srcVal;
     }
 
-    @NotNull private static Object translateArray(@NotNull Class<?> tgtCls, @NotNull Class<?> srcCls, @NotNull Object srcArr, @NotNull Map<String, Object> cache) throws Exception {
+    @NotNull
+    private static Object translateArray(@NotNull Class<?> tgtCls, @NotNull Class<?> srcCls, @NotNull Object srcArr, @NotNull Map<String, Object> cache) throws Exception {
         TypeInfo tgtCompTp = new TypeInfo(tgtCls.getComponentType());
         TypeInfo srcCompTp = new TypeInfo(srcCls.getComponentType());
         int      arrLn     = Array.getLength(srcArr);

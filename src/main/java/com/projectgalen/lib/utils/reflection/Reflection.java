@@ -46,7 +46,7 @@ public class Reflection {
 
     public static @Nullable Object castIfNumeric(@Nullable Object value, @NotNull Class<?> targetClass) {
         if((value != null) && !targetClass.isAssignableFrom(value.getClass())) {
-            if(value instanceof Character) value = (int)((Character)value);
+            if(value instanceof Character) value = (int) ((Character) value);
 
             if(Number.class.isAssignableFrom(targetClass) && (value instanceof Number)) {
                 Class<?> l = objectClassForPrimitive(targetClass);
@@ -96,11 +96,13 @@ public class Reflection {
 
                 if((m.getReturnType() == void.class) && (mParamTypes.length == 1) && m.getName().startsWith("set")) {
                     Class<?> l = mParamTypes[0];
-                    if(getAll) a.add(m);
-                    else for(Class<?> r : pTypes) {
-                        if(isTypeMatch(exact, l, r)) {
-                            a.add(m);
-                            break;
+                    if(getAll) { a.add(m); }
+                    else {
+                        for(Class<?> r : pTypes) {
+                            if(isTypeMatch(exact, l, r)) {
+                                a.add(m);
+                                break;
+                            }
                         }
                     }
                 }
@@ -158,7 +160,7 @@ public class Reflection {
 
     public static @Nullable <T extends Annotation> T getAnnotation(@NotNull AnnotatedElement element, @NotNull Class<T> annotationClass) {
         if(element.getClass() == Class.class) {
-            Class<?> cls = (Class<?>)element;
+            Class<?> cls = (Class<?>) element;
             while(cls != null) {
                 T a = cls.getAnnotation(annotationClass);
                 if(a != null) return a;
@@ -195,7 +197,8 @@ public class Reflection {
         }
     }
 
-    public static @NotNull @SafeVarargs List<Field> getFieldsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static @NotNull
+    @SafeVarargs List<Field> getFieldsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         List<Field> fields = new ArrayList<>();
         while(cls != null) {
             for(Field f : cls.getDeclaredFields()) if(hasAllAnnotations(f, annotationClasses)) fields.add(f);
@@ -204,7 +207,8 @@ public class Reflection {
         return fields;
     }
 
-    public static @NotNull @SafeVarargs List<Field> getFieldsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static @NotNull
+    @SafeVarargs List<Field> getFieldsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         List<Field> fields = new ArrayList<>();
         while(cls != null) {
             for(Field f : cls.getDeclaredFields()) if(hasAnyAnnotation(f, annotationClasses)) fields.add(f);
@@ -214,8 +218,8 @@ public class Reflection {
     }
 
     /**
-     * This method functions like {@link Class#getMethod(String, Class...)} except that it will also search private, protected, and package member methods as well as public member
-     * methods. In this respect it behaves similar to {@link Class#getDeclaredMethod(String, Class...)}.
+     * This method functions like {@link Class#getMethod(String, Class...)} except that it will also search private, protected, and package member methods as well as public member methods. In this
+     * respect it behaves similar to {@link Class#getDeclaredMethod(String, Class...)}.
      *
      * @param cls            The class that will be searched for the specified method.
      * @param name           The name of the method.
@@ -231,8 +235,8 @@ public class Reflection {
     }
 
     /**
-     * This method is exactly like {@link Reflection#getMethod(Class, String, Class[])} except that instead of throwing a NoSuchMethodException exception if the method is not found
-     * it simply returns null.
+     * This method is exactly like {@link Reflection#getMethod(Class, String, Class[])} except that instead of throwing a NoSuchMethodException exception if the method is not found it simply returns
+     * null.
      *
      * @param cls            The class that will be searched for the specified method.
      * @param name           The name of the method.
@@ -245,7 +249,8 @@ public class Reflection {
         return null;
     }
 
-    public static @NotNull @SafeVarargs List<Method> getMethodsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static @NotNull
+    @SafeVarargs List<Method> getMethodsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         List<Method> methods = new ArrayList<>();
         while(cls != null) {
             for(Method m : cls.getDeclaredMethods()) if(hasAllAnnotations(m, annotationClasses)) methods.add(m);
@@ -254,7 +259,8 @@ public class Reflection {
         return methods;
     }
 
-    public static @NotNull @SafeVarargs List<Method> getMethodsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static @NotNull
+    @SafeVarargs List<Method> getMethodsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         List<Method> methods = new ArrayList<>();
         while(cls != null) {
             for(Method m : cls.getDeclaredMethods()) if(hasAnyAnnotation(m, annotationClasses)) methods.add(m);
@@ -298,7 +304,7 @@ public class Reflection {
     public static boolean isAnnotationPresent(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> annotationClass) {
         if(element.getClass() == Class.class) {
             AtomicBoolean found = new AtomicBoolean(false);
-            forEachSuperclass((Class<?>)element, cls -> U.atomicSet(found, cls.isAnnotationPresent(annotationClass)));
+            forEachSuperclass((Class<?>) element, cls -> U.atomicSet(found, cls.isAnnotationPresent(annotationClass)));
             return found.get();
         }
         return element.isAnnotationPresent(annotationClass);
@@ -380,7 +386,7 @@ public class Reflection {
 
     private static @NotNull List<Type> getActualTypeArguments(@NotNull Type type) {
         List<Type> list = new ArrayList<>();
-        if(type instanceof ParameterizedType) list.addAll(Arrays.asList(((ParameterizedType)type).getActualTypeArguments()));
+        if(type instanceof ParameterizedType) list.addAll(Arrays.asList(((ParameterizedType) type).getActualTypeArguments()));
         return list;
     }
 

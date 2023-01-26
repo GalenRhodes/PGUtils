@@ -30,10 +30,10 @@ public class IO {
 
     private static final PGProperties props = PGProperties.getSharedInstanceForNamedResource("pg_properties.properties", IO.class);
 
-    private IO() {}
+    private IO() { }
 
     public static void closeQuietly(@NotNull Closeable closeable) {
-        try {closeable.close();} catch(Exception ignore) {}
+        try { closeable.close(); } catch(Exception ignore) { }
     }
 
     public static long copy(@NotNull File inputFile, @NotNull OutputStream outputStream, boolean closeOutputOnSuccess) throws IOException {

@@ -60,7 +60,7 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
         isParameterizedType = (type instanceof ParameterizedType);
 
         if(isParameterizedType) {
-            ParameterizedType pType = (ParameterizedType)type;
+            ParameterizedType pType = (ParameterizedType) type;
             this.typeName = pType.getRawType().getTypeName();
 
             List<TypeInfo> argTypes = new ArrayList<>();
@@ -71,6 +71,12 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
             this.typeName = type.getTypeName();
             this.argTypes = Collections.emptyList();
         }
+    }
+
+    public static @NotNull TypeInfo[] getParameterTypeInfo(@NotNull Method method) {
+        List<TypeInfo> list = new ArrayList<>();
+        for(Type pType : method.getGenericParameterTypes()) list.add(new TypeInfo(pType));
+        return list.toArray(new TypeInfo[0]);
     }
 
     public @Override int compareTo(@NotNull TypeInfo o) {
@@ -96,7 +102,7 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
     }
 
     public @Override boolean equals(Object o) {
-        return ((this == o) || ((o instanceof TypeInfo) && _equals((TypeInfo)o)));
+        return ((this == o) || ((o instanceof TypeInfo) && _equals((TypeInfo) o)));
     }
 
     public @Override String toString() {
@@ -107,8 +113,8 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
             boolean first = true;
             sb.append('<');
             for(TypeInfo typeInfo : argTypes) {
-                if(first) first = false;
-                else sb.append(", ");
+                if(first) { first = false; }
+                else { sb.append(", "); }
                 sb.append(typeInfo);
             }
             sb.append('>');
@@ -119,11 +125,5 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
 
     private boolean _equals(@NotNull TypeInfo other) {
         return ((isParameterizedType == other.isParameterizedType) && typeName.equals(other.typeName) && argTypes.equals(other.argTypes));
-    }
-
-    public static @NotNull TypeInfo[] getParameterTypeInfo(@NotNull Method method) {
-        List<TypeInfo> list = new ArrayList<>();
-        for(Type pType : method.getGenericParameterTypes()) list.add(new TypeInfo(pType));
-        return list.toArray(new TypeInfo[0]);
     }
 }
