@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.InputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -39,37 +39,143 @@ public class PGProperties extends Properties {
     public static final                     String DEFAULT_DATE_FORMAT            = "yyyy-MM-dd";
     public static final                     String DEFAULT_TIME_FORMAT            = "HH:mm:ss.SSSZ";
     public static final                     String DEFAULT_DATETIME_FORMAT        = String.format("%s'T'%s", DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT);
+    public static final                     int    DEFAULT_LIMIT                  = -1;
 
-    private static final PGResourceBundle _msgs         = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
-    private static final int              DEFAULT_LIMIT = -1;
+    private static final PGResourceBundle msgs  = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final PGProperties     props = getXMLProperties("pg_properties.xml", PGProperties.class);
 
-    public <T extends Throwable> PGProperties(@Nullable InputStream inputStream, Class<T> errorClass) throws T {
+    public PGProperties() {
         super();
+    }
+
+    public PGProperties(@Nullable Properties defaults) {
+        super(defaults);
+    }
+
+    @NotNull
+    public static PGProperties getProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz) {
+        return getProperties(resourceName, clazz, null);
+    }
+
+    @NotNull
+    public static PGProperties getProperties(@NotNull @NonNls String resourceName, @Nullable Properties defaults) {
+        Class<?> clazz = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
+        return getProperties(resourceName, clazz, defaults);
+    }
+
+    @NotNull
+    public static PGProperties getProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz, @Nullable Properties defaults) {
         try {
-            if(inputStream == null) throw U.getThrowable(_msgs.getString("msg.err.no_input_stream"), errorClass);
-            try(inputStream) { load(inputStream); }
+            return getProperties(clazz.getResourceAsStream(resourceName), defaults);
         }
-        catch(Exception e) { throw U.wrapThrowable(_msgs.getString("msg.err.props_load_failed"), e, errorClass); }
-    }
-
-    public PGProperties(@Nullable InputStream inputStream) throws IllegalArgumentException {
-        this(inputStream, IllegalArgumentException.class);
-    }
-
-    @NotNull
-    public static PGProperties getSharedInstanceForNamedResource(@NotNull @NonNls String resourceName, @NotNull Class<?> refClass) {
-        String       key   = String.format("%s|%s", refClass.getName(), resourceName);
-        PGProperties props = CacheHolder.CACHE.get(key, PGProperties.class);
-
-        if(props != null) return props;
-        props = new PGProperties(refClass.getResourceAsStream(resourceName));
-        CacheHolder.CACHE.store(key, props);
-        return props;
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.res", resourceName), e);
+        }
     }
 
     @NotNull
-    public static PGProperties getSharedInstanceForNamedResource(@NotNull @NonNls String resourceName) {
-        return getSharedInstanceForNamedResource(resourceName.startsWith("/") ? resourceName : ("/" + resourceName), PGProperties.class);
+    public static PGProperties getProperties(@NotNull File file) {
+        return getProperties(file, null);
+    }
+
+    @NotNull
+    public static PGProperties getProperties(@NotNull File file, @Nullable Properties defaults) {
+        try(InputStream inputStream = new FileInputStream(file)) {
+            return getProperties(inputStream, defaults);
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.file", file), e);
+        }
+    }
+
+    @NotNull
+    public static PGProperties getProperties(InputStream inputStream) {
+        return getProperties(inputStream, new Properties());
+    }
+
+    @NotNull
+    public static PGProperties getProperties(InputStream inputStream, @Nullable Properties defaults) {
+        if(inputStream == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.input.stream"), new NullPointerException());
+        try(BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
+            PGProperties props = new PGProperties(defaults);
+            props.load(bufferedInputStream);
+            return props;
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.getString("msg.err.props.load.failed"), e);
+        }
+    }
+
+    @NotNull
+    public static PGProperties getProperties(Reader reader) {
+        return getProperties(reader, null);
+    }
+
+    @NotNull
+    public static PGProperties getProperties(Reader reader, @Nullable Properties defaults) {
+        if(reader == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.reader"), new NullPointerException());
+        try(BufferedReader bufferedReader = new BufferedReader(reader)) {
+            PGProperties props = new PGProperties(defaults);
+            props.load(bufferedReader);
+            return props;
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.getString("msg.err.props.load.failed"), e);
+        }
+    }
+
+    @NotNull
+    public static PGProperties getXMLProperties(InputStream inputStream) {
+        return getXMLProperties(inputStream, null);
+    }
+
+    @NotNull
+    public static PGProperties getXMLProperties(InputStream inputStream, @Nullable Properties defaults) {
+        if(inputStream == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.input.stream"), new NullPointerException());
+        try(BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
+            PGProperties props = new PGProperties(defaults);
+            props.loadFromXML(bufferedInputStream);
+            return props;
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.getString("msg.err.props.load.failed"), e);
+        }
+    }
+
+    @NotNull
+    public static PGProperties getXMLProperties(@NotNull File file) {
+        return getXMLProperties(file, null);
+    }
+
+    @NotNull
+    public static PGProperties getXMLProperties(@NotNull File file, @Nullable Properties defaults) {
+        try(InputStream inputStream = new FileInputStream(file)) {
+            return getXMLProperties(inputStream, defaults);
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.file", file), e);
+        }
+    }
+
+    @NotNull
+    public static PGProperties getXMLProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz) {
+        return getXMLProperties(resourceName, clazz, null);
+    }
+
+    @NotNull
+    public static PGProperties getXMLProperties(@NotNull @NonNls String resourceName, @Nullable Properties defaults) {
+        Class<?> clazz = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
+        return getXMLProperties(resourceName, clazz, defaults);
+    }
+
+    @NotNull
+    public static PGProperties getXMLProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz, @Nullable Properties defaults) {
+        try {
+            return getXMLProperties(clazz.getResourceAsStream(resourceName), defaults);
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.res", resourceName), e);
+        }
     }
 
     public String format(@NotNull @NonNls String key, Object... args) {
@@ -77,7 +183,7 @@ public class PGProperties extends Properties {
         return ((fmt == null) ? null : String.format(fmt, args));
     }
 
-    public boolean getBooleanProperty(@NotNull @NonNls String key, boolean defaultBoolean) {
+    public boolean getBoolean(@NotNull @NonNls String key, boolean defaultBoolean) {
         switch(getProperty(key, Boolean.toString(defaultBoolean)).trim()) {/*@f0*/
             case "true":  return true;
             case "false": return false;
@@ -85,11 +191,11 @@ public class PGProperties extends Properties {
         }/*@f1*/
     }
 
-    public boolean getBooleanProperty(@NotNull @NonNls String key) {
-        return getBooleanProperty(key, false);
+    public boolean getBoolean(@NotNull @NonNls String key) {
+        return getBoolean(key, false);
     }
 
-    public byte getByteProperty(@NotNull @NonNls String key, byte defaultValue) {
+    public byte getByte(@NotNull @NonNls String key, byte defaultValue) {
         try {
             return Byte.parseByte(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
         }
@@ -98,8 +204,8 @@ public class PGProperties extends Properties {
         }
     }
 
-    public byte getByteProperty(@NotNull @NonNls String key) {
-        return getByteProperty(key, (byte)0);
+    public byte getByte(@NotNull @NonNls String key) {
+        return getByte(key, (byte)0);
     }
 
     public Date getDateProperty(@NotNull @NonNls String key, @NotNull @NonNls String format, @Nullable Date defaultDate) {
@@ -118,7 +224,7 @@ public class PGProperties extends Properties {
         return getDateProperty(key, DEFAULT_DATETIME_FORMAT, null);
     }
 
-    public double getDoubleProperty(@NotNull @NonNls String key, double defaultValue) {
+    public double getDouble(@NotNull @NonNls String key, double defaultValue) {
         try {
             return Double.parseDouble(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
         }
@@ -127,11 +233,11 @@ public class PGProperties extends Properties {
         }
     }
 
-    public double getDoubleProperty(@NotNull @NonNls String key) {
-        return getDoubleProperty(key, 0);
+    public double getDouble(@NotNull @NonNls String key) {
+        return getDouble(key, 0);
     }
 
-    public float getFloatProperty(@NotNull @NonNls String key, float defaultValue) {
+    public float getFloat(@NotNull @NonNls String key, float defaultValue) {
         try {
             return Float.parseFloat(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
         }
@@ -140,11 +246,11 @@ public class PGProperties extends Properties {
         }
     }
 
-    public float getFloatProperty(@NotNull @NonNls String key) {
-        return getFloatProperty(key, 0);
+    public float getFloat(@NotNull @NonNls String key) {
+        return getFloat(key, 0);
     }
 
-    public int getIntProperty(@NotNull @NonNls String key, int defaultValue) {
+    public int getInt(@NotNull @NonNls String key, int defaultValue) {
         try {
             return Integer.parseInt(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
         }
@@ -153,38 +259,44 @@ public class PGProperties extends Properties {
         }
     }
 
-    public int getIntProperty(@NotNull @NonNls String key) {
-        return getIntProperty(key, 0);
+    public int getInt(@NotNull @NonNls String key) {
+        return getInt(key, 0);
     }
 
+    @NotNull
     public List<String> getList(@NotNull @NonNls String key, @Nullable @Language("RegExp") String separatorPattern, int limit, @Nullable List<String> defaultList) {
         String str = getProperty(key);
-        if(str == null) return defaultList;
+        if(str == null) return ((defaultList == null) ? Collections.emptyList() : defaultList);
         String[] arr = str.split(Null.ifNull(separatorPattern, DEFAULT_LIST_SEPARATOR_PATTERN), limit);
         return Arrays.asList(arr);
     }
 
+    @NotNull
     public List<String> getList(@NotNull @NonNls String key, @Nullable @Language("RegExp") @NonNls String separatorPattern, @Nullable List<String> defaultList) {
         return getList(key, separatorPattern, DEFAULT_LIMIT, defaultList);
     }
 
+    @NotNull
     public List<String> getList(@NotNull @NonNls String key, int limit, @Nullable List<String> defaultList) {
         return getList(key, DEFAULT_LIST_SEPARATOR_PATTERN, limit, defaultList);
     }
 
+    @NotNull
     public List<String> getList(@NotNull @NonNls String key, int limit) {
         return getList(key, DEFAULT_LIST_SEPARATOR_PATTERN, limit, null);
     }
 
+    @NotNull
     public List<String> getList(@NotNull @NonNls String key, @Nullable List<String> defaultList) {
         return getList(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_LIMIT, defaultList);
     }
 
+    @NotNull
     public List<String> getList(@NotNull @NonNls String key) {
         return getList(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_LIMIT, null);
     }
 
-    public long getLongProperty(@NotNull @NonNls String key, long defaultValue) {
+    public long getLong(@NotNull @NonNls String key, long defaultValue) {
         try {
             return Long.parseLong(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
         }
@@ -193,38 +305,59 @@ public class PGProperties extends Properties {
         }
     }
 
-    public long getLongProperty(@NotNull @NonNls String key) {
-        return getLongProperty(key, 0);
+    public long getLong(@NotNull @NonNls String key) {
+        return getLong(key, 0);
     }
 
-    public Map<String, String> getMap(@NotNull @NonNls String key, @NotNull @NonNls @Language("RegExp") String listSeparatorPattern, @NotNull @NonNls @Language("RegExp") String kvSeparatorPattern, @Nullable Map<String, String> defaultMap) {
-        List<String> list = getList(key, listSeparatorPattern, 0, null);
-        if(list == null) return defaultMap;
-        Map<String, String> map = new LinkedHashMap<>();
+    @NotNull
+    public Map<String, String> getMap(@NotNull @NonNls String key, @NotNull @NonNls @Language("RegExp") String listSepPat, @NotNull @NonNls @Language("RegExp") String kvSepPat, @Nullable Map<String, String> defaultMap) {
+        if(!containsKey(key)) return ((defaultMap == null) ? Collections.emptyMap() : defaultMap);
+        List<String>        list = getList(key, listSepPat, 0, null);
+        Map<String, String> map  = new LinkedHashMap<>();
 
         for(String kv : list) {
-            String[] arKv = kv.split(kvSeparatorPattern, 2);
-            if(arKv.length != 2) throw new InvalidPropertyKeyValuePair(_msgs.format("msg.err.kv_pair_missing_value", kv));
+            String[] arKv = kv.split(kvSepPat, 2);
+            if(arKv.length != 2) throw new InvalidPropertyKeyValuePair(msgs.format("msg.err.macro.kv_pair_missing_value", kv));
             map.put(arKv[0], arKv[1]);
         }
 
         return map;
     }
 
+    @NotNull
     public Map<String, String> getMap(@NotNull @NonNls String key, @Nullable Map<String, String> defaultMap) {
         return getMap(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_MAP_KV_PATTERN, defaultMap);
     }
 
+    @NotNull
     public Map<String, String> getMap(@NotNull @NonNls String key) {
-        return getMap(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_MAP_KV_PATTERN, null);
+        return getMap(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_MAP_KV_PATTERN, Collections.emptyMap());
     }
 
     @Override
-    public String getProperty(String key) {
-        return Macro.replaceMacros(_gp(key), this::_gp);
+    public String getProperty(@NotNull @NonNls String key) {
+        return getProperty(key, true);
     }
 
-    public short getShortProperty(@NotNull @NonNls String key, short defaultValue) {
+    @Override
+    public String getProperty(@NotNull @NonNls String key, String defaultValue) {
+        return getProperty(key, defaultValue, true);
+    }
+
+    public String getProperty(@NotNull @NonNls String key, String defaultValue, boolean macroExpansion) {
+        String value = _gp(key);
+        return getString(((value == null) ? defaultValue : value), macroExpansion);
+    }
+
+    public String getProperty(@NotNull @NonNls String key, boolean macroExpansion) {
+        return getString(_gp(key), macroExpansion);
+    }
+
+    private String getString(String value, boolean macroExpansion) {
+        return ((value == null) ? null : (macroExpansion ? Macro.replaceMacros(value, this::_gp) : value));
+    }
+
+    public short getShort(@NotNull @NonNls String key, short defaultValue) {
         try {
             return Short.parseShort(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
         }
@@ -233,19 +366,38 @@ public class PGProperties extends Properties {
         }
     }
 
-    public short getShortProperty(@NotNull @NonNls String key) {
-        return getShortProperty(key, (short)0);
+    public short getShort(@NotNull @NonNls String key) {
+        return getShort(key, (short)0);
     }
 
-    private String _gp(String key) {
+    private String _gp(@NotNull @NonNls String key) {
         return super.getProperty(key);
     }
 
+    @NotNull
     private String prepForNumber(@NotNull String value) {
         return value.replaceAll("_", "").replaceAll(",", "");
     }
 
     private static final class CacheHolder {
         private static final ObjCache CACHE = new ObjCache();
+    }
+
+    public static class PGPropertiesException extends RuntimeException {
+        public PGPropertiesException() {
+            super();
+        }
+
+        public PGPropertiesException(String message) {
+            super(message);
+        }
+
+        public PGPropertiesException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public PGPropertiesException(Throwable cause) {
+            super(cause);
+        }
     }
 }

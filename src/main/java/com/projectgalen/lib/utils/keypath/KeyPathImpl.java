@@ -35,8 +35,8 @@ import java.util.Map;
 public final class KeyPathImpl {
 
     private static final char             PATH_ELEM_SEP = '.';
-    private static final PGResourceBundle msgs          = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
-    private static final PGProperties     props         = PGProperties.getSharedInstanceForNamedResource("pg_properties.properties", PGProperties.class);
+    private static final PGResourceBundle msgs          = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final PGProperties     props         = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
 
     private KeyPathImpl() { }
 
@@ -73,7 +73,7 @@ public final class KeyPathImpl {
             return (T)field.get(target);
         }
         catch(Exception e) {
-            throw new KeyPathException(msgs.format("msg.err.keypath_elem_error_getting_field", key, target.getClass().getName()), e);
+            throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_error_getting_field", key, target.getClass().getName()), e);
         }
     }
 
@@ -87,7 +87,7 @@ public final class KeyPathImpl {
             fmt = getGetterNameFormat(++i);
         }
 
-        throw new KeyPathException(msgs.format("msg.err.keypath_elem_not_found", key, tClass.getName()));
+        throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_not_found", key, tClass.getName()));
     }
 
     private static String getGetterNameFormat(int i) {
@@ -117,7 +117,7 @@ public final class KeyPathImpl {
 
     private static <T> T getValueForKey(@NotNull String key, @Nullable Object target) {
         if(target == null) return null;
-        if(key.length() == 0) throw new KeyPathException(msgs.getString("msg.err.keypath_elem_empty"));
+        if(key.length() == 0) throw new KeyPathException(msgs.getString("msg.err.reflect.keypath.elem_empty"));
         return ((target instanceof Map) ? ((Map<Object, T>)target).get(key) : getValueForKey(key, target, target.getClass()));
     }
 
@@ -140,7 +140,7 @@ public final class KeyPathImpl {
             return (T)getterMethod.invoke(target);
         }
         catch(Exception e) {
-            throw new KeyPathException(msgs.format("msg.err.keypath_elem_error_invoking_getter", key, target.getClass().getName()), e);
+            throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_error_invoking_getter", key, target.getClass().getName()), e);
         }
     }
 
@@ -151,7 +151,7 @@ public final class KeyPathImpl {
             return true;
         }
         catch(Exception e) {
-            String mkey = ((value == null) ? "msg.err.keypath_elem_error_invoking_setter_null" : "msg.err.keypath_elem_error_invoking_setter");
+            String mkey = ((value == null) ? "msg.err.reflect.keypath.elem_error_invoking_setter_null" : "msg.err.reflect.keypath.elem_error_invoking_setter");
             throw new KeyPathException(msgs.format(mkey, key, target.getClass().getName(), Null.getIfNotNull(value, Object::getClass)));
         }
     }
@@ -169,7 +169,7 @@ public final class KeyPathImpl {
             return true;
         }
         catch(Exception e) {
-            String mKey = ((value == null) ? "msg.err.keypath_elem_error_setting_field_null" : "msg.err.keypath_elem_error_setting_field");
+            String mKey = ((value == null) ? "msg.err.reflect.keypath.elem_error_setting_field_null" : "msg.err.reflect.keypath.elem_error_setting_field");
             throw new KeyPathException(msgs.format(mKey, key, target.getClass().getName(), Null.getIfNotNull(value, Object::getClass)));
         }
     }

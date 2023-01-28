@@ -91,7 +91,8 @@ public final class U {
         return ((str != null) && (str.trim().length() > 0));
     }
 
-    public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
+    @NotNull
+    public static String @NotNull [] splitDotPath(@NotNull String path) {
         int i = path.lastIndexOf('.');
         return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
     }

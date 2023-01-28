@@ -39,8 +39,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class TargetInfo {
-    private static final PGResourceBundle msgs  = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
-    private static final PGProperties     props = PGProperties.getSharedInstanceForNamedResource("pg_properties.properties", PGProperties.class);
+    private static final PGResourceBundle msgs  = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final PGProperties     props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
 
     public final Object   target;
     public final String[] fieldNames;

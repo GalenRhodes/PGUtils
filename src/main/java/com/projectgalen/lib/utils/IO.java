@@ -28,7 +28,7 @@ import java.nio.charset.Charset;
 @SuppressWarnings({ "UnusedReturnValue", "unused" })
 public final class IO {
 
-    private static final PGProperties props = PGProperties.getSharedInstanceForNamedResource("pg_properties.properties", IO.class);
+    private static final PGProperties props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
 
     private IO() { }
 
@@ -57,7 +57,7 @@ public final class IO {
             long total = 0;
 
             try {
-                byte[] buff = new byte[props.getIntProperty("default.read_buffer_size")];
+                byte[] buff = new byte[props.getInt("default.read_buffer_size")];
                 int    cc   = inputStream.read(buff);
 
                 while(cc >= 0) {
@@ -80,7 +80,7 @@ public final class IO {
             long total = 0;
 
             try {
-                char[] buff = new char[props.getIntProperty("default.read_buffer_size")];
+                char[] buff = new char[props.getInt("default.read_buffer_size")];
                 int    cc   = reader.read(buff);
 
                 while(cc >= 0) {

@@ -21,9 +21,9 @@ package com.projectgalen.lib.utils.regex;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.ObjCache;
+import com.projectgalen.lib.utils.PGProperties;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.MagicConstant;
-import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +32,9 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public final class Regex {
+
+    private static final PGProperties props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
+
     private Regex() { }
 
     @NotNull
@@ -41,36 +44,45 @@ public final class Regex {
 
     @NotNull
     public static Matcher getMatcher(@NotNull @NonNls @Language("RegExp") String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, @NotNull @NonNls CharSequence input) {
-        String  key = String.format("♚%s♛%d", pattern, flags);
-        Pattern p   = CacheHolder.CACHE.get(key, Pattern.class);
-        if(p == null) {
-            p = Pattern.compile(pattern, flags);
-            CacheHolder.CACHE.store(key, p);
+        synchronized(CacheHolder.CACHE) {
+            String  key = String.format(props.getProperty("regex.cache.key.format", false), pattern, flags);
+            Pattern p   = CacheHolder.CACHE.get(key, Pattern.class);
+            if(p == null) {
+                try {
+                    p = Pattern.compile(pattern, flags);
+                    CacheHolder.CACHE.store(key, p);
+                }
+                catch(Throwable e) {
+                    e.printStackTrace(System.err);
+                    throw new RuntimeException(e);
+                }
+            }
+            return p.matcher(input);
         }
-        return p.matcher(input);
+    }
+
+    public static String replaceUsingDelegate(@NotNull @Language("RegExp") @NonNls String pattern, CharSequence input, @NotNull ReplacementDelegate delegate) {
+        return ((input == null) ? null : replaceUsingDelegate(pattern, 0, input, delegate));
+    }
+
+    public static String replaceUsingDelegate(@Language("RegExp") @NonNls @NotNull String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, CharSequence input, @NotNull ReplacementDelegate delegate) {
+        return ((input == null) ? null : replaceUsingDelegate(getMatcher(pattern, flags, input), delegate));
+    }
+
+    public static String replaceUsingDelegate(@NotNull Pattern regex, CharSequence input, @NotNull ReplacementDelegate delegate) {
+        return ((input == null) ? null : replaceUsingDelegate(regex.matcher(input), delegate));
     }
 
     @NotNull
-    public static String replaceUsingDelegate(@NotNull @Language("RegExp") @RegExp @NonNls String pattern, @NotNull CharSequence input, @NotNull ReplacementDelegate delegate) {
-        Pattern p = Pattern.compile(pattern);
-        return replaceUsingDelegate(p, input, delegate);
-    }
-
-    @NotNull
-    public static String replaceUsingDelegate(@NotNull Pattern pattern, @NotNull CharSequence input, @NotNull ReplacementDelegate delegate) {
-        Matcher m = pattern.matcher(input);
-
-        if(!m.find()) return input.toString();
-
+    public static String replaceUsingDelegate(@NotNull Matcher matcher, @NotNull ReplacementDelegate delegate) {
         StringBuilder sb = new StringBuilder();
 
-        do {
-            String repl = delegate.getReplacement(m);
-            m.appendReplacement(sb, Matcher.quoteReplacement(repl == null ? m.group() : repl));
+        while(matcher.find()) {
+            String repl = delegate.getReplacement(matcher);
+            matcher.appendReplacement(sb, Matcher.quoteReplacement((repl == null) ? matcher.group() : repl));
         }
-        while(m.find());
 
-        m.appendTail(sb);
+        matcher.appendTail(sb);
         return sb.toString();
     }
 

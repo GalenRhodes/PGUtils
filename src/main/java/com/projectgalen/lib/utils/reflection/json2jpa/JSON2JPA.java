@@ -37,7 +37,7 @@ import java.util.TreeMap;
 @SuppressWarnings({ "unchecked" })
 public final class JSON2JPA {
 
-    private static final PGResourceBundle msgs = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
     private JSON2JPA() { }
 

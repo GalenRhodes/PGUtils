@@ -14,13 +14,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings({ "SameParameterValue", "MismatchedQueryAndUpdateOfCollection" })
 public class Main {
     public Main() {
     }
 
     public static void main(String[] args) {
         try {
-            testMethod(3);
+            propsXMLTest();
         }
         catch(Exception e) {
             e.printStackTrace(System.err);
@@ -65,19 +66,30 @@ public class Main {
     }
 
     private static void propsTest() {
-        PGResourceBundle bundle = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.test.main_messages");
-        PGProperties     props  = PGProperties.getSharedInstanceForNamedResource("main_settings.properties", Main.class);
+        PGResourceBundle bundle = PGResourceBundle.getPGBundle("com.projectgalen.lib.utils.test.main_messages");
+        PGProperties     props  = PGProperties.getProperties("main_settings.properties", Main.class);
 
+        propsTest(bundle, props);
+    }
+
+    private static void propsXMLTest() {
+        PGResourceBundle bundle = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.test.main_messages");
+        PGProperties     props  = PGProperties.getXMLProperties("main_settings.xml", Main.class);
+
+        propsTest(bundle, props);
+    }
+
+    private static void propsTest(PGResourceBundle bundle, PGProperties props) {
         System.out.printf("                 Message Test: \"%s\"%n", bundle.getString("msg.test.main"));
-        System.out.printf("Settings Test  boolean (true): \"%b\"%n", props.getBooleanProperty("set.test.boolean.1", false));
-        System.out.printf("Settings Test boolean (false): \"%b\"%n", props.getBooleanProperty("set.test.boolean.2", true));
+        System.out.printf("Settings Test  boolean (true): \"%b\"%n", props.getBoolean("set.test.boolean.1", false));
+        System.out.printf("Settings Test boolean (false): \"%b\"%n", props.getBoolean("set.test.boolean.2", true));
         System.out.printf("Settings Test          String: \"%s\"%n", props.getProperty("set.test.main"));
-        System.out.printf("Settings Test            byte: \"%d\"%n", props.getByteProperty("set.test.byte"));
-        System.out.printf("Settings Test           short: \"%d\"%n", props.getShortProperty("set.test.short"));
-        System.out.printf("Settings Test             int: \"%d\"%n", props.getIntProperty("set.test.int"));
-        System.out.printf("Settings Test            long: \"%d\"%n", props.getLongProperty("set.test.long"));
-        System.out.printf("Settings Test          double: \"%g\"%n", props.getDoubleProperty("set.test.double"));
-        System.out.printf("Settings Test           float: \"%g\"%n", props.getFloatProperty("set.test.float"));
+        System.out.printf("Settings Test            byte: \"%d\"%n", props.getByte("set.test.byte"));
+        System.out.printf("Settings Test           short: \"%d\"%n", props.getShort("set.test.short"));
+        System.out.printf("Settings Test             int: \"%d\"%n", props.getInt("set.test.int"));
+        System.out.printf("Settings Test            long: \"%d\"%n", props.getLong("set.test.long"));
+        System.out.printf("Settings Test          double: \"%g\"%n", props.getDouble("set.test.double"));
+        System.out.printf("Settings Test           float: \"%g\"%n", props.getFloat("set.test.float"));
         System.out.printf("Settings Test            List: \"%s\"%n", props.getList("set.test.list"));
         System.out.printf("Settings Test             Map: \"%s\"%n", props.getMap("set.test.map"));
 

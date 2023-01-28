@@ -34,9 +34,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
 public final class Reflection {
-    private static final PGResourceBundle msgs  = PGResourceBundle.getSharedBundle("com.projectgalen.lib.utils.pg_messages");
-    private static final PGProperties     props = PGProperties.getSharedInstanceForNamedResource("pg_properties.properties", PGProperties.class);
+    private static final PGResourceBundle msgs  = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final PGProperties     props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
 
     private Reflection() { }
 
@@ -208,7 +209,8 @@ public final class Reflection {
     }
 
     @NotNull
-    public static @SafeVarargs List<Field> getFieldsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    @SafeVarargs
+    public static List<Field> getFieldsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         List<Field> fields = new ArrayList<>();
         while(cls != null) {
             for(Field f : cls.getDeclaredFields()) if(hasAllAnnotations(f, annotationClasses)) fields.add(f);
@@ -218,7 +220,8 @@ public final class Reflection {
     }
 
     @NotNull
-    public static @SafeVarargs List<Field> getFieldsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    @SafeVarargs
+    public static List<Field> getFieldsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         List<Field> fields = new ArrayList<>();
         while(cls != null) {
             for(Field f : cls.getDeclaredFields()) if(hasAnyAnnotation(f, annotationClasses)) fields.add(f);
@@ -262,7 +265,8 @@ public final class Reflection {
     }
 
     @NotNull
-    public static @SafeVarargs List<Method> getMethodsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    @SafeVarargs
+    public static List<Method> getMethodsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         List<Method> methods = new ArrayList<>();
         while(cls != null) {
             for(Method m : cls.getDeclaredMethods()) if(hasAllAnnotations(m, annotationClasses)) methods.add(m);
@@ -272,7 +276,8 @@ public final class Reflection {
     }
 
     @NotNull
-    public static @SafeVarargs List<Method> getMethodsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    @SafeVarargs
+    public static List<Method> getMethodsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         List<Method> methods = new ArrayList<>();
         while(cls != null) {
             for(Method m : cls.getDeclaredMethods()) if(hasAnyAnnotation(m, annotationClasses)) methods.add(m);
@@ -308,12 +313,14 @@ public final class Reflection {
         return new TypeInfo(method.getGenericReturnType());
     }
 
-    public static @SafeVarargs boolean hasAllAnnotations(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation>... annotationClasses) {
+    @SafeVarargs
+    public static boolean hasAllAnnotations(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation>... annotationClasses) {
         for(Class<? extends Annotation> ac : annotationClasses) if(!isAnnotationPresent(element, ac)) return false;
         return true;
     }
 
-    public static @SafeVarargs boolean hasAnyAnnotation(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation>... annotationClasses) {
+    @SafeVarargs
+    public static boolean hasAnyAnnotation(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation>... annotationClasses) {
         for(Class<? extends Annotation> ac : annotationClasses) if(isAnnotationPresent(element, ac)) return true;
         return false;
     }
