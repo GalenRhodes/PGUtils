@@ -22,13 +22,19 @@ package com.projectgalen.lib.utils;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
+import com.projectgalen.lib.utils.regex.Regex;
+import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
 
 @SuppressWarnings({ "unused", "SameParameterValue" })
 public final class U {
@@ -127,5 +133,42 @@ public final class U {
         R[] out = (R[])Array.newInstance(cls, args.length);
         for(int i = 0; i < args.length; i++) out[i] = delegate.action(args[i]);
         return out;
+    }
+
+    public static String getPart(@NotNull String str, @NotNull @NonNls @Language("RegExp") String separator, @NotNull Parts part) {
+        List<String> arr = new ArrayList<>();
+        Matcher      m   = Regex.getMatcher(separator, str);
+
+        if(!m.find()) return str;
+        int idx = 0;
+
+        do {
+            arr.add(str.substring(idx, m.start()));
+            arr.add(m.group());
+            idx = m.end();
+        }
+        while(m.find());
+
+        arr.add(str.substring(idx));
+        StringBuilder sb = new StringBuilder();
+        int           sz = arr.size();
+
+        switch(part) {
+            case FIRST:
+                return arr.get(0);
+            case LAST:
+                return arr.get(sz - 1);
+            case NOT_FIRST:
+                for(int i = 2; i < sz; i++) sb.append(arr.get(i));
+                return sb.toString();
+            case NOT_LAST:
+            default:
+                for(int i = 0; i < (sz - 2); i++) sb.append(arr.get(i));
+                return sb.toString();
+        }
+    }
+
+    public enum Parts {
+        FIRST, LAST, NOT_FIRST, NOT_LAST
     }
 }

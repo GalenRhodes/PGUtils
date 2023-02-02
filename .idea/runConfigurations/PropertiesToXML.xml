@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="PropertiesToXML" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.projectgalen.lib.utils.PropertiesToXML" />
+    <module name="PGUtils" />
+    <option name="PROGRAM_PARAMETERS" value="$PROJECT_DIR$/src/main/resources/com/projectgalen/lib/utils/pg_messages.properties" />
+    <method v="2">
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="clean package" />
+    </method>
+  </configuration>
+</component>

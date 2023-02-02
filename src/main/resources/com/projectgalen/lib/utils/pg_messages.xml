@@ -1,16 +1,29 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
+    <entry key="msg.err.bundle.missing.resource.file">Could not locate resource bundle.</entry>
+
     <entry key="msg.err.json2jpa.infer_tgt_cls_failed">Unable to infer target class information from source class "%s": %s</entry>
     <entry key="msg.err.json2jpa.invalid_target">Invalid target type: %s != %s</entry>
-    <entry key="msg.err.json2jpa.target_object_incompatible">The given object of type "%s" is not compatible with type "%s".</entry>
     <entry key="msg.err.json2jpa.missing_doppelganger_annotation">Class "%s" does not have a doppelgänger annotation.</entry>
+    <entry key="msg.err.json2jpa.target_object_incompatible">The given object of type "%s" is not compatible with type "%s".</entry>
     <entry key="msg.err.json2jpa.xlate_doppelganger_failed">Unable to translate type "%s" to its doppelgänger type "%s".</entry>
     <entry key="msg.err.json2jpa.xlate_value_failed">Unable to translate value from "%s" to "%s": %s</entry>
 
-    <entry key="msg.err.reflect.set_fld_val_failed">Unable to set value to field "%s" in class "%s": %s</entry>
-    <entry key="msg.err.reflect.get_fld_val_failed">Unable to get value from field "%s" in class "%s": %s</entry>
+    <entry key="msg.err.macro.key_circular_ref">Circular reference of key: %s</entry>
+    <entry key="msg.err.macro.kv_pair_missing_value">Key Value Pair missing Value: %s</entry>
+    <entry key="msg.err.macro.no_input_stream">No input stream.</entry>
 
+    <entry key="msg.err.p2x.error">Error: %s%n</entry>
+    <entry key="msg.err.p2x.no.props.file.specified">No properties files specified.</entry>
+
+    <entry key="msg.err.props.load.failed">Unable to load properties.</entry>
+    <entry key="msg.err.props.load.failed.file">Unable to load properties from file: %s</entry>
+    <entry key="msg.err.props.load.failed.res">Unable to load properties from resource: %s</entry>
+    <entry key="msg.err.props.missing.input.stream">Missing Input Stream.</entry>
+    <entry key="msg.err.props.missing.reader">Missing Reader.</entry>
+
+    <entry key="msg.err.reflect.get_fld_val_failed">Unable to get value from field "%s" in class "%s": %s</entry>
     <entry key="msg.err.reflect.keypath.elem_empty">Key path cannot contain an empty element.</entry>
     <entry key="msg.err.reflect.keypath.elem_error_getting_field">Exception while reading field value for key "%1$s" in object of type %2$s.</entry>
     <entry key="msg.err.reflect.keypath.elem_error_invoking_getter">Exception while executing getter for key "%1$s" in object of type %2$s.</entry>
@@ -19,16 +32,5 @@
     <entry key="msg.err.reflect.keypath.elem_error_setting_field">Exception while writing value of type %3$s to field for key "%1$s" in object of type %2$s.</entry>
     <entry key="msg.err.reflect.keypath.elem_error_setting_field_null">Exception while writing null value to field for key "%1$s" in object of type %2$s.</entry>
     <entry key="msg.err.reflect.keypath.elem_not_found">Key "%s" not found in object of type %s</entry>
-
-    <entry key="msg.err.macro.kv_pair_missing_value">Key Value Pair missing Value: %s</entry>
-    <entry key="msg.err.macro.key_circular_ref">Circular reference of key: %s</entry>
-    <entry key="msg.err.macro.no_input_stream">No input stream.</entry>
-
-    <entry key="msg.err.bundle.missing.resource.file">Could not locate resource bundle.</entry>
-
-    <entry key="msg.err.props.load.failed">Unable to load properties.</entry>
-    <entry key="msg.err.props.load.failed.file">Unable to load properties from file: %s</entry>
-    <entry key="msg.err.props.load.failed.res">Unable to load properties from resource: %s</entry>
-    <entry key="msg.err.props.missing.input.stream">Missing Input Stream.</entry>
-    <entry key="msg.err.props.missing.reader">Missing Reader.</entry>
+    <entry key="msg.err.reflect.set_fld_val_failed">Unable to set value to field "%s" in class "%s": %s</entry>
 </properties>
