@@ -36,7 +36,7 @@ import java.util.*;
 
 public final class PGResourceBundle extends ResourceBundle {
 
-    private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final PGResourceBundle msgs = PGResourceBundle.getPGBundle("com.projectgalen.lib.utils.pg_messages");
 
     private final ResourceBundle bundle;
 

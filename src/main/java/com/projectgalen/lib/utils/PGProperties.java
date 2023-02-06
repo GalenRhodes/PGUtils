@@ -325,6 +325,11 @@ public class PGProperties extends Properties {
     }
 
     @NotNull
+    public Map<String, String> getMap(@NotNull @NonNls String key, @NotNull @NonNls @Language("RegExp") String listSepPat, @NotNull @NonNls @Language("RegExp") String kvSepPat) {
+        return getMap(key, listSepPat, kvSepPat, Collections.emptyMap());
+    }
+
+    @NotNull
     public Map<String, String> getMap(@NotNull @NonNls String key, @Nullable Map<String, String> defaultMap) {
         return getMap(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_MAP_KV_PATTERN, defaultMap);
     }

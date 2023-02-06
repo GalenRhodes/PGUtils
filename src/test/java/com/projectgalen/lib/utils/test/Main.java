@@ -18,12 +18,26 @@ import java.util.List;
 @SuppressWarnings({ "SameParameterValue", "MismatchedQueryAndUpdateOfCollection" })
 public class Main {
 
-    private static final PGResourceBundle msgs = PGResourceBundle.getPGBundle("com.projectgalen.lib.utils.test.test_messages");
+    private static final PGResourceBundle msgs     = PGResourceBundle.getPGBundle("com.projectgalen.lib.utils.test.test_messages");
+    private static final String           DASH_STR = String.format("%c%c", (char)8211, (char)8211);
 
     public Main() {
     }
 
     public static void main(String[] args) {
+        String str = DASH_STR;
+
+        System.out.println(str);
+
+        for(int i = 0, j = str.length(); i < j; i++) {
+            System.out.printf("%d ", (int)str.charAt(i));
+        }
+
+        System.out.println();
+        System.out.println();
+    }
+
+    private static void testXMLPropertiesSave() {
         try {
             PGProperties props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class, PGProperties.getProperties("main_settings.xml", Main.class));
 
