@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-
+    <!-- # -->
     <entry key="set.test.main">Now is ${set.test.sub1} ${set.test.sub2} for all \\${set.test.sub5} to come to the \${aid} of \\\${their} country.</entry>
     <entry key="set.test.sub1">the</entry>
     <entry key="set.test.sub2">time</entry>
     <entry key="set.test.sub3">good</entry>
     <entry key="set.test.sub4">men</entry>
     <entry key="set.test.sub5">${set.test.sub3} ${set.test.sub4}</entry>
-
+    <!-- # -->
     <entry key="set.test.byte">1</entry>
     <entry key="set.test.short">512</entry>
     <entry key="set.test.int">-65_538</entry>
     <entry key="set.test.long">-281,474,976,710,656</entry>
     <entry key="set.test.float">1.453</entry>
     <entry key="set.test.double">1024.8765</entry>
-
+    <!-- # -->
     <entry key="set.test.boolean.1">true</entry>
     <entry key="set.test.boolean.2">false</entry>
-
+    <!-- # -->
     <entry key="set.test.list">Now , is , the , time , for , all , good , men , to , come , to , the , aid , of , their , country.</entry>
-
+    <!-- # -->
     <entry key="set.test.map">message1: Now is the time for all good men to come to the aid of their country., message2: The quick brown fox jumps over the lazy dog.</entry>
-
+    <!-- # -->
     <entry key="set.test.date.1">1970-10-25T10:25:04.321-0500</entry>
     <entry key="set.test.date.2">1970-10-25T10:25:04.321</entry>
     <entry key="set.test.date.3">1970-10-25T10:25:04-0500</entry>
@@ -33,5 +33,5 @@
     <entry key="set.test.date.format.3">yyyy-MM-dd'T'HH:mm:ssZ</entry>
     <entry key="set.test.date.format.4">yyyy-MM-dd'T'Z</entry>
     <entry key="set.test.date.format.5">yyyy-mm-dd</entry>
-
+    <!-- # -->
 </properties>

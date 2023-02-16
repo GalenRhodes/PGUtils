@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-
+    <!-- # -->
     <entry key="msg.test.main">Now is ${msg.test.sub1} ${msg.test.sub2} for all \\${msg.test.sub5} to come to the \${aid} of \\\${their} country.</entry>
-
+    <!-- # -->
     <entry key="msg.test.sub1">the</entry>
-
+    <!-- # -->
     <entry key="msg.test.sub2">time</entry>
-
+    <!-- # -->
     <entry key="msg.test.sub3">good</entry>
-
+    <!-- # -->
     <entry key="msg.test.sub4">men</entry>
-
+    <!-- # -->
     <entry key="msg.test.sub5">${msg.test.sub3} ${msg.test.sub4}</entry>
-
+    <!-- # -->
 </properties>

@@ -34,15 +34,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
 public final class Reflection {
     private static final PGResourceBundle msgs  = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
     private static final PGProperties     props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
 
     private Reflection() { }
 
-    @Nullable
-    public static Object castIfNumeric(@Nullable Object value, @NotNull Class<?> targetClass) {
+    public static @Nullable Object castIfNumeric(@Nullable Object value, @NotNull Class<?> targetClass) {
         if((value != null) && !targetClass.isAssignableFrom(value.getClass())) {
             if(value instanceof Character) value = (int)((Character)value);
 
@@ -63,8 +61,7 @@ public final class Reflection {
         return value;
     }
 
-    @NotNull
-    public static List<Method> findGetters(@NotNull Class<?> cls) {
+    public static @NotNull List<Method> findGetters(@NotNull Class<?> cls) {
         List<Method> methods = new ArrayList<>();
         while(cls != null) {
             for(Method m : cls.getDeclaredMethods()) if((m.getReturnType() != Void.class) && (m.getParameterCount() == 0) && m.getName().startsWith("get")) methods.add(m);
@@ -73,8 +70,7 @@ public final class Reflection {
         return methods;
     }
 
-    @NotNull
-    public static List<Method> findSetters(@Nullable Class<?> cls) {
+    public static @NotNull List<Method> findSetters(@Nullable Class<?> cls) {
         List<Method> methods = new ArrayList<>();
         while(cls != null) {
             for(Method m : cls.getDeclaredMethods()) if((m.getReturnType() == void.class) && (m.getParameterCount() == 1) && m.getName().startsWith("set")) methods.add(m);
@@ -83,13 +79,11 @@ public final class Reflection {
         return methods;
     }
 
-    @NotNull
-    public static List<Method> findSettersForTypes(@NotNull Class<?> cls, @NotNull Class<?>... paramTypes) {
+    public static @NotNull List<Method> findSettersForTypes(@NotNull Class<?> cls, @NotNull Class<?>... paramTypes) {
         return findSettersForTypes(cls, false, paramTypes);
     }
 
-    @NotNull
-    public static List<Method> findSettersForTypes(@NotNull Class<?> cls, boolean exact, @NotNull Class<?>... pTypes) {
+    public static @NotNull List<Method> findSettersForTypes(@NotNull Class<?> cls, boolean exact, @NotNull Class<?>... pTypes) {
         List<Method> a      = new ArrayList<>();
         boolean      getAll = (pTypes.length == 0);
         forEachSuperclass(cls, c -> {
@@ -136,36 +130,31 @@ public final class Reflection {
         }
     }
 
-    @NotNull
-    public static Field getAccessibleField(@NotNull Class<?> cls, @NotNull String name) throws NoSuchFieldException {
+    public static @NotNull Field getAccessibleField(@NotNull Class<?> cls, @NotNull String name) throws NoSuchFieldException {
         Field field = getField(cls, name);
         field.setAccessible(true);
         return field;
     }
 
-    @Nullable
-    public static Field getAccessibleFieldOrNull(@NotNull Class<?> cls, @NotNull String name) {
+    public static @Nullable Field getAccessibleFieldOrNull(@NotNull Class<?> cls, @NotNull String name) {
         Field field = getFieldOrNull(cls, name);
         if(field != null) field.setAccessible(true);
         return field;
     }
 
-    @NotNull
-    public static Method getAccessibleMethod(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
+    public static @NotNull Method getAccessibleMethod(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
         Method method = getMethod(cls, name, parameterTypes);
         method.setAccessible(true);
         return method;
     }
 
-    @Nullable
-    public static Method getAccessibleMethodOrNull(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) {
+    public static @Nullable Method getAccessibleMethodOrNull(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) {
         Method method = getMethodOrNull(cls, name, parameterTypes);
         if(method != null) method.setAccessible(true);
         return method;
     }
 
-    @Nullable
-    public static <T extends Annotation> T getAnnotation(@NotNull AnnotatedElement element, @NotNull Class<T> annotationClass) {
+    public static @Nullable <T extends Annotation> T getAnnotation(@NotNull AnnotatedElement element, @NotNull Class<T> annotationClass) {
         if(element.getClass() == Class.class) {
             Class<?> cls = (Class<?>)element;
             while(cls != null) {
@@ -178,27 +167,23 @@ public final class Reflection {
         return element.getAnnotation(annotationClass);
     }
 
-    @NotNull
-    public static Field getField(@NotNull Class<?> cls, @NotNull String name) throws NoSuchFieldException {
+    public static @NotNull Field getField(@NotNull Class<?> cls, @NotNull String name) throws NoSuchFieldException {
         Field field = getFieldOrNull(cls, name);
         if(field == null) throw new NoSuchFieldException(name);
         return field;
     }
 
-    @Nullable
-    public static Field getFieldOrNull(@NotNull Class<?> cls, @NotNull String name) {
+    public static @Nullable Field getFieldOrNull(@NotNull Class<?> cls, @NotNull String name) {
         Class<?> c = cls;
         while(c != null) { try { return cls.getDeclaredField(name); } catch(NoSuchFieldException e) { c = c.getSuperclass(); } }
         return null;
     }
 
-    @NotNull
-    public static TypeInfo getFieldTypeInfo(@NotNull Field field) {
+    public static @NotNull TypeInfo getFieldTypeInfo(@NotNull Field field) {
         return new TypeInfo(field.getGenericType());
     }
 
-    @Nullable
-    public static Object getFieldValue(@NotNull Field field, @Nullable Object obj) {
+    public static @Nullable Object getFieldValue(@NotNull Field field, @Nullable Object obj) {
         try {
             return field.get(obj);
         }
@@ -240,8 +225,7 @@ public final class Reflection {
      * @return The method.
      * @throws NoSuchMethodException If the method cannot be found.
      */
-    @NotNull
-    public static Method getMethod(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
+    public static @NotNull Method getMethod(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
         Method method = getMethodOrNull(cls, name, parameterTypes);
         if(method != null) return method;
         String msg = props.format("reflect.nosuchmethod.msg.format", cls.getName(), name, U.join(", ", U.translate(Object.class, Class::getName, parameterTypes)));
@@ -257,8 +241,7 @@ public final class Reflection {
      * @param parameterTypes The parameter types.
      * @return The method.
      */
-    @Nullable
-    public static Method getMethodOrNull(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) {
+    public static @Nullable Method getMethodOrNull(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) {
         Class<?> c = cls;
         while(c != null) try { return c.getDeclaredMethod(name, parameterTypes); } catch(NoSuchMethodException ignore) { c = c.getSuperclass(); }
         return null;
@@ -286,30 +269,25 @@ public final class Reflection {
         return methods;
     }
 
-    @NotNull
-    public static List<TypeInfo> getParameterTypeInfo(@NotNull Method method) {
+    public static @NotNull List<TypeInfo> getParameterTypeInfo(@NotNull Method method) {
         List<TypeInfo> list = new ArrayList<>();
         for(Type t : method.getGenericParameterTypes()) list.add(new TypeInfo(t));
         return list;
     }
 
-    @NotNull
-    public static List<Type> getParameterizedFieldTypes(@NotNull Field field) {
+    public static @NotNull List<Type> getParameterizedFieldTypes(@NotNull Field field) {
         return getActualTypeArguments(field.getGenericType());
     }
 
-    @NotNull
-    public static List<Type> getParameterizedParameterTypes(@NotNull Method method, int parameterIndex) {
+    public static @NotNull List<Type> getParameterizedParameterTypes(@NotNull Method method, int parameterIndex) {
         return getActualTypeArguments(method.getGenericParameterTypes()[parameterIndex]);
     }
 
-    @NotNull
-    public static List<Type> getParameterizedReturnTypes(@NotNull Method method) {
+    public static @NotNull List<Type> getParameterizedReturnTypes(@NotNull Method method) {
         return getActualTypeArguments(method.getGenericReturnType());
     }
 
-    @NotNull
-    public static TypeInfo getReturnTypeInfo(@NotNull Method method) {
+    public static @NotNull TypeInfo getReturnTypeInfo(@NotNull Method method) {
         return new TypeInfo(method.getGenericReturnType());
     }
 
@@ -354,8 +332,7 @@ public final class Reflection {
         return _isNumericallyAssignable(objectClassForPrimitive(leftHandClass), objectClassForPrimitive(rightHandClass));
     }
 
-    @NotNull
-    public static Class<?> objectClassForPrimitive(@NotNull Class<?> cls) {
+    public static @NotNull Class<?> objectClassForPrimitive(@NotNull Class<?> cls) {
         //@f:0
         if(!cls.isPrimitive())  return cls;
         if(cls == char.class)   return Character.class;
@@ -369,8 +346,7 @@ public final class Reflection {
         return Boolean.class;
     }
 
-    @Nullable
-    public static Class<?> primitiveClassForObject(@NotNull Class<?> cls) {
+    public static @Nullable Class<?> primitiveClassForObject(@NotNull Class<?> cls) {
         //@f:0
         if(cls.isPrimitive())      return cls;
         if(cls == Character.class) return char.class;
@@ -410,8 +386,7 @@ public final class Reflection {
         return false;
     }
 
-    @NotNull
-    private static List<Type> getActualTypeArguments(@NotNull Type type) {
+    private static @NotNull List<Type> getActualTypeArguments(@NotNull Type type) {
         List<Type> list = new ArrayList<>();
         if(type instanceof ParameterizedType) list.addAll(Arrays.asList(((ParameterizedType)type).getActualTypeArguments()));
         return list;

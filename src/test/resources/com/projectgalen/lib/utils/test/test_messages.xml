@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="form01">%15s: %s%n</entry>
+    <entry key="form02">%s value: %d%n</entry>
+    <entry key="form03">%s "%s %s(%s)"</entry>
+    <entry key="form04">%29s: "%s"%n</entry>
+    <entry key="form05">Settings Test %15s: "%s"%n</entry>
+    <entry key="form06">%s %d</entry>
+    <entry key="form07">Type Var #%d</entry>
+    <entry key="form08">%n%n Parameter Class Type: %s%n</entry>
+    <entry key="form09">Parameter Class isPrimitive: %s%n%n</entry>
+    <entry key="form10">Field "%s" is type "%s" and %s primitive.%n</entry>
+    <entry key="form11">&#9;Assignable from "%s"? %s%n</entry>
+    <entry key="form_b">%b</entry>
+    <entry key="form_d">%d</entry>
+    <entry key="form_g">%g</entry>
+    <entry key="form_s">%s</entry>
+    <entry key="long_field">longField</entry>
+    <entry key="long_obj_field">longObjField</entry>
+    <entry key="tx_bool_false">boolean (false)</entry>
+    <entry key="tx_bool_true">boolean (true)</entry>
+    <entry key="tx_byte">byte</entry>
+    <entry key="tx_date">Date</entry>
+    <entry key="tx_double">double</entry>
+    <entry key="tx_float">float</entry>
+    <entry key="tx_generic">Generic String</entry>
+    <entry key="tx_getter">Getter</entry>
+    <entry key="tx_int">int</entry>
+    <entry key="tx_is">is</entry>
+    <entry key="tx_isnot">is not</entry>
+    <entry key="tx_list">List</entry>
+    <entry key="tx_long">long</entry>
+    <entry key="tx_map">Map</entry>
+    <entry key="tx_msg_test">Message Test</entry>
+    <entry key="tx_na">-N/A-</entry>
+    <entry key="tx_name">Name</entry>
+    <entry key="tx_no">NO</entry>
+    <entry key="tx_setter">Setter</entry>
+    <entry key="tx_short">short</entry>
+    <entry key="tx_string">String</entry>
+    <entry key="tx_type">Type name</entry>
+    <entry key="tx_void">void</entry>
+    <entry key="tx_yes">YES</entry>
+</properties>

@@ -20,7 +20,8 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -28,13 +29,13 @@ import java.math.BigInteger;
 public final class PGMath {
     private PGMath() { }
 
-    @NotNull
-    public static BigDecimal getBigDecimal(@NotNull Number num) {
-        return ((num instanceof BigDecimal) ? (BigDecimal)num : ((num instanceof BigInteger) ? new BigDecimal((BigInteger)num) : BigDecimal.valueOf(num.doubleValue())));
+    @Contract("null -> null; !null -> !null")
+    public static BigDecimal getBigDecimal(@Nullable Number num) {
+        return ((num == null) ? null : ((num instanceof BigDecimal) ? (BigDecimal)num : ((num instanceof BigInteger) ? new BigDecimal((BigInteger)num) : BigDecimal.valueOf(num.doubleValue()))));
     }
 
-    @NotNull
-    public static BigInteger getBigInteger(@NotNull Number num) {
-        return ((num instanceof BigInteger) ? (BigInteger)num : ((num instanceof BigDecimal) ? ((BigDecimal)num).toBigInteger() : BigInteger.valueOf(num.longValue())));
+    @Contract("null -> null; !null -> !null")
+    public static BigInteger getBigInteger(@Nullable Number num) {
+        return ((num == null) ? null : ((num instanceof BigInteger) ? (BigInteger)num : ((num instanceof BigDecimal) ? ((BigDecimal)num).toBigInteger() : BigInteger.valueOf(num.longValue()))));
     }
 }

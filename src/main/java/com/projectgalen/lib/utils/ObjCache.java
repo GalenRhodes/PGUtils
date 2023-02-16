@@ -22,7 +22,6 @@ package com.projectgalen.lib.utils;
 
 import com.projectgalen.lib.utils.concurrency.Locks;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -43,27 +42,22 @@ public class ObjCache {
         return ObjCacheHolder.INSTANCE;
     }
 
-    @UnknownNullability
     public <T> T get(@NotNull String key, @NotNull Class<T> cls) {
         return Locks.getWithLock(lock, () -> cls.cast(cache.get(key)));
     }
 
-    @UnknownNullability
     public Object get(@NotNull String key) {
         return Locks.getWithLock(lock, () -> cache.get(key));
     }
 
-    @UnknownNullability
     public <T> T remove(@NotNull String key, @NotNull Class<T> cls) {
         return Locks.getWithLock(lock, () -> cls.cast(cache.remove(key)));
     }
 
-    @UnknownNullability
     public Object remove(@NotNull String key) {
         return Locks.getWithLock(lock, () -> cache.remove(key));
     }
 
-    @UnknownNullability
     public <T> T store(@NotNull String key, @NotNull T obj) {
         return Locks.getWithLock(lock, () -> ((Class<T>)obj.getClass()).cast(cache.put(key, obj)));
     }

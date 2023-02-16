@@ -18,13 +18,19 @@ import java.util.List;
 @SuppressWarnings({ "SameParameterValue", "MismatchedQueryAndUpdateOfCollection" })
 public class Main {
 
-    private static final PGResourceBundle msgs     = PGResourceBundle.getPGBundle("com.projectgalen.lib.utils.test.test_messages");
+    private static final PGResourceBundle msgs     = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.test.test_messages");
     private static final String           DASH_STR = String.format("%c%c", (char)8211, (char)8211);
 
     public Main() {
     }
 
     public static void main(String[] args) {
+        propsTest();
+        System.out.println("=================================================================================================================================");
+        propsXMLTest();
+    }
+
+    private static void testDashReplacement() {
         String str = DASH_STR;
 
         System.out.println(str);

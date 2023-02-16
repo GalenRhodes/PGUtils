@@ -21,7 +21,9 @@ package com.projectgalen.lib.utils;
 // ===========================================================================
 
 import org.intellij.lang.annotations.MagicConstant;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -32,8 +34,13 @@ import java.util.TimeZone;
 public final class Dates {
     private Dates() { }
 
-    @NotNull
-    public static Calendar createCalendar(int year, @MagicConstant(intValues = {
+    @Contract("-> new")
+    public static @NotNull Timestamp getTimestamp() {
+        return new Timestamp(Calendar.getInstance().getTimeInMillis());
+    }
+
+    @Contract("_,_,_ -> new")
+    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
             Calendar.JANUARY,
             Calendar.FEBRUARY,
             Calendar.MARCH,
@@ -48,11 +55,11 @@ public final class Dates {
             Calendar.DECEMBER,
             Calendar.UNDECIMBER
     }) int month, int date) {
-        return createCalendar(year, month, date, TimeZone.getDefault(), Locale.getDefault());
+        return createCalendar(year, month, date, null, null);
     }
 
-    @NotNull
-    public static Calendar createCalendar(int year, @MagicConstant(intValues = {
+    @Contract("_,_,_,_,_ -> new")
+    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
             Calendar.JANUARY,
             Calendar.FEBRUARY,
             Calendar.MARCH,
@@ -66,12 +73,12 @@ public final class Dates {
             Calendar.NOVEMBER,
             Calendar.DECEMBER,
             Calendar.UNDECIMBER
-    }) int month, int date, TimeZone tz, Locale locale) {
+    }) int month, int date, @Nullable TimeZone tz, @Nullable Locale locale) {
         return createCalendar(year, month, date, 0, 0, 0, 0, tz, locale);
     }
 
-    @NotNull
-    public static Calendar createCalendar(int year, @MagicConstant(intValues = {
+    @Contract("_,_,_,_,_,_,_ -> new")
+    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
             Calendar.JANUARY,
             Calendar.FEBRUARY,
             Calendar.MARCH,
@@ -86,11 +93,11 @@ public final class Dates {
             Calendar.DECEMBER,
             Calendar.UNDECIMBER
     }) int month, int date, int hour24, int minute, int second, int ms) {
-        return createCalendar(year, month, date, hour24, minute, second, ms, TimeZone.getDefault(), Locale.getDefault());
+        return createCalendar(year, month, date, hour24, minute, second, ms, null, null);
     }
 
-    @NotNull
-    public static Calendar createCalendar(int year, @MagicConstant(intValues = {
+    @Contract("_,_,_,_,_,_,_,_,_ -> new")
+    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
             Calendar.JANUARY,
             Calendar.FEBRUARY,
             Calendar.MARCH,
@@ -104,42 +111,48 @@ public final class Dates {
             Calendar.NOVEMBER,
             Calendar.DECEMBER,
             Calendar.UNDECIMBER
-    }) int month, int date, int hour24, int minute, int second, int ms, @NotNull TimeZone tz, @NotNull Locale locale) {
-        Calendar c = Calendar.getInstance(tz, locale);
+    }) int month, int date, int hour24, int minute, int second, int ms, @Nullable TimeZone tz, @Nullable Locale locale) {
+        Calendar c = getCalendarInstance(tz, locale);
         c.set(year, month, date, hour24, minute, second);
         c.set(Calendar.MILLISECOND, ms);
         return c;
     }
 
-    @NotNull
-    public static Timestamp getTimestamp() {
-        return new Timestamp(Calendar.getInstance().getTimeInMillis());
-    }
-
-    @NotNull
-    public static Calendar toCalendar(@NotNull Date dt, @NotNull TimeZone tz, @NotNull Locale locale) {
-        Calendar c = Calendar.getInstance(tz, locale);
+    @Contract("!null,_,_ -> new; null,_,_ -> null")
+    public static Calendar toCalendar(@Nullable Date dt, @Nullable TimeZone tz, @Nullable Locale locale) {
+        if(dt == null) return null;
+        Calendar c = getCalendarInstance(tz, locale);
         c.setTime(dt);
         return c;
     }
 
-    @NotNull
-    public static Calendar toCalendar(@NotNull Date dt, @NotNull Locale locale) {
-        return toCalendar(dt, TimeZone.getDefault(), locale);
+    @Contract("!null,_ -> new; null,_ -> null")
+    public static Calendar toCalendar(@Nullable Date dt, @Nullable Locale locale) {
+        return toCalendar(dt, null, locale);
     }
 
-    @NotNull
-    public static Calendar toCalendar(@NotNull Date dt, @NotNull TimeZone tz) {
-        return toCalendar(dt, tz, Locale.getDefault());
+    @Contract("!null,_ -> new; null,_ -> null")
+    public static Calendar toCalendar(@Nullable Date dt, @Nullable TimeZone tz) {
+        return toCalendar(dt, tz, null);
     }
 
-    @NotNull
-    public static Calendar toCalendar(@NotNull Date dt) {
-        return toCalendar(dt, TimeZone.getDefault(), Locale.getDefault());
+    @Contract("!null -> new; null -> null")
+    public static Calendar toCalendar(@Nullable Date dt) {
+        return toCalendar(dt, null, null);
     }
 
-    @NotNull
-    public static Date toDate(@NotNull Calendar c) {
-        return new Date(c.getTimeInMillis());
+    @Contract("!null -> new; null -> null")
+    public static Date toDate(@Nullable Calendar c) {
+        return ((c == null) ? null : new Date(c.getTimeInMillis()));
+    }
+
+    @Contract("null -> null; !null -> new")
+    public static Timestamp toTimestamp(@Nullable Calendar cal) {
+        return ((cal == null) ? null : new Timestamp(cal.getTimeInMillis()));
+    }
+
+    @Contract("_,_ -> new")
+    private static @NotNull Calendar getCalendarInstance(@Nullable TimeZone tz, @Nullable Locale locale) {
+        return Calendar.getInstance(((tz == null) ? TimeZone.getDefault() : tz), ((locale == null) ? Locale.getDefault() : locale));
     }
 }

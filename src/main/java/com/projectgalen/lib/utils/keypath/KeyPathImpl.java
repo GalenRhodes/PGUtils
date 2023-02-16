@@ -40,8 +40,7 @@ public final class KeyPathImpl {
 
     private KeyPathImpl() { }
 
-    @Nullable
-    public static <T> T getValueForKeyPath(@NotNull String keyPath, @Nullable Object target) {
+    public static @Nullable <T> T getValueForKeyPath(@NotNull String keyPath, @Nullable Object target) {
         int idx = keyPath.lastIndexOf(PATH_ELEM_SEP);
         return ((idx < 0) ? getValueForKey(keyPath, target) : getValueForKey(keyPath.substring(idx + 1), getValueForKeyPath(keyPath.substring(0, idx), target)));
     }
@@ -55,13 +54,11 @@ public final class KeyPathImpl {
         return props.getProperty(String.format("keypath.field.format%d", i));
     }
 
-    @Nullable
-    private static Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls) {
+    private static @Nullable Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls) {
         return getFieldNamed(name, cls, null, false);
     }
 
-    @Nullable
-    private static Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> type, boolean exact) {
+    private static @Nullable Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> type, boolean exact) {
         if(cls == null) return null;
         for(Field f : cls.getDeclaredFields()) if(f.getName().equals(name)) if((type == null) || isAssignable(exact, f.getType(), type)) return f;
         return getFieldNamed(name, cls.getSuperclass(), type, exact);
@@ -94,8 +91,7 @@ public final class KeyPathImpl {
         return props.getProperty(String.format("keypath.getter.format%d", i));
     }
 
-    @Nullable
-    private static Method getGetterNamed(@NotNull String name, @Nullable Class<?> cls) {
+    private static @Nullable Method getGetterNamed(@NotNull String name, @Nullable Class<?> cls) {
         if(cls == null) return null;
         for(Method m : cls.getDeclaredMethods()) if((m.getReturnType() != void.class) && (m.getParameterCount() == 0) && m.getName().equals(name)) return m;
         return getGetterNamed(name, cls.getSuperclass());
@@ -105,8 +101,7 @@ public final class KeyPathImpl {
         return props.getProperty(String.format("keypath.setter.format%d", i));
     }
 
-    @Nullable
-    private static Method getSetterNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> paramCls, boolean exact) {
+    private static @Nullable Method getSetterNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> paramCls, boolean exact) {
         if(cls == null) return null;
         for(Method m : cls.getDeclaredMethods()) {
             Class<?>[] params = m.getParameterTypes();

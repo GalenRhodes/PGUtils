@@ -22,34 +22,31 @@ package com.projectgalen.lib.utils;
 // ===========================================================================
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnknownNullability;
 
 public class PRef<T> {
 
-    protected final @NotNull      Class<T> clazz;
-    protected @UnknownNullability T        value;
+    protected final @NotNull Class<T> clazz;
+    protected                T        value;
 
     public PRef(@NotNull Class<T> clazz) {
         this.value = null;
         this.clazz = clazz;
     }
 
-    public PRef(@NotNull Class<T> clazz, @UnknownNullability T initialValue) {
+    public PRef(@NotNull Class<T> clazz, T initialValue) {
         this.value = initialValue;
         this.clazz = clazz;
     }
 
-    @NotNull
-    public Class<T> getValueClass() {
-        return clazz;
-    }
-
-    @UnknownNullability
     public T getValue() {
         return value;
     }
 
-    public void setValue(@UnknownNullability T value) {
+    public @NotNull Class<T> getValueClass() {
+        return clazz;
+    }
+
+    public void setValue(T value) {
         this.value = value;
     }
 }

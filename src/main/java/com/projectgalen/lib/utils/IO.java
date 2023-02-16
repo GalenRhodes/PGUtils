@@ -101,30 +101,27 @@ public final class IO {
         return copy(reader, writer, true);
     }
 
-    public static byte[] readFile(@NotNull File file) throws IOException {
+    public static byte @NotNull [] readFile(@NotNull File file) throws IOException {
         return readFile(new FileInputStream(file));
     }
 
-    @NotNull
-    public static String readFile(@NotNull File file, @NotNull Charset cs) throws IOException {
+    public static @NotNull String readFile(@NotNull File file, @NotNull Charset cs) throws IOException {
         return readFile(new FileInputStream(file), cs);
     }
 
-    @NotNull
-    public static String readFile(@NotNull Reader reader) throws IOException {
+    public static @NotNull String readFile(@NotNull Reader reader) throws IOException {
         StringWriter sw = new StringWriter();
         copy(reader, sw, true);
         return sw.toString();
     }
 
-    public static byte[] readFile(@NotNull InputStream inputStream) throws IOException {
+    public static byte @NotNull [] readFile(@NotNull InputStream inputStream) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         copy(inputStream, outputStream, true);
         return outputStream.toByteArray();
     }
 
-    @NotNull
-    public static String readFile(@NotNull InputStream inputStream, @NotNull Charset cs) throws IOException {
+    public static @NotNull String readFile(@NotNull InputStream inputStream, @NotNull Charset cs) throws IOException {
         return readFile(new InputStreamReader(inputStream, cs));
     }
 

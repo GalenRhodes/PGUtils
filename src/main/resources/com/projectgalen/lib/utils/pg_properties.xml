@@ -5,6 +5,7 @@
     <entry key="macro.single_slash">\</entry>
     <entry key="macro.double_slash.repl">ð</entry>
     <entry key="macro.regexp">(?&lt;!\\)\$\{([^}]+)}</entry>
+    <entry key="macro.regexp.quiet">\\(\$\{([^}]+)})</entry>
 
     <entry key="default.read_buffer_size">8192</entry>
 

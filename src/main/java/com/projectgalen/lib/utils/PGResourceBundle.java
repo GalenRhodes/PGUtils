@@ -36,7 +36,7 @@ import java.util.*;
 
 public final class PGResourceBundle extends ResourceBundle {
 
-    private static final PGResourceBundle msgs = PGResourceBundle.getPGBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
     private final ResourceBundle bundle;
 
@@ -45,97 +45,14 @@ public final class PGResourceBundle extends ResourceBundle {
         this.bundle = bundle;
     }
 
-    @Contract("_ -> new")
-    @NotNull
-    public static PGResourceBundle getPGBundle(@NotNull String baseName) {
-        return new PGResourceBundle(ResourceBundle.getBundle(baseName));
-    }
-
-    @NotNull
-    public static PGResourceBundle getPGBundle(@NotNull String baseName, Module module) {
-        return new PGResourceBundle(ResourceBundle.getBundle(baseName, module));
-    }
-
-    @NotNull
-    public static PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale) {
-        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale));
-    }
-
-    @NotNull
-    public static PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, Module module) {
-        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, module));
-    }
-
-    @NotNull
-    public static PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader) {
-        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, loader));
-    }
-
-    @NotNull
-    public static PGResourceBundle getPGBundle(@NotNull String baseName, Control control) {
-        return new PGResourceBundle(ResourceBundle.getBundle(baseName, control));
-    }
-
-    @NotNull
-    public static PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, Control control) {
-        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, control));
-    }
-
-    @NotNull
-    public static PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader, Control control) {
-        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, loader, control));
-    }
-
-    @Contract("_ -> new")
-    @NotNull
-    public static PGResourceBundle getXMLPGBundle(@NotNull String baseName) {
-        return new PGResourceBundle(ResourceBundle.getBundle(baseName, new XMLResourceBundleControl()));
-    }
-
-    @NotNull
-    public static PGResourceBundle getXMLPGBundle(@NotNull String baseName, Locale locale) {
-        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, new XMLResourceBundleControl()));
-    }
-
-    @NotNull
-    public static PGResourceBundle getXMLPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader) {
-        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, loader, new XMLResourceBundleControl()));
-    }
-
-    @NotNull
-    public String format(String key, Object... args) {
-        return String.format(getString(key), args);
-    }
-
-    @NotNull
-    public String format(boolean macroExpansion, @NotNull String key, Object... args) {
-        return String.format(getString(key, macroExpansion), args);
-    }
-
-    @NotNull
-    public String getString(@NotNull String key, boolean macroExpansion) {
-        return (macroExpansion ? bundle.getString(key) : getString(key));
-    }
-
-    @NotNull
-    public String getString(@NotNull String key, @NotNull String defaultValue) {
-        return getString(key, defaultValue, true);
-    }
-
-    @NotNull
-    public String getString(@NotNull String key, @NotNull String defaultValue, boolean macroExpansion) {
-        try {
-            return getString(key);
-        }
-        catch(MissingResourceException e) {
-            return (macroExpansion ? Macro.replaceMacros(defaultValue, this::getStringQuietly) : defaultValue);
-        }
+    @Override
+    public @NotNull Enumeration<String> getKeys() {
+        return bundle.getKeys();
     }
 
     @Override
-    @Nullable
     @Unmodifiable
-    protected Object handleGetObject(@NotNull String key) {
+    protected @Nullable Object handleGetObject(@NotNull String key) {
         try {
             return Macro.replaceMacros(bundle.getString(key), this::getStringQuietly);
         }
@@ -144,14 +61,32 @@ public final class PGResourceBundle extends ResourceBundle {
         }
     }
 
-    @NotNull
-    @Override
-    public Enumeration<String> getKeys() {
-        return bundle.getKeys();
+    public @NotNull String format(String key, Object... args) {
+        return String.format(getString(key), args);
     }
 
-    @Nullable
-    private String getStringQuietly(@NotNull String key) {
+    public @NotNull String format(boolean macroExpansion, @NotNull String key, Object... args) {
+        return String.format(getString(key, macroExpansion), args);
+    }
+
+    public @NotNull String getString(@NotNull String key, boolean macroExpansion) {
+        return (macroExpansion ? bundle.getString(key) : getString(key));
+    }
+
+    public @NotNull String getString(@NotNull String key, @NotNull String defaultValue) {
+        return getString(key, defaultValue, true);
+    }
+
+    public @NotNull String getString(@NotNull String key, @NotNull String defaultValue, boolean macroExpansion) {
+        try {
+            return getString(key);
+        }
+        catch(MissingResourceException e) {
+            return (macroExpansion ? Macro.replaceMacros(defaultValue, this::getStringQuietly) : defaultValue);
+        }
+    }
+
+    private @Nullable String getStringQuietly(@NotNull String key) {
         try {
             return bundle.getString(key);
         }
@@ -160,30 +95,59 @@ public final class PGResourceBundle extends ResourceBundle {
         }
     }
 
-    private static class XMLResourceBundle extends ResourceBundle {
-        private static final Properties props = new Properties();
+    @Contract("_ -> new")
+    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName) {
+        return new PGResourceBundle(ResourceBundle.getBundle(baseName));
+    }
 
-        private XMLResourceBundle(InputStream inputStream) {
-            super();
-            try {
-                props.loadFromXML(inputStream);
-            }
-            catch(Exception e) {
-                throw new MissingResourceException(msgs.getString("msg.err.bundle.missing.resource.file"), PGResourceBundle.class.getName(), "");
-            }
-        }
+    @Contract("_,_ -> new")
+    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Module module) {
+        return new PGResourceBundle(ResourceBundle.getBundle(baseName, module));
+    }
 
-        @Override
-        @Unmodifiable
-        protected Object handleGetObject(@NotNull String key) {
-            return props.getProperty(key);
-        }
+    @Contract("_,_ -> new")
+    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale) {
+        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale));
+    }
 
-        @NotNull
-        @Override
-        public Enumeration<String> getKeys() {
-            return new XMLKeyEnumerator(props.keys());
-        }
+    @Contract("_,_,_ -> new")
+    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, Module module) {
+        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, module));
+    }
+
+    @Contract("_,_,_ -> new")
+    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader) {
+        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, loader));
+    }
+
+    @Contract("_,_ -> new")
+    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Control control) {
+        return new PGResourceBundle(ResourceBundle.getBundle(baseName, control));
+    }
+
+    @Contract("_,_,_ -> new")
+    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, Control control) {
+        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, control));
+    }
+
+    @Contract("_,_,_,_ -> new")
+    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader, Control control) {
+        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, loader, control));
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull PGResourceBundle getXMLPGBundle(@NotNull String baseName) {
+        return new PGResourceBundle(ResourceBundle.getBundle(baseName, new XMLResourceBundleControl()));
+    }
+
+    @Contract("_,_ -> new")
+    public static @NotNull PGResourceBundle getXMLPGBundle(@NotNull String baseName, Locale locale) {
+        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, new XMLResourceBundleControl()));
+    }
+
+    @Contract("_,_,_ -> new")
+    public static @NotNull PGResourceBundle getXMLPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader) {
+        return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, loader, new XMLResourceBundleControl()));
     }
 
     private static class XMLKeyEnumerator implements Enumeration<String> {
@@ -201,6 +165,32 @@ public final class PGResourceBundle extends ResourceBundle {
         @Override
         public String nextElement() {
             return Objects.toString(e.nextElement(), null);
+        }
+    }
+
+    private static class XMLResourceBundle extends ResourceBundle {
+        private static final Properties props = new Properties();
+
+        private XMLResourceBundle(InputStream inputStream) {
+            super();
+            try {
+                props.loadFromXML(inputStream);
+            }
+            catch(Exception e) {
+                throw new MissingResourceException(msgs.getString("msg.err.bundle.missing.resource.file"), PGResourceBundle.class.getName(), "");
+            }
+        }
+
+        @NotNull
+        @Override
+        public Enumeration<String> getKeys() {
+            return new XMLKeyEnumerator(props.keys());
+        }
+
+        @Override
+        @Unmodifiable
+        protected Object handleGetObject(@NotNull String key) {
+            return props.getProperty(key);
         }
     }
 

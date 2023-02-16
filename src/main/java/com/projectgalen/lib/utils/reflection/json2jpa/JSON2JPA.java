@@ -41,18 +41,15 @@ public final class JSON2JPA {
 
     private JSON2JPA() { }
 
-    @NotNull
-    public static <T> T convert(@NotNull Object source) {
+    public static @NotNull <T> T convert(@NotNull Object source) {
         return (T)convert(null, source, new TreeMap<>());
     }
 
-    @NotNull
-    public static <T> T convert(@NotNull T target, @NotNull Object source) {
+    public static @NotNull <T> T convert(@NotNull T target, @NotNull Object source) {
         return (T)convert(target, source, new TreeMap<>());
     }
 
-    @NotNull
-    private static Object convert(@Nullable Object tgt, @NotNull Object src, @NotNull Map<String, Object> cache) {
+    private static @NotNull Object convert(@Nullable Object tgt, @NotNull Object src, @NotNull Map<String, Object> cache) {
         TargetInfo tgtInfo = new TargetInfo(tgt, src, cache);
         if(tgtInfo.isCachedValue) return tgtInfo.target;
 
@@ -75,8 +72,7 @@ public final class JSON2JPA {
         }
     }
 
-    @NotNull
-    private static String getXlateFailedMsg(@NotNull Field tgtFld, @NotNull Field srcFld, Exception e) {
+    private static @NotNull String getXlateFailedMsg(@NotNull Field tgtFld, @NotNull Field srcFld, Exception e) {
         return msgs.format("msg.err.json2jpa.xlate_value_failed", srcFld.getType().getName(), tgtFld.getType().getName(), e);
     }
 
@@ -93,8 +89,7 @@ public final class JSON2JPA {
                 && (tgtTp.argTypes.size() == 1));
     }
 
-    @Nullable
-    private static Object translate(@NotNull Field tgtFld, @NotNull Field srcFld, @NotNull Map<String, Object> cache, @Nullable Object srcVal) {
+    private static @Nullable Object translate(@NotNull Field tgtFld, @NotNull Field srcFld, @NotNull Map<String, Object> cache, @Nullable Object srcVal) {
         try { return translate(new TypeInfo(tgtFld), new TypeInfo(srcFld), srcVal, cache); }
         catch(Exception e) { throw new RuntimeException(getXlateFailedMsg(tgtFld, srcFld, e), e); }
     }
@@ -116,8 +111,7 @@ public final class JSON2JPA {
         return srcVal;
     }
 
-    @NotNull
-    private static Object translateArray(@NotNull Class<?> tgtCls, @NotNull Class<?> srcCls, @NotNull Object srcArr, @NotNull Map<String, Object> cache) throws Exception {
+    private static @NotNull Object translateArray(@NotNull Class<?> tgtCls, @NotNull Class<?> srcCls, @NotNull Object srcArr, @NotNull Map<String, Object> cache) throws Exception {
         TypeInfo tgtCompTp = new TypeInfo(tgtCls.getComponentType());
         TypeInfo srcCompTp = new TypeInfo(srcCls.getComponentType());
         int      arrLn     = Array.getLength(srcArr);
@@ -132,8 +126,7 @@ public final class JSON2JPA {
         return arr;
     }
 
-    @NotNull
-    private static List<Object> translateList(@NotNull TypeInfo tTp, @NotNull TypeInfo sTp, @NotNull List<?> srcLst, @NotNull Map<String, Object> cache) throws Exception {
+    private static @NotNull List<Object> translateList(@NotNull TypeInfo tTp, @NotNull TypeInfo sTp, @NotNull List<?> srcLst, @NotNull Map<String, Object> cache) throws Exception {
         List<Object> list           = new ArrayList<>();
         TypeInfo     targetCompType = tTp.argTypes.get(0);
         TypeInfo     sourceCompType = sTp.argTypes.get(0);
