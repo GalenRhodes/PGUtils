@@ -35,4 +35,5 @@
     <!-- # -->
     <entry key="msg.err.p2x.no.props.file.specified">No properties files specified.</entry>
     <entry key="msg.err.p2x.error">Error: %s%n</entry>
+    <!-- # -->
 </properties>
