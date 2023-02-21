@@ -6,28 +6,33 @@
     <entry key="macro.double_slash.repl">ð</entry>
     <entry key="macro.regexp">(?&lt;!\\)\$\{([^}]+)}</entry>
     <entry key="macro.regexp.quiet">\\(\$\{([^}]+)})</entry>
-
+    <!-- # -->
     <entry key="default.read_buffer_size">8192</entry>
-
+    <!-- # -->
+    <entry key="keypath.getter.format.count">4</entry>
     <entry key="keypath.getter.format1">get%1$C%2$s</entry>
     <entry key="keypath.getter.format2">_get%1$C%2$s</entry>
     <entry key="keypath.getter.format3">%3$s</entry>
     <entry key="keypath.getter.format4">_%3$s</entry>
-
+    <!-- # -->
+    <entry key="keypath.setter.format.count">4</entry>
     <entry key="keypath.setter.format1">set%1$C%2$s</entry>
     <entry key="keypath.setter.format2">_set%1$C%2$s</entry>
     <entry key="keypath.setter.format3">%3$s</entry>
     <entry key="keypath.setter.format4">_%3$s</entry>
-
+    <!-- # -->
+    <entry key="keypath.field.format.count">2</entry>
     <entry key="keypath.field.format1">%s</entry>
     <entry key="keypath.field.format2">_%s</entry>
-
+    <!-- # -->
+    <entry key="keypath.separator.regexp">\\s*\\.\\s*</entry>
+    <!-- # -->
     <entry key="reflect.nosuchmethod.msg.format">%s.%s(%s)</entry>
-
+    <!-- # -->
     <entry key="json2jpa.cache.key.format">%s(%s)</entry>
     <entry key="json2jpa.dao.get_method_name">get</entry>
     <entry key="json2jpa.dao.get_instance_method_name">getInstance</entry>
     <entry key="json2jpa.dao.classname_format">%1$s.dao.%2$sDao</entry>
-
+    <!-- # -->
     <entry key="regex.cache.key.format">♚%s♛%d</entry>
 </properties>

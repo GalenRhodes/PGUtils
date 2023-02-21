@@ -20,189 +20,136 @@ package com.projectgalen.lib.utils.keypath;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.Null;
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
+import com.projectgalen.lib.utils.Range;
 import com.projectgalen.lib.utils.reflection.Reflection;
+import com.projectgalen.lib.utils.regex.Regex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.regex.Matcher;
 
-@SuppressWarnings("unchecked")
 public final class KeyPathImpl {
 
-    private static final char             PATH_ELEM_SEP = '.';
-    private static final PGResourceBundle msgs          = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
-    private static final PGProperties     props         = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
+    private static final PGResourceBundle msgs  = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final PGProperties     props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
 
     private KeyPathImpl() { }
 
-    public static @Nullable <T> T getValueForKeyPath(@NotNull String keyPath, @Nullable Object target) {
-        int idx = keyPath.lastIndexOf(PATH_ELEM_SEP);
-        return ((idx < 0) ? getValueForKey(keyPath, target) : getValueForKey(keyPath.substring(idx + 1), getValueForKeyPath(keyPath.substring(0, idx), target)));
+    public static <T> T getValueForKey(@NotNull Class<T> type, @NotNull String key, Object source) {
+        return ((source == null) ? null : _getValueForKey(type, key.trim(), source));
     }
 
-    public static void setValueForKeyPath(@NotNull String keyPath, @Nullable Object value, @Nullable Object target) {
-        int idx = keyPath.lastIndexOf(PATH_ELEM_SEP);
-        setValueForKey(((idx < 0) ? keyPath : keyPath.substring(idx + 1)), value, ((idx < 0) ? target : getValueForKeyPath(keyPath.substring(0, idx), target)));
+    public static <T> T getValueForKeyPath(@NotNull Class<T> type, @NotNull String keyPath, Object source) {
+        return ((source == null) ? null : _getValueForKeyPath(type, keyPath.trim(), source));
     }
 
-    private static String getFieldNameFormat(int i) {
-        return props.getProperty(String.format("keypath.field.format%d", i));
+    public static void setValueForKey(@NotNull String key, Object target, Object value) {
+        if(target != null) _setValueForKey(key.trim(), target, value);
     }
 
-    private static @Nullable Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls) {
-        return getFieldNamed(name, cls, null, false);
+    public static void setValueForKeyPath(@NotNull String keyPath, Object target, Object value) {
+        Range range = Regex.rangeOfLastMatch(props.getProperty("keypath.separator.regexp"), keyPath);
+        if(range == null) setValueForKey(keyPath, target, value);
+        else setValueForKey(keyPath.substring(range.end), getValueForKeyPath(Object.class, keyPath.substring(0, range.start), target), value);
     }
 
-    private static @Nullable Field getFieldNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> type, boolean exact) {
-        if(cls == null) return null;
-        for(Field f : cls.getDeclaredFields()) if(f.getName().equals(name)) if((type == null) || isAssignable(exact, f.getType(), type)) return f;
-        return getFieldNamed(name, cls.getSuperclass(), type, exact);
-    }
+    private static Field _getField(@NotNull String key, @NotNull Object obj) {
+        Class<?> objClass = obj.getClass();
 
-    private static <T> T getFieldValue(@NotNull Field field, @NotNull Object target, @NotNull String key) {
-        try {
-            field.setAccessible(true);
-            return (T)field.get(target);
-        }
-        catch(Exception e) {
-            throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_error_getting_field", key, target.getClass().getName()), e);
-        }
-    }
-
-    private static <T> T getFromGetter(@NotNull String key, @NotNull Object target, Class<?> tClass) {
-        int    i   = 0;
-        String fmt = getGetterNameFormat(++i);
-
-        while(fmt != null) {
-            Method method = getGetterNamed(String.format(fmt, key.charAt(0), key.substring(1), key), tClass);
-            if(method != null) return invokeGetter(method, target, key);
-            fmt = getGetterNameFormat(++i);
+        for(int i = 1, j = props.getInt("keypath.field.format.count"); i <= j; i++) {
+            Field field = Reflection.getAccessibleFieldOrNull(objClass, props.getProperty(String.format("keypath.field.format%d", i)));
+            if(field != null) return field;
         }
 
-        throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_not_found", key, tClass.getName()));
+        return null;
     }
 
-    private static String getGetterNameFormat(int i) {
-        return props.getProperty(String.format("keypath.getter.format%d", i));
-    }
+    private static Method _getMethod(@NotNull String methodType, @NotNull String key, @NotNull Object obj) {
+        Class<?> objClass = obj.getClass();
 
-    private static @Nullable Method getGetterNamed(@NotNull String name, @Nullable Class<?> cls) {
-        if(cls == null) return null;
-        for(Method m : cls.getDeclaredMethods()) if((m.getReturnType() != void.class) && (m.getParameterCount() == 0) && m.getName().equals(name)) return m;
-        return getGetterNamed(name, cls.getSuperclass());
-    }
-
-    private static String getSetterNameFormat(int i) {
-        return props.getProperty(String.format("keypath.setter.format%d", i));
-    }
-
-    private static @Nullable Method getSetterNamed(@NotNull String name, @Nullable Class<?> cls, @Nullable Class<?> paramCls, boolean exact) {
-        if(cls == null) return null;
-        for(Method m : cls.getDeclaredMethods()) {
-            Class<?>[] params = m.getParameterTypes();
-            if((m.getReturnType() == void.class) && (params.length == 1) && m.getName().equals(name) && ((paramCls == null) || isAssignable(exact, params[0], paramCls))) return m;
-        }
-        return getSetterNamed(name, cls.getSuperclass(), paramCls, exact);
-    }
-
-    private static <T> T getValueForKey(@NotNull String key, @Nullable Object target) {
-        if(target == null) return null;
-        if(key.length() == 0) throw new KeyPathException(msgs.getString("msg.err.reflect.keypath.elem_empty"));
-        return ((target instanceof Map) ? ((Map<Object, T>)target).get(key) : getValueForKey(key, target, target.getClass()));
-    }
-
-    private static <T> T getValueForKey(@NotNull String key, @NotNull Object target, Class<?> cls) {
-        int    i   = 0;
-        String fmt = getFieldNameFormat(++i);
-
-        while(fmt != null) {
-            Field field = getFieldNamed(String.format(fmt, key), cls);
-            if(field != null) return getFieldValue(field, target, key);
-            fmt = getFieldNameFormat(++i);
+        for(int i = 1, j = props.getInt(String.format("keypath.%s.format.count", methodType)); i <= j; i++) {
+            Method method = Reflection.getAccessibleMethodOrNull(objClass, props.getProperty(String.format("keypath.%s.format%d", methodType, i)));
+            if(method != null) return method;
         }
 
-        return getFromGetter(key, target, cls);
+        return null;
     }
 
-    private static <T> T invokeGetter(@NotNull Method getterMethod, @NotNull Object target, @NotNull String key) {
-        try {
-            getterMethod.setAccessible(true);
-            return (T)getterMethod.invoke(target);
+    private static <T> T _getValueForKey(@NotNull Class<T> type, @NotNull String key, Object source) {
+        if(key.length() == 0) throw new KeyPathException(msgs.getString("msg.err.reflect.keypath.key_empty"));
+
+        Field field = _getField(key, source);
+        if(field != null) {
+            try {
+                return type.cast(field.get(source));
+            }
+            catch(Throwable t) {
+                throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_error_getting_field", key, source.getClass().getName()), t);
+            }
         }
-        catch(Exception e) {
-            throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_error_invoking_getter", key, target.getClass().getName()), e);
+
+        Method getter = _getMethod("getter", key, source);
+        if(getter != null) {
+            try {
+                return type.cast(getter.invoke(source));
+            }
+            catch(Throwable t) {
+                throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_error_invoking_getter", key, source.getClass().getName()), t);
+            }
         }
+
+        throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_not_found", key, source.getClass().getName()));
     }
 
-    private static boolean invokeSetter(@NotNull Method setterMethod, @Nullable Object value, @NotNull Object target, @NotNull String key) {
-        try {
-            setterMethod.setAccessible(true);
-            setterMethod.invoke(target, value);
-            return true;
+    @Nullable
+    private static <T> T _getValueForKeyPath(@NotNull Class<T> type, @NotNull String keyPath, Object source) {
+        if(keyPath.length() == 0) throw new KeyPathException(msgs.getString("msg.err.reflect.keypath.key_path_empty"));
+
+        Matcher m       = Regex.getMatcher(props.getProperty("keypath.separator.regexp"), keyPath);
+        int     lastIdx = 0;
+
+        while(m.find()) {
+            String _key = keyPath.substring(lastIdx, m.start());
+            if(_key.length() == 0) throw new KeyPathException(msgs.getString("msg.err.reflect.keypath.elem_empty"));
+            source = _getValueForKey(Object.class, _key, source);
+            if(source == null) return null;
+            lastIdx = m.end();
         }
-        catch(Exception e) {
-            String mkey = ((value == null) ? "msg.err.reflect.keypath.elem_error_invoking_setter_null" : "msg.err.reflect.keypath.elem_error_invoking_setter");
-            throw new KeyPathException(msgs.format(mkey, key, target.getClass().getName(), Null.getIfNotNull(value, Object::getClass)));
-        }
+
+        String _key = keyPath.substring(lastIdx);
+        if(_key.length() == 0) throw new KeyPathException(msgs.getString("msg.err.reflect.keypath.elem_empty"));
+        return _getValueForKey(type, _key, source);
     }
 
-    private static boolean isAssignable(boolean exact, Class<?> lht, @NotNull Class<?> rht) {
-        Class<?> _lht = Reflection.objectClassForPrimitive(lht);
-        Class<?> _rht = Reflection.objectClassForPrimitive(rht);
-        return (exact ? (_lht == _rht) : (_lht.isAssignableFrom(_rht) || Reflection.isNumericallyAssignable(_lht, _rht)));
-    }
+    private static void _setValueForKey(@NotNull String key, Object target, Object value) {
+        if(key.length() == 0) throw new KeyPathException(msgs.getString("msg.err.reflect.keypath.key_empty"));
 
-    private static boolean setFieldValue(@NotNull Field field, @Nullable Object value, @NotNull Object target, @NotNull String key) {
-        try {
-            field.setAccessible(true);
-            field.set(target, value);
-            return true;
-        }
-        catch(Exception e) {
-            String mKey = ((value == null) ? "msg.err.reflect.keypath.elem_error_setting_field_null" : "msg.err.reflect.keypath.elem_error_setting_field");
-            throw new KeyPathException(msgs.format(mKey, key, target.getClass().getName(), Null.getIfNotNull(value, Object::getClass)));
-        }
-    }
-
-    private static void setValueForKey(@NotNull String key, @Nullable Object value, @Nullable Object target) {
-        if(target != null) {
-            if(target instanceof Map) { ((Map<Object, Object>)target).put(key, value); }
-            else if(!setValueForKey(key, value, target, true)) setValueForKey(key, value, target, false);
-        }
-    }
-
-    private static boolean setValueForKey(@NotNull String key, @Nullable Object value, @NotNull Object target, boolean exact) {
-        return (setViaField(key, value, target, exact) || setViaSetter(key, value, target, exact));
-    }
-
-    private static boolean setViaField(@NotNull String key, @Nullable Object value, @NotNull Object target, boolean exact) {
-        int    i   = 0;
-        String fmt = getFieldNameFormat(++i);
-
-        while(fmt != null) {
-            Field field = getFieldNamed(key, target.getClass(), Null.getIfNotNull(value, Object::getClass), exact);
-            if(field != null) return setFieldValue(field, Reflection.castIfNumeric(value, field.getType()), target, key);
-            fmt = getFieldNameFormat(++i);
+        Field field = _getField(key, target);
+        if(field != null) {
+            try {
+                field.set(target, value);
+            }
+            catch(Throwable t) {
+                if(value == null) throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_error_setting_field_null", key, target.getClass().getName()), t);
+                throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_error_setting_field", key, target.getClass().getName(), value.getClass().getName()), t);
+            }
         }
 
-        return false;
-    }
-
-    private static boolean setViaSetter(@NotNull String key, @Nullable Object value, @NotNull Object target, boolean exact) {
-        int    i   = 0;
-        String fmt = getSetterNameFormat(++i);
-
-        while(fmt != null) {
-            Method method = getSetterNamed(key, target.getClass(), Null.getIfNotNull(value, Object::getClass), exact);
-            if(method != null) return invokeSetter(method, Reflection.castIfNumeric(value, method.getParameterTypes()[0]), target, key);
-            fmt = getSetterNameFormat(++i);
+        Method setter = _getMethod("setter", key, target);
+        if(setter != null) {
+            try {
+                setter.invoke(target, value);
+            }
+            catch(Throwable t) {
+                if(value == null) throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_error_invoking_setter_null", key, target.getClass().getName()), t);
+                throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_error_invoking_setter", key, target.getClass().getName(), value.getClass().getName()), t);
+            }
         }
 
-        return false;
+        throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_not_found", key, target.getClass().getName()));
     }
 }

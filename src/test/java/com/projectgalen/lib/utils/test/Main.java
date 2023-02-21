@@ -2,6 +2,7 @@ package com.projectgalen.lib.utils.test;
 
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
+import com.projectgalen.lib.utils.U;
 import com.projectgalen.lib.utils.reflection.Reflection;
 import com.projectgalen.lib.utils.test.casting.TestClass;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +26,14 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        String str = "com.projectgalen.lib.utils.test.test_messages";
+        System.out.printf("%s: \"%s\"\n", "    FIRST", U.getPart(str, "\\.", U.Parts.FIRST));
+        System.out.printf("%s: \"%s\"\n", "     LAST", U.getPart(str, "\\.", U.Parts.LAST));
+        System.out.printf("%s: \"%s\"\n", "NOT_FIRST", U.getPart(str, "\\.", U.Parts.NOT_FIRST));
+        System.out.printf("%s: \"%s\"\n", " NOT_LAST", U.getPart(str, "\\.", U.Parts.NOT_LAST));
+    }
+
+    private static void propertiesTest() {
         propsTest();
         System.out.println("=================================================================================================================================");
         propsXMLTest();

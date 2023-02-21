@@ -31,9 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 
@@ -82,41 +80,39 @@ public final class U {
     }
 
     public static @NotNull String getPart(@NotNull String str, @NotNull @NonNls @Language("RegExp") String separator, @NotNull Parts part) {
-        List<String> arr = new ArrayList<>();
-        Matcher      m   = Regex.getMatcher(separator, str);
-
-        if(!m.find()) return str;
-        int idx = 0;
-
-        do {
-            arr.add(str.substring(idx, m.start()));
-            arr.add(m.group());
-            idx = m.end();
-        }
-        while(m.find());
-
-        arr.add(str.substring(idx));
-        StringBuilder sb = new StringBuilder();
-        int           sz = arr.size();
+        Matcher m = Regex.getMatcher(separator, str);
 
         switch(part) {
-            case FIRST:
-                return arr.get(0);
-            case LAST:
-                return arr.get(sz - 1);
             case NOT_FIRST:
-                for(int i = 2; i < sz; i++) sb.append(arr.get(i));
-                return sb.toString();
+                if(m.find()) return str.substring(m.end());
+                return str;
             case NOT_LAST:
+                if(m.find()) {
+                    int i = m.start();
+                    while(m.find()) i = m.start();
+                    return str.substring(0, i);
+                }
+                return str;
+            case LAST:
+                if(m.find()) {
+                    int i = m.end();
+                    while(m.find()) i = m.end();
+                    return str.substring(i);
+                }
+                return str;
             default:
-                for(int i = 0; i < (sz - 2); i++) sb.append(arr.get(i));
-                return sb.toString();
+                if(m.find()) return str.substring(0, m.start());
+                return str;
         }
     }
 
     public static @NotNull <T extends Throwable> T getThrowable(@NotNull String msg, @NotNull Class<T> throwableClass) {
         try { return throwableClass.getConstructor(String.class).newInstance(msg); }
         catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) { throw new RuntimeException(ex); }
+    }
+
+    public static @NotNull String ifNullOrEmpty(@Nullable String str, @NotNull String def) {
+        return ((str == null || str.length() <= 0) ? def : str);
     }
 
     public static @NotNull String join(char separator, Object... args) {

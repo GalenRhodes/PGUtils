@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils.regex;
 
 import com.projectgalen.lib.utils.ObjCache;
 import com.projectgalen.lib.utils.PGProperties;
+import com.projectgalen.lib.utils.Range;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NonNls;
@@ -57,6 +58,32 @@ public final class Regex {
             }
             return p.matcher(input);
         }
+    }
+
+    public static Range rangeOfFirstMatch(@NotNull @NonNls @Language("RegExp") String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, @NotNull @NonNls CharSequence input) {
+        return rangeOfLastMatch(getMatcher(pattern, flags, input));
+    }
+
+    public static Range rangeOfFirstMatch(@NotNull @NonNls @Language("RegExp") String pattern, @NotNull @NonNls CharSequence input) {
+        return rangeOfLastMatch(getMatcher(pattern, input));
+    }
+
+    public static Range rangeOfFirstMatch(@NotNull Matcher matcher) {
+        return (matcher.find() ? Range.valueOf(matcher) : null);
+    }
+
+    public static Range rangeOfLastMatch(@NotNull @NonNls @Language("RegExp") String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, @NotNull @NonNls CharSequence input) {
+        return rangeOfLastMatch(getMatcher(pattern, flags, input));
+    }
+
+    public static Range rangeOfLastMatch(@NotNull @NonNls @Language("RegExp") String pattern, @NotNull @NonNls CharSequence input) {
+        return rangeOfLastMatch(getMatcher(pattern, input));
+    }
+
+    public static Range rangeOfLastMatch(@NotNull Matcher matcher) {
+        Range r = rangeOfFirstMatch(matcher);
+        if(r != null) { while(matcher.find()) r = Range.valueOf(matcher); }
+        return r;
     }
 
     public static String replaceUsingDelegate(@NotNull @Language("RegExp") @NonNls String pattern, CharSequence input, @NotNull ReplacementDelegate delegate) {
