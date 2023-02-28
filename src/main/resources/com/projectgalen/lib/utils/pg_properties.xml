@@ -35,4 +35,6 @@
     <entry key="json2jpa.dao.classname_format">%1$s.dao.%2$sDao</entry>
     <!-- # -->
     <entry key="regex.cache.key.format">♚%s♛%d</entry>
+    <!-- # -->
+    <entry key="default.value_of.method_name">valueOf</entry>
 </properties>

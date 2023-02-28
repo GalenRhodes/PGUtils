@@ -4,6 +4,7 @@ import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
 import com.projectgalen.lib.utils.U;
 import com.projectgalen.lib.utils.reflection.Reflection;
+import com.projectgalen.lib.utils.reflection.TypeInfo;
 import com.projectgalen.lib.utils.test.casting.TestClass;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,6 +14,7 @@ import java.lang.reflect.TypeVariable;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -22,65 +24,22 @@ public class Main {
     private static final PGResourceBundle msgs     = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.test.test_messages");
     private static final String           DASH_STR = String.format("%c%c", (char)8211, (char)8211);
 
+    public final List<List<String>> array = List.of(Arrays.asList("Galen", "Rhodes", "Was", "Here"));
+
     public Main() {
     }
 
     public static void main(String[] args) {
-        String str = "com.projectgalen.lib.utils.test.test_messages";
-        System.out.printf("%s: \"%s\"\n", "    FIRST", U.getPart(str, "\\.", U.Parts.FIRST));
-        System.out.printf("%s: \"%s\"\n", "     LAST", U.getPart(str, "\\.", U.Parts.LAST));
-        System.out.printf("%s: \"%s\"\n", "NOT_FIRST", U.getPart(str, "\\.", U.Parts.NOT_FIRST));
-        System.out.printf("%s: \"%s\"\n", " NOT_LAST", U.getPart(str, "\\.", U.Parts.NOT_LAST));
-    }
-
-    private static void propertiesTest() {
-        propsTest();
-        System.out.println("=================================================================================================================================");
-        propsXMLTest();
-    }
-
-    private static void testDashReplacement() {
-        String str = DASH_STR;
-
-        System.out.println(str);
-
-        for(int i = 0, j = str.length(); i < j; i++) {
-            System.out.printf("%d ", (int)str.charAt(i));
-        }
-
-        System.out.println();
-        System.out.println();
-    }
-
-    private static void testXMLPropertiesSave() {
         try {
-            PGProperties props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class, PGProperties.getProperties("main_settings.xml", Main.class));
+            TypeInfo typeInfo = new TypeInfo(Main.class.getDeclaredField("array"));
+            debugTypeInfo(typeInfo, "");
 
-            props.storeToXML(System.out, null, StandardCharsets.UTF_8);
+            typeInfo = new TypeInfo(new Main().array.getClass());
+            debugTypeInfo(typeInfo, "");
         }
-        catch(Exception e) {
-            e.printStackTrace(System.err);
+        catch(NoSuchFieldException e) {
+            throw new RuntimeException(e);
         }
-    }
-
-    private static void testGenerics() {
-        List<String>                       myList   = new ArrayList<>();
-        Class<?>                           cls      = myList.getClass();
-        TypeVariable<? extends Class<?>>[] typeVars = cls.getTypeParameters();
-
-        System.out.print(msgs.format("form01", msgs.getString("tx_name"), cls.getName()));
-        System.out.print(msgs.format("form01", msgs.getString("tx_type"), cls.getTypeName()));
-        System.out.print(msgs.format("form01", msgs.getString("tx_generic"), cls.toGenericString()));
-
-        int i = 0;
-        for(TypeVariable<? extends Class<?>> tv : typeVars) {
-            System.out.print(msgs.format("form01", msgs.format("form07", ++i), tv.getTypeName()));
-        }
-    }
-
-    private static void testMethod(@NotNull Object o) {
-        System.out.print(msgs.format("form08", o.getClass().getName()));
-        System.out.print(msgs.format("form09", o.getClass().isPrimitive()));
     }
 
     private static void checkAssignability(Field[] fields) {
@@ -93,6 +52,21 @@ public class Main {
         }
     }
 
+    private static void debugTypeInfo(TypeInfo typeInfo, String tab) {
+        String bar = "-".repeat(50 - tab.length());
+
+        System.out.printf("%s+%s\n", tab, bar);
+        System.out.printf("%s|%17s: %s\n", tab, "Declaration", typeInfo);
+        System.out.printf("%s|%17s: %s\n", tab, "Type Name", typeInfo.typeName);
+        System.out.printf("%s|%17s: %s\n", tab, "Is Parameterized", typeInfo.isParameterizedType);
+
+        for(TypeInfo argType : typeInfo.argTypes) {
+            debugTypeInfo(argType, tab + "|    ");
+        }
+
+        System.out.printf("%s+%s\n", tab, bar);
+    }
+
     private static void numbersTest() {
         Class<TestClass> cls    = TestClass.class;
         Field[]          fields = cls.getDeclaredFields();
@@ -100,16 +74,15 @@ public class Main {
         checkAssignability(fields);
     }
 
+    private static void propertiesTest() {
+        propsTest();
+        System.out.println("=================================================================================================================================");
+        propsXMLTest();
+    }
+
     private static void propsTest() {
         PGResourceBundle bundle = PGResourceBundle.getPGBundle("com.projectgalen.lib.utils.test.main_messages");
         PGProperties     props  = PGProperties.getProperties("main_settings.properties", Main.class);
-
-        propsTest(bundle, props);
-    }
-
-    private static void propsXMLTest() {
-        PGResourceBundle bundle = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.test.main_messages");
-        PGProperties     props  = PGProperties.getXMLProperties("main_settings.xml", Main.class);
 
         propsTest(bundle, props);
     }
@@ -134,6 +107,13 @@ public class Main {
             Date d = props.getDateProperty("set.test.date." + i, props.getProperty("set.test.date.format." + i, PGProperties.DEFAULT_DATETIME_FORMAT), null);
             System.out.print(msgs.format("form05", msgs.format("form06", msgs.getString("tx_date"), i), d == null ? msgs.getString("tx_na") : sdf.format(d)));
         }
+    }
+
+    private static void propsXMLTest() {
+        PGResourceBundle bundle = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.test.main_messages");
+        PGProperties     props  = PGProperties.getXMLProperties("main_settings.xml", Main.class);
+
+        propsTest(bundle, props);
     }
 
     private static void showMethods() {
@@ -174,5 +154,57 @@ public class Main {
         System.out.print(msgs.format("form02", msgs.getString("long_field"), obj.getLongField()));
         f.set(obj, Long.valueOf((byte)4));
         System.out.print(msgs.format("form02", msgs.getString("long_field"), obj.getLongField()));
+    }
+
+    private static void testDashReplacement() {
+        String str = DASH_STR;
+
+        System.out.println(str);
+
+        for(int i = 0, j = str.length(); i < j; i++) {
+            System.out.printf("%d ", (int)str.charAt(i));
+        }
+
+        System.out.println();
+        System.out.println();
+    }
+
+    private static void testGenerics() {
+        List<String>                       myList   = new ArrayList<>();
+        Class<?>                           cls      = myList.getClass();
+        TypeVariable<? extends Class<?>>[] typeVars = cls.getTypeParameters();
+
+        System.out.print(msgs.format("form01", msgs.getString("tx_name"), cls.getName()));
+        System.out.print(msgs.format("form01", msgs.getString("tx_type"), cls.getTypeName()));
+        System.out.print(msgs.format("form01", msgs.getString("tx_generic"), cls.toGenericString()));
+
+        int i = 0;
+        for(TypeVariable<? extends Class<?>> tv : typeVars) {
+            System.out.print(msgs.format("form01", msgs.format("form07", ++i), tv.getTypeName()));
+        }
+    }
+
+    private static void testGetPart() {
+        String str = "com.projectgalen.lib.utils.test.test_messages";
+        System.out.printf("%s: \"%s\"\n", "    FIRST", U.getPart(str, "\\.", U.Parts.FIRST));
+        System.out.printf("%s: \"%s\"\n", "     LAST", U.getPart(str, "\\.", U.Parts.LAST));
+        System.out.printf("%s: \"%s\"\n", "NOT_FIRST", U.getPart(str, "\\.", U.Parts.NOT_FIRST));
+        System.out.printf("%s: \"%s\"\n", " NOT_LAST", U.getPart(str, "\\.", U.Parts.NOT_LAST));
+    }
+
+    private static void testMethod(@NotNull Object o) {
+        System.out.print(msgs.format("form08", o.getClass().getName()));
+        System.out.print(msgs.format("form09", o.getClass().isPrimitive()));
+    }
+
+    private static void testXMLPropertiesSave() {
+        try {
+            PGProperties props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class, PGProperties.getProperties("main_settings.xml", Main.class));
+
+            props.storeToXML(System.out, null, StandardCharsets.UTF_8);
+        }
+        catch(Exception e) {
+            e.printStackTrace(System.err);
+        }
     }
 }

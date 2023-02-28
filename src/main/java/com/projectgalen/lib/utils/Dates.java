@@ -107,14 +107,57 @@ public final class Dates {
             Calendar.JULY,
             Calendar.AUGUST,
             Calendar.SEPTEMBER,
-            Calendar.OCTOBER,
-            Calendar.NOVEMBER,
-            Calendar.DECEMBER,
-            Calendar.UNDECIMBER
+            Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER
     }) int month, int date, int hour24, int minute, int second, int ms, @Nullable TimeZone tz, @Nullable Locale locale) {
         Calendar c = getCalendarInstance(tz, locale);
         c.set(year, month, date, hour24, minute, second);
         c.set(Calendar.MILLISECOND, ms);
+        return c;
+    }
+
+    /**
+     * Create and return a new instance of Calendar from the given milliseconds since the epoch.
+     *
+     * @param milliseconds The current date and time in milliseconds since the epoch.
+     * @return A new instance of Calendar.
+     */
+    @Contract("_ -> new")
+    public static @NotNull Calendar getCalendar(long milliseconds) {
+        return getCalendar(milliseconds, null, null);
+    }
+
+    /**
+     * Create and return a new instance of Calendar from the given milliseconds since the epoch.
+     *
+     * @param milliseconds The current date and time in milliseconds since the epoch.
+     * @return A new instance of Calendar.
+     */
+    @Contract("_,_ -> new")
+    public static @NotNull Calendar getCalendar(long milliseconds, @NotNull Locale locale) {
+        return getCalendar(milliseconds, null, locale);
+    }
+
+    /**
+     * Create and return a new instance of Calendar from the given milliseconds since the epoch.
+     *
+     * @param milliseconds The current date and time in milliseconds since the epoch.
+     * @return A new instance of Calendar.
+     */
+    @Contract("_,_ -> new")
+    public static @NotNull Calendar getCalendar(long milliseconds, @NotNull TimeZone tz) {
+        return getCalendar(milliseconds, tz, null);
+    }
+
+    /**
+     * Create and return a new instance of Calendar from the given milliseconds since the epoch.
+     *
+     * @param milliseconds The current date and time in milliseconds since the epoch.
+     * @return A new instance of Calendar.
+     */
+    @Contract("_,_,_ -> new")
+    public static @NotNull Calendar getCalendar(long milliseconds, @Nullable TimeZone tz, @Nullable Locale locale) {
+        Calendar c = getCalendarInstance(tz, locale);
+        c.setTimeInMillis(milliseconds);
         return c;
     }
 
@@ -127,12 +170,12 @@ public final class Dates {
     }
 
     @Contract("!null,_ -> new; null,_ -> null")
-    public static Calendar toCalendar(@Nullable Date dt, @Nullable Locale locale) {
+    public static Calendar toCalendar(@Nullable Date dt, @NotNull Locale locale) {
         return toCalendar(dt, null, locale);
     }
 
     @Contract("!null,_ -> new; null,_ -> null")
-    public static Calendar toCalendar(@Nullable Date dt, @Nullable TimeZone tz) {
+    public static Calendar toCalendar(@Nullable Date dt, @NotNull TimeZone tz) {
         return toCalendar(dt, tz, null);
     }
 

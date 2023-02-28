@@ -33,4 +33,11 @@
     <entry key="msg.err.range.len.lt.zero">Length value cannot be less than zero.</entry>
     <entry key="msg.err.range.start.lt.zero">Start value cannot be less than zero.</entry>
     <!-- # -->
+    <entry key="sub.001">No way to construct default value</entry>
+    <entry key="msg.err.def.val.empty_string">${sub.001}: Empty value string.</entry>
+    <entry key="msg.err.def.not_setter">${sub.001}: Method is not a setter.</entry>
+    <entry key="msg.err.def.exception">${sub.001}: %s</entry>
+    <entry key="msg.err.def.value_of.returned_null">${sub.001}: "%s" method returned a null value.</entry>
+    <entry key="msg.err.def.no_way">${sub.001}: No constructor or "%s" static method that takes a string.</entry>
+    <!-- # -->
 </properties>
