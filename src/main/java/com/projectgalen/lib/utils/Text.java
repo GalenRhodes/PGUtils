@@ -32,6 +32,7 @@ import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public final class Text {
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
@@ -54,10 +55,10 @@ public final class Text {
     }
 
     public static <T> @Nullable T forEachCodePoint(@NotNull String str, int startIndex, int endIndex, @Nullable T defaultReturnValue, @NotNull CodePointIteratorHandler<T> handler) {
-        if(startIndex > endIndex) throw new IllegalArgumentException(String.format("Starting index cannot be greater than the ending index: %d > %d", startIndex, endIndex));
+        if(startIndex > endIndex) throw new IllegalArgumentException(String.format(msgs.getString("msg.err.text.start_greater_than_end"), startIndex, endIndex));
         if(startIndex == endIndex) return null;
-        if(startIndex < 0) throw new IllegalArgumentException(String.format("Starting index cannot be negative: %d", startIndex));
-        if(endIndex > str.length()) throw new IllegalArgumentException(String.format("Ending index cannot be greater than the length of the string: %d > %d", endIndex, str.length()));
+        if(startIndex < 0) throw new IllegalArgumentException(String.format(msgs.getString("msg.err.text.start_neg"), startIndex));
+        if(endIndex > str.length()) throw new IllegalArgumentException(String.format(msgs.getString("msg.err.text.end_greater_than_length"), endIndex, str.length()));
 
         ObjectRef<T> retValue = new ObjectRef<>(defaultReturnValue);
         BooleanRef   stop     = new BooleanRef(false);
@@ -92,6 +93,11 @@ public final class Text {
         return isAllWhitespace(str, 0, str.length());
     }
 
+    public static boolean isWS(@NotNull String str, int idx) {
+        char ch = str.charAt(idx);
+        return ((Character.isHighSurrogate(ch) && ((idx + 1) < str.length())) ? Character.isWhitespace(str.codePointAt(idx)) : Character.isWhitespace(ch));
+    }
+
     public static @NotNull String pad(String str, int width) {
         return pad(str, Align.Left, width, true);
     }
@@ -119,12 +125,11 @@ public final class Text {
     public static String @NotNull [] padWithWrap(String str, Align align, int width, boolean stripEachLineLeading) {
         if(str == null) return new String[] { String.valueOf(U.createAndFill(width, ' ')) };
 
-        String[]      lines    = str.split("\\r\\n|\\n");
-        List<String>  out      = new ArrayList<>();
-        BreakIterator iterator = BreakIterator.getWordInstance();
+        String[]     lines = str.split("\\r\\n|\\n");
+        List<String> out   = new ArrayList<>();
 
-        for(String s : lines) {
-            String line = (stripEachLineLeading ? s.strip() : s.stripTrailing());
+        for(String _line : lines) {
+            String line = (stripEachLineLeading ? _line.strip() : _line.stripTrailing());
 
             if(line.length() == width) {
                 out.add(line);
@@ -133,19 +138,15 @@ public final class Text {
                 out.add(_pad(line, align, width));
             }
             else {
-                iterator.setText(str);
-                int           lastIdx     = 0;
-                int           lastLastIdx = 0;
-                int           idx         = iterator.next();
-                StringBuilder sb          = new StringBuilder();
-
-                while(idx != BreakIterator.DONE) {
-
-                }
+                for(String l : _wrap(line, width)) out.add(_pad(l, align, width));
             }
         }
 
         return out.toArray(new String[0]);
+    }
+
+    public static @NotNull List<String> wrap(@NotNull String str, int width, boolean stripLeading) {
+        return _wrap((stripLeading ? str.strip() : str.stripTrailing()), width);
     }
 
     private static @NotNull String _pad(@NotNull String str, @NotNull Align align, int width) {
@@ -162,6 +163,68 @@ public final class Text {
         }/*@f1*/
 
         return String.valueOf(buffer);
+    }
+
+    private static @NotNull List<String> _wrap(String str, int width) {
+        BreakIterator iterator = BreakIterator.getWordInstance();
+        iterator.setText(str);
+
+        int          brk   = 0;
+        int          start = 0;
+        int          end   = str.length();
+        int          idx   = iterator.next();
+        List<String> list  = new ArrayList<>();
+
+        while(idx != BreakIterator.DONE) {
+            boolean fits = ((idx - start) <= width);
+
+            if(idx == end) {
+                if(fits) {
+                    list.add(str.substring(start));
+                }
+                else if(brk == start) {
+                    int j = _wrap01(list, str, start, idx, width);
+                    list.add(str.substring(j));
+                }
+                else {
+                    int i = _wrap02(list, iterator, str, start, brk);
+                    int j = _wrap01(list, str, i, idx, width);
+                    list.add(str.substring(j));
+                }
+                return list;
+            }
+
+            if(isWS(str, idx)) {
+                if(fits) {
+                    brk = idx;
+                }
+                else if(brk == start) {
+                    start = _wrap01(list, str, start, idx, width);
+                    brk   = idx;
+                }
+                else {
+                    brk = start = _wrap02(list, iterator, str, start, brk);
+                }
+            }
+
+            idx = iterator.next();
+        }
+
+        return list;
+    }
+
+    private static int _wrap01(@NotNull List<String> list, @NotNull String str, int start, int idx, int limit) {
+        while((idx - start) > limit) start = _wrap03(list, str, start, (start + limit));
+        return start;
+    }
+
+    private static int _wrap02(@NotNull List<String> list, @NotNull BreakIterator iterator, @NotNull String str, int start, int end) {
+        return iterator.following(_wrap03(list, str, start, end));
+    }
+
+    private static int _wrap03(@NotNull List<String> list, @NotNull String str, int start, int end) {
+        list.add(str.substring(start, end));
+        return end;
     }
 
     public interface CodePointIteratorHandler<T> {

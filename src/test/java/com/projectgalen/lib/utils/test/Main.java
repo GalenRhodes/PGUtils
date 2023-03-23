@@ -2,6 +2,7 @@ package com.projectgalen.lib.utils.test;
 
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
+import com.projectgalen.lib.utils.Text;
 import com.projectgalen.lib.utils.U;
 import com.projectgalen.lib.utils.reflection.Reflection;
 import com.projectgalen.lib.utils.reflection.TypeInfo;
@@ -12,7 +13,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.nio.charset.StandardCharsets;
-import java.text.BreakIterator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,11 +33,11 @@ public class Main {
     public static void main(String[] args) {
         String str = "   Now is the time   for all good men,   to come to the aid of their country.  abcdfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ        ";
 
-        List<String> list = wrap(str, 15);
+        List<String> list = Text.wrap(str, 15, false);
 
         printLines(list);
 
-        list = wrap(str.stripTrailing(), 15);
+        list = Text.wrap(str.stripTrailing(), 15, false);
 
         printLines(list);
     }
@@ -65,10 +65,6 @@ public class Main {
         }
 
         System.out.printf("%s+%s\n", tab, bar);
-    }
-
-    private static boolean isWS(String str, int idx) {
-        return Character.isWhitespace(str.charAt(idx));
     }
 
     private static void numbersTest() {
@@ -227,56 +223,5 @@ public class Main {
         catch(Exception e) {
             e.printStackTrace(System.err);
         }
-    }
-
-    private static @NotNull List<String> wrap(@NotNull String str, int limit) {
-        BreakIterator iterator = BreakIterator.getWordInstance();
-        iterator.setText(str = str.stripTrailing());
-
-        int          brk   = 0;
-        int          start = 0;
-        int          end   = str.length();
-        int          idx   = iterator.next();
-        List<String> list  = new ArrayList<>();
-
-        while(idx != BreakIterator.DONE) {
-            boolean fits = ((idx - start) <= limit);
-
-            if(idx == end) {
-                list.add(str.substring(fits ? start : wrap01(list, str, ((brk == start) ? start : wrap02(list, iterator, str, start, brk)), idx, limit)));
-                return list;
-            }
-
-            if(isWS(str, idx)) {
-                if(fits) {
-                    brk = idx;
-                }
-                else if(brk == start) {
-                    start = wrap01(list, str, start, idx, limit);
-                    brk   = idx;
-                }
-                else {
-                    brk = start = wrap02(list, iterator, str, start, brk);
-                }
-            }
-
-            idx = iterator.next();
-        }
-
-        return list;
-    }
-
-    private static int wrap01(@NotNull List<String> list, @NotNull String str, int start, int idx, int limit) {
-        while((idx - start) > limit) start = wrap03(list, str, start, (start + limit));
-        return start;
-    }
-
-    private static int wrap02(@NotNull List<String> list, @NotNull BreakIterator iterator, @NotNull String str, int start, int end) {
-        return iterator.following(wrap03(list, str, start, end));
-    }
-
-    private static int wrap03(@NotNull List<String> list, @NotNull String str, int start, int end) {
-        list.add(str.substring(start, end));
-        return end;
     }
 }
