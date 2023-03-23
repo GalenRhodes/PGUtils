@@ -1,11 +1,13 @@
-package com.projectgalen.lib.utils.annotations;
+package com.projectgalen.lib.utils.refs;
+
 // ===========================================================================
 //     PROJECT: PGUtils
-//    FILENAME: PGJPA.java
-//         IDE: IntelliJ
+//    FILENAME: ShortRef.java
+//         IDE: IntelliJ IDEA
 //      AUTHOR: Galen Rhodes
-//        DATE: January 05, 2023
+//        DATE: March 22, 2023
 //
+// Copyright © 2023 Project Galen. All rights reserved.
 //
 // Permission to use, copy, modify, and distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -20,11 +22,22 @@ package com.projectgalen.lib.utils.annotations;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Objects;
 
-@Target({ ElementType.TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-public @interface PGJPA { }
+public class ShortRef {
+    public short value;
+
+    public ShortRef() { }
+
+    public ShortRef(short initialValue) { value = initialValue; }
+
+    @Override
+    public boolean equals(Object o) {
+        return ((this == o) || ((o instanceof ShortRef) && (value == ((ShortRef)o).value)));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+}

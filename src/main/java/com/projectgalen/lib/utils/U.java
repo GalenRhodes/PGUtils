@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
@@ -77,6 +78,61 @@ public final class U {
 
     public static @NotNull String concat(Object... args) {
         return concat(new StringBuilder(), args).toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T @NotNull [] createAndFill(int length, @NotNull T value) {
+        T[] array = (T[])Array.newInstance(value.getClass(), length);
+        Arrays.fill(array, value);
+        return array;
+    }
+
+    public static double @NotNull [] createAndFill(int length, double value) {
+        double[] array = new double[length];
+        Arrays.fill(array, value);
+        return array;
+    }
+
+    public static float @NotNull [] createAndFill(int length, float value) {
+        float[] array = new float[length];
+        Arrays.fill(array, value);
+        return array;
+    }
+
+    public static long @NotNull [] createAndFill(int length, long value) {
+        long[] array = new long[length];
+        Arrays.fill(array, value);
+        return array;
+    }
+
+    public static int @NotNull [] createAndFill(int length, int value) {
+        int[] array = new int[length];
+        Arrays.fill(array, value);
+        return array;
+    }
+
+    public static short @NotNull [] createAndFill(int length, short value) {
+        short[] array = new short[length];
+        Arrays.fill(array, value);
+        return array;
+    }
+
+    public static byte @NotNull [] createAndFill(int length, byte value) {
+        byte[] array = new byte[length];
+        Arrays.fill(array, value);
+        return array;
+    }
+
+    public static char @NotNull [] createAndFill(int length, char value) {
+        char[] array = new char[length];
+        Arrays.fill(array, value);
+        return array;
+    }
+
+    public static boolean @NotNull [] createAndFill(int length, boolean value) {
+        boolean[] array = new boolean[length];
+        Arrays.fill(array, value);
+        return array;
     }
 
     public static @NotNull String getPart(@NotNull String str, @NotNull @NonNls @Language("RegExp") String separator, @NotNull Parts part) {

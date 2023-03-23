@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.nio.charset.StandardCharsets;
+import java.text.BreakIterator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,19 +31,18 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        try {
-            TypeInfo typeInfo = new TypeInfo(Main.class.getDeclaredField("array"));
-            debugTypeInfo(typeInfo, "");
+        String str = "   Now is the time   for all good men,   to come to the aid of their country.  abcdfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ        ";
 
-            typeInfo = new TypeInfo(new Main().array.getClass());
-            debugTypeInfo(typeInfo, "");
-        }
-        catch(NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        List<String> list = wrap(str, 15);
+
+        printLines(list);
+
+        list = wrap(str.stripTrailing(), 15);
+
+        printLines(list);
     }
 
-    private static void checkAssignability(Field[] fields) {
+    private static void checkAssignability(Field @NotNull [] fields) {
         for(Field field : fields) {
             System.out.print(msgs.format("form10", field.getName(), field.getType().getName(), field.getType().isPrimitive() ? msgs.getString("tx_is") : msgs.getString("tx_isnot")));
             for(Field f1 : fields) {
@@ -52,7 +52,7 @@ public class Main {
         }
     }
 
-    private static void debugTypeInfo(TypeInfo typeInfo, String tab) {
+    private static void debugTypeInfo(TypeInfo typeInfo, @NotNull String tab) {
         String bar = "-".repeat(50 - tab.length());
 
         System.out.printf("%s+%s\n", tab, bar);
@@ -67,11 +67,20 @@ public class Main {
         System.out.printf("%s+%s\n", tab, bar);
     }
 
+    private static boolean isWS(String str, int idx) {
+        return Character.isWhitespace(str.charAt(idx));
+    }
+
     private static void numbersTest() {
         Class<TestClass> cls    = TestClass.class;
         Field[]          fields = cls.getDeclaredFields();
 
         checkAssignability(fields);
+    }
+
+    private static void printLines(List<String> list) {
+        for(String s : list) System.out.printf("\"%s\"\n", s);
+        System.out.print("\n\n");
     }
 
     private static void propertiesTest() {
@@ -87,7 +96,7 @@ public class Main {
         propsTest(bundle, props);
     }
 
-    private static void propsTest(PGResourceBundle bundle, PGProperties props) {
+    private static void propsTest(@NotNull PGResourceBundle bundle, @NotNull PGProperties props) {
         System.out.print(msgs.format("form04", msgs.getString("tx_msg_test"), bundle.getString("msg.test.main")));
         System.out.printf(msgs.format("form05", /* */msgs.getString("tx_bool_true"), msgs.getString("form_b")), /* */props.getBoolean("set.test.boolean.1", false));
         System.out.printf(msgs.format("form05", /**/msgs.getString("tx_bool_false"), msgs.getString("form_b")), /* */props.getBoolean("set.test.boolean.2", true));
@@ -197,14 +206,77 @@ public class Main {
         System.out.print(msgs.format("form09", o.getClass().isPrimitive()));
     }
 
+    private static void testTypeInfo() {
+        try {
+            TypeInfo typeInfo = new TypeInfo(Main.class.getDeclaredField("array"));
+            debugTypeInfo(typeInfo, "");
+
+            typeInfo = new TypeInfo(new Main().array.getClass());
+            debugTypeInfo(typeInfo, "");
+        }
+        catch(NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static void testXMLPropertiesSave() {
         try {
             PGProperties props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class, PGProperties.getProperties("main_settings.xml", Main.class));
-
             props.storeToXML(System.out, null, StandardCharsets.UTF_8);
         }
         catch(Exception e) {
             e.printStackTrace(System.err);
         }
+    }
+
+    private static @NotNull List<String> wrap(@NotNull String str, int limit) {
+        BreakIterator iterator = BreakIterator.getWordInstance();
+        iterator.setText(str = str.stripTrailing());
+
+        int          brk   = 0;
+        int          start = 0;
+        int          end   = str.length();
+        int          idx   = iterator.next();
+        List<String> list  = new ArrayList<>();
+
+        while(idx != BreakIterator.DONE) {
+            boolean fits = ((idx - start) <= limit);
+
+            if(idx == end) {
+                list.add(str.substring(fits ? start : wrap01(list, str, ((brk == start) ? start : wrap02(list, iterator, str, start, brk)), idx, limit)));
+                return list;
+            }
+
+            if(isWS(str, idx)) {
+                if(fits) {
+                    brk = idx;
+                }
+                else if(brk == start) {
+                    start = wrap01(list, str, start, idx, limit);
+                    brk   = idx;
+                }
+                else {
+                    brk = start = wrap02(list, iterator, str, start, brk);
+                }
+            }
+
+            idx = iterator.next();
+        }
+
+        return list;
+    }
+
+    private static int wrap01(@NotNull List<String> list, @NotNull String str, int start, int idx, int limit) {
+        while((idx - start) > limit) start = wrap03(list, str, start, (start + limit));
+        return start;
+    }
+
+    private static int wrap02(@NotNull List<String> list, @NotNull BreakIterator iterator, @NotNull String str, int start, int end) {
+        return iterator.following(wrap03(list, str, start, end));
+    }
+
+    private static int wrap03(@NotNull List<String> list, @NotNull String str, int start, int end) {
+        list.add(str.substring(start, end));
+        return end;
     }
 }

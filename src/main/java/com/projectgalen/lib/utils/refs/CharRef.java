@@ -1,11 +1,11 @@
-package com.projectgalen.lib.utils.annotations;
+package com.projectgalen.lib.utils.refs;
 
 // ===========================================================================
 //     PROJECT: PGUtils
-//    FILENAME: PGCurrentTimestamp.java
+//    FILENAME: CharRef.java
 //         IDE: IntelliJ IDEA
 //      AUTHOR: Galen Rhodes
-//        DATE: February 24, 2023
+//        DATE: March 22, 2023
 //
 // Copyright © 2023 Project Galen. All rights reserved.
 //
@@ -22,16 +22,22 @@ package com.projectgalen.lib.utils.annotations;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Objects;
 
-/**
- * Although originally designed for JPA and/or JSON POJOs this annotation could really be used anywhere.  It's main intent was to mark a field or setter method as having a default value corresponding
- * to the current date and time.  The precision of the value would, of course, depend on the type of field.  In practice, some piece of code in your application could detect this annotation and
- * populate the field, or call the setter, with the current timestamp when the object is instantiated.
- */
-@Target({ ElementType.FIELD, ElementType.METHOD })
-@Retention(RetentionPolicy.RUNTIME)
-public @interface PGCurrentTimestamp { }
+public class CharRef {
+    public char value;
+
+    public CharRef() { }
+
+    public CharRef(char initialValue) { value = initialValue; }
+
+    @Override
+    public boolean equals(Object o) {
+        return ((this == o) || ((o instanceof CharRef) && (value == ((CharRef)o).value)));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+}

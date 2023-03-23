@@ -154,7 +154,7 @@ public class PGProperties extends Properties {
     public List<String> getList(@NotNull @NonNls String key, @Nullable @Language("RegExp") String separatorPattern, int limit, @Nullable List<String> defaultList) {
         String str = getProperty(key);
         if(str == null) return ((defaultList == null) ? Collections.emptyList() : defaultList);
-        String[] arr = str.split(Null.ifNull(separatorPattern, DEFAULT_LIST_SEPARATOR_PATTERN), limit);
+        String[] arr = str.trim().split(Null.ifNull(separatorPattern, DEFAULT_LIST_SEPARATOR_PATTERN), limit);
         return Arrays.asList(arr);
     }
 

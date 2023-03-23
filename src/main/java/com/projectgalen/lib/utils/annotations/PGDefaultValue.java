@@ -27,6 +27,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Although originally designed for JPA and/or JSON POJOs this annotation could really be used anywhere.  It's main intent was to mark a field or setter method as having a default value. The
+ * understanding being, that any field that is not a java.lang.String type should have either a constructor that takes a string or a static method called "valueOf" that takes a string.  In the case of
+ * a date value you could also specify the format as defined for the standard library class <a
+ * href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</a>.
+ */
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PGDefaultValue {
