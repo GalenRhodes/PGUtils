@@ -39,5 +39,8 @@
     <entry key="msg.err.def.exception">${sub.001}: %s</entry>
     <entry key="msg.err.def.value_of.returned_null">${sub.001}: "%s" method returned a null value.</entry>
     <entry key="msg.err.def.no_way">${sub.001}: No constructor or "%s" static method that takes a string.</entry>
+    <entry key="msg.err.text.start_greater_than_end">Starting index cannot be greater than the ending index: %d &gt; %d</entry>
+    <entry key="msg.err.text.start_neg">Starting index cannot be negative: %d</entry>
+    <entry key="msg.err.text.end_greater_than_length">Ending index cannot be greater than the length of the string: %d &gt; %d</entry>
     <!-- # -->
 </properties>

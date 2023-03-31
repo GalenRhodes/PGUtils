@@ -20,6 +20,6 @@ package com.projectgalen.lib.utils.delegates;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-public interface VoidThrowsDelegate {
-    void action() throws Exception;
+public interface VoidThrowsDelegate<E extends Throwable> {
+    void action() throws E;
 }

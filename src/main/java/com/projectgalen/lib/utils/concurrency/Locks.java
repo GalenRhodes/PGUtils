@@ -24,31 +24,32 @@ import com.projectgalen.lib.utils.delegates.GetDelegate;
 import com.projectgalen.lib.utils.delegates.GetThrowsDelegate;
 import com.projectgalen.lib.utils.delegates.VoidDelegate;
 import com.projectgalen.lib.utils.delegates.VoidThrowsDelegate;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.locks.Lock;
 
 public final class Locks {
     private Locks() { }
 
-    public static void doWithLock(Lock lock, VoidDelegate delegate) {
+    public static void doWithLock(@NotNull Lock lock, @NotNull VoidDelegate delegate) {
         lock.lock();
         try { delegate.action(); }
         finally { lock.unlock(); }
     }
 
-    public static void doWithLockThrows(Lock lock, VoidThrowsDelegate delegate) throws Exception {
+    public static <E extends Throwable> void doWithLockThrows(@NotNull Lock lock, @NotNull VoidThrowsDelegate<E> delegate) throws E {
         lock.lock();
         try { delegate.action(); }
         finally { lock.unlock(); }
     }
 
-    public static <T> T getWithLock(Lock lock, GetDelegate<T> delegate) {
+    public static <T> T getWithLock(@NotNull Lock lock, @NotNull GetDelegate<T> delegate) {
         lock.lock();
         try { return delegate.action(); }
         finally { lock.unlock(); }
     }
 
-    public static <T> T getWithLockThrows(Lock lock, GetThrowsDelegate<T> delegate) throws Exception {
+    public static <T, E extends Throwable> T getWithLockThrows(@NotNull Lock lock, @NotNull GetThrowsDelegate<T, E> delegate) throws E {
         lock.lock();
         try { return delegate.action(); }
         finally { lock.unlock(); }

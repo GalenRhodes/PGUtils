@@ -20,6 +20,6 @@ package com.projectgalen.lib.utils.delegates;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-public interface GetThrowsDelegate<T> {
-    T action() throws Exception;
+public interface GetThrowsDelegate<T, E extends Throwable> {
+    T action() throws E;
 }
