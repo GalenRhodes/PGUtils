@@ -31,15 +31,38 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 
 @SuppressWarnings({ "unused", "SameParameterValue" })
 public final class U {
+    private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
     private U() { }
+
+    @SafeVarargs
+    public static <T> T[] asArray(T... elements) {
+        return elements;
+    }
+
+    public static <T1, T2> @NotNull Map<T1, T2> asMap(Class<? extends Map<T1, T2>> cls, T1 @NotNull [] keys, T2 @NotNull [] values) {
+        try {
+            if(keys.length != values.length) throw new IllegalAccessException(msgs.format("msg.err.key_value_count_mismatch", keys.length, values.length));
+            Map<T1, T2> map = cls.getConstructor().newInstance();
+            for(int i = 0; i < keys.length; i++) map.put(keys[i], values[i]);
+            return map;
+        }
+        catch(InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
         return sb.append(String.format(format, args));
@@ -66,12 +89,14 @@ public final class U {
         return ((str.length() == 0) ? str : ((str.length() == 1) ? str.toUpperCase() : (str.substring(0, 1).toUpperCase() + str.substring(1))));
     }
 
-    public static @NotNull StringBuffer concat(@NotNull StringBuffer sb, Object... args) {
+    @Contract("_, _ -> param1")
+    public static @NotNull StringBuffer concat(@NotNull StringBuffer sb, Object @NotNull ... args) {
         for(Object o : args) sb.append(o);
         return sb;
     }
 
-    public static @NotNull StringBuilder concat(@NotNull StringBuilder sb, Object... args) {
+    @Contract("_, _ -> param1")
+    public static @NotNull StringBuilder concat(@NotNull StringBuilder sb, Object @NotNull ... args) {
         for(Object o : args) sb.append(o);
         return sb;
     }
@@ -171,6 +196,13 @@ public final class U {
         return ((str == null || str.length() <= 0) ? def : str);
     }
 
+    @Contract(pure = true)
+    @SafeVarargs
+    public static <T> boolean isEqualToAny(T obj, T @NotNull ... others) {
+        for(T other : others) if(Objects.equals(obj, other)) return true;
+        return false;
+    }
+
     public static @NotNull String join(char separator, Object... args) {
         return join(Character.toString(separator), args);
     }
@@ -189,6 +221,11 @@ public final class U {
 
     public static boolean nz(@Nullable String str) {
         return ((str != null) && (str.trim().length() > 0));
+    }
+
+    public static @NotNull String sha3_256Hash(@NotNull String text) {
+        try { return Base64.getEncoder().encodeToString(MessageDigest.getInstance("SHA3-256").digest(text.getBytes(StandardCharsets.UTF_8))); }
+        catch(NoSuchAlgorithmException e) { throw new RuntimeException(e); }
     }
 
     public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {

@@ -107,7 +107,10 @@ public final class Dates {
             Calendar.JULY,
             Calendar.AUGUST,
             Calendar.SEPTEMBER,
-            Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER
+            Calendar.OCTOBER,
+            Calendar.NOVEMBER,
+            Calendar.DECEMBER,
+            Calendar.UNDECIMBER
     }) int month, int date, int hour24, int minute, int second, int ms, @Nullable TimeZone tz, @Nullable Locale locale) {
         Calendar c = getCalendarInstance(tz, locale);
         c.set(year, month, date, hour24, minute, second);
@@ -187,6 +190,16 @@ public final class Dates {
     @Contract("!null -> new; null -> null")
     public static Date toDate(@Nullable Calendar c) {
         return ((c == null) ? null : new Date(c.getTimeInMillis()));
+    }
+
+    @Contract("!null->new;null->null")
+    public static java.sql.Date toSQLDate(Date dt) {
+        return ((dt == null) ? null : new java.sql.Date(dt.getTime()));
+    }
+
+    @Contract("!null->new;null->null")
+    public static java.sql.Date toSQLDate(Calendar c) {
+        return ((c == null) ? null : new java.sql.Date(c.getTimeInMillis()));
     }
 
     @Contract("null -> null; !null -> new")

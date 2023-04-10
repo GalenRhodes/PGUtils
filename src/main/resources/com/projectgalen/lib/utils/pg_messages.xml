@@ -42,5 +42,6 @@
     <entry key="msg.err.text.start_greater_than_end">Starting index cannot be greater than the ending index: %d &gt; %d</entry>
     <entry key="msg.err.text.start_neg">Starting index cannot be negative: %d</entry>
     <entry key="msg.err.text.end_greater_than_length">Ending index cannot be greater than the length of the string: %d &gt; %d</entry>
+    <entry key="msg.err.key_value_count_mismatch">Number of keys and values does not match. %d != %d</entry>
     <!-- # -->
 </properties>
