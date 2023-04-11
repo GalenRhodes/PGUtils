@@ -26,23 +26,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public final class Dates {
-    private Dates() { }
+    private static final Map<String, SimpleDateFormat> formatters = new TreeMap<>();
 
-    @Contract("-> new")
-    public static @NotNull Timestamp getTimestamp() {
-        return new Timestamp(Calendar.getInstance().getTimeInMillis());
-    }
+    private Dates() { }
 
     @Contract("_,_,_ -> new")
     public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY,
-            Calendar.FEBRUARY,
+            Calendar.JANUARY, Calendar.FEBRUARY,
             Calendar.MARCH,
             Calendar.APRIL,
             Calendar.MAY,
@@ -56,6 +50,23 @@ public final class Dates {
             Calendar.UNDECIMBER
     }) int month, int date) {
         return createCalendar(year, month, date, null, null);
+    }
+
+    public static @NotNull String format(@NotNull String pattern, @NotNull Calendar calendar) {
+        return format(pattern, calendar.getTime());
+    }
+
+    @Contract("-> new")
+    public static @NotNull Timestamp getTimestamp() {
+        return new Timestamp(Calendar.getInstance().getTimeInMillis());
+    }
+
+    public static @NotNull String format(@NotNull String pattern, @NotNull Date date) {
+        synchronized(formatters) {
+            SimpleDateFormat fmt = formatters.get(pattern);
+            if(fmt == null) formatters.put(pattern, (fmt = new SimpleDateFormat(pattern)));
+            return fmt.format(date);
+        }
     }
 
     @Contract("_,_,_,_,_ -> new")

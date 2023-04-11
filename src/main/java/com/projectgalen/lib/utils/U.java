@@ -31,6 +31,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -47,6 +50,14 @@ public final class U {
 
     private U() { }
 
+    public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
+        return sb.append(String.format(format, args));
+    }
+
+    public static @NotNull StringBuffer appendFormat(@NotNull StringBuffer sb, @NotNull String format, @Nullable Object... args) {
+        return sb.append(String.format(format, args));
+    }
+
     @SafeVarargs
     public static <T> T[] asArray(T... elements) {
         return elements;
@@ -62,14 +73,6 @@ public final class U {
         catch(InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
-        return sb.append(String.format(format, args));
-    }
-
-    public static @NotNull StringBuffer appendFormat(@NotNull StringBuffer sb, @NotNull String format, @Nullable Object... args) {
-        return sb.append(String.format(format, args));
     }
 
     public static boolean atomicSet(@NotNull AtomicBoolean atomicBoolean, boolean value) {
@@ -224,8 +227,19 @@ public final class U {
     }
 
     public static @NotNull String sha3_256Hash(@NotNull String text) {
-        try { return Base64.getEncoder().encodeToString(MessageDigest.getInstance("SHA3-256").digest(text.getBytes(StandardCharsets.UTF_8))); }
-        catch(NoSuchAlgorithmException e) { throw new RuntimeException(e); }
+        return sha3_256Hash(text.toCharArray());
+    }
+
+    private static @NotNull String sha3_256Hash(char @NotNull [] chars) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+            ByteBuffer    bytes  = StandardCharsets.UTF_8.newEncoder().encode(CharBuffer.wrap(chars));
+            digest.update(bytes);
+            String str = Base64.getEncoder().encodeToString(digest.digest());
+            for(int i = 0; i < bytes.limit(); i++) bytes.put(i, (byte)0);
+            return str;
+        }
+        catch(NoSuchAlgorithmException | CharacterCodingException e) { throw new RuntimeException(e); }
     }
 
     public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
