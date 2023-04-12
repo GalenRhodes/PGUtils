@@ -65,7 +65,7 @@ public final class U {
 
     public static <T1, T2> @NotNull Map<T1, T2> asMap(Class<? extends Map<T1, T2>> cls, T1 @NotNull [] keys, T2 @NotNull [] values) {
         try {
-            if(keys.length != values.length) throw new IllegalAccessException(msgs.format("msg.err.key_value_count_mismatch", keys.length, values.length));
+            if(keys.length != values.length) throw new IllegalAccessException(msgs.format("msg.err.as_map.key_value_count_mismatch", keys.length, values.length));
             Map<T1, T2> map = cls.getConstructor().newInstance();
             for(int i = 0; i < keys.length; i++) map.put(keys[i], values[i]);
             return map;
@@ -190,6 +190,27 @@ public final class U {
         }
     }
 
+    public static int @NotNull [] getRange(int start, int end, int stride) {
+        if(stride == 0) throw new IllegalArgumentException(msgs.getString("msg.err.get_range.stride_zero"));
+        if(start == end) return new int[0];
+        if(start < end && stride < 0) throw new IllegalArgumentException(msgs.getString("msg.err.get_range.stride_lt_zero"));
+        if(start > end && stride > 0) throw new IllegalArgumentException(msgs.getString("msg.err.get_range.stide_gt_zero"));
+
+        boolean _flg = (start < end);
+        long    _ds  = (Math.max(start, (long)end) - Math.min(start, (long)end));
+        long    _st  = Math.abs(stride);
+        long    _sz  = ((_ds / _st) + (((_ds % _st) == 0) ? 0 : 1));
+        int     _idx = 0;
+
+        if(_sz > Integer.MAX_VALUE) throw new IllegalArgumentException(msgs.format("msg.err.get_range.too_many_elements", _sz, Integer.MAX_VALUE));
+
+        int[] arr = new int[(int)_sz];
+
+        for(long i = start; (_flg ? (i < (long)end) : (i > (long)end)); i += stride) arr[_idx++] = (int)i;
+        if(_idx < arr.length) throw new IllegalArgumentException(msgs.format("msg.err.get_range.guess_too_high", _idx, arr.length));
+        return arr;
+    }
+
     public static @NotNull <T extends Throwable> T getThrowable(@NotNull String msg, @NotNull Class<T> throwableClass) {
         try { return throwableClass.getConstructor(String.class).newInstance(msg); }
         catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) { throw new RuntimeException(ex); }
@@ -230,18 +251,6 @@ public final class U {
         return sha3_256Hash(text.toCharArray());
     }
 
-    private static @NotNull String sha3_256Hash(char @NotNull [] chars) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA3-256");
-            ByteBuffer    bytes  = StandardCharsets.UTF_8.newEncoder().encode(CharBuffer.wrap(chars));
-            digest.update(bytes);
-            String str = Base64.getEncoder().encodeToString(digest.digest());
-            for(int i = 0; i < bytes.limit(); i++) bytes.put(i, (byte)0);
-            return str;
-        }
-        catch(NoSuchAlgorithmException | CharacterCodingException e) { throw new RuntimeException(e); }
-    }
-
     public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
         int i = path.lastIndexOf('.');
         return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
@@ -276,6 +285,18 @@ public final class U {
 
     public static boolean z(@Nullable String str) {
         return ((str == null) || (str.trim().length() == 0));
+    }
+
+    private static @NotNull String sha3_256Hash(char @NotNull [] chars) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+            ByteBuffer    bytes  = StandardCharsets.UTF_8.newEncoder().encode(CharBuffer.wrap(chars));
+            digest.update(bytes);
+            String str = Base64.getEncoder().encodeToString(digest.digest());
+            for(int i = 0; i < bytes.limit(); i++) bytes.put(i, (byte)0);
+            return str;
+        }
+        catch(NoSuchAlgorithmException | CharacterCodingException e) { throw new RuntimeException(e); }
     }
 
     public enum Parts {

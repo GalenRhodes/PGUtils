@@ -14,10 +14,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings({ "SameParameterValue", "MismatchedQueryAndUpdateOfCollection" })
 public class Main {
@@ -31,15 +28,13 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        String str = "   Now is the time   for all good men,   to come to the aid of their country.  abcdfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ        ";
-
-        List<String> list = Text.wrap(str, 15, false);
-
-        printLines(list);
-
-        list = Text.wrap(str.stripTrailing(), 15, false);
-
-        printLines(list);
+        try {
+            testGetRange();
+        }
+        catch(Exception e) {
+            System.err.printf(String.format("\n\nERROR: %s\n", e));
+            e.printStackTrace(System.err);
+        }
     }
 
     private static void checkAssignability(Field @NotNull [] fields) {
@@ -197,6 +192,23 @@ public class Main {
         System.out.printf("%s: \"%s\"\n", " NOT_LAST", U.getPart(str, "\\.", U.Parts.NOT_LAST));
     }
 
+    private static void testGetRange() {
+        Random rnd = new Random(System.currentTimeMillis());
+
+        for(int j = 0; j < 100_000; j++) {
+            int  start     = rnd.nextInt();
+            int  end       = rnd.nextInt();
+            long distance  = (Math.max((long)start, end) - Math.min((long)start, end));
+            long stride    = (distance / 10L) * ((start > end) ? -1 : 1);
+            long div       = (distance / Math.abs(stride));
+            long remainder = (distance % Math.abs(stride));
+            long guess     = (div + ((remainder == 0) ? 0 : 1));
+
+            System.out.printf("start: %,14d; end: %,14d; distance: %,14d; stride: %,12d; dividend: %,d; remainder: %d; guess: %,d", start, end, distance, stride, div, remainder, guess);
+            System.out.printf("; elements: %,d\n", U.getRange(start, end, (int)stride).length);
+        }
+    }
+
     private static void testMethod(@NotNull Object o) {
         System.out.print(msgs.format("form08", o.getClass().getName()));
         System.out.print(msgs.format("form09", o.getClass().isPrimitive()));
@@ -213,6 +225,18 @@ public class Main {
         catch(NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void testWrap() {
+        String str = "   Now is the time   for all good men,   to come to the aid of their country.  abcdfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ        ";
+
+        List<String> list = Text.wrap(str, 15, false);
+
+        printLines(list);
+
+        list = Text.wrap(str.stripTrailing(), 15, false);
+
+        printLines(list);
     }
 
     private static void testXMLPropertiesSave() {

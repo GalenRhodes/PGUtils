@@ -55,10 +55,10 @@ public final class Text {
     }
 
     public static <T> @Nullable T forEachCodePoint(@NotNull String str, int startIndex, int endIndex, @Nullable T defaultReturnValue, @NotNull CodePointIteratorHandler<T> handler) {
-        if(startIndex > endIndex) throw new IllegalArgumentException(String.format(msgs.getString("msg.err.text.start_greater_than_end"), startIndex, endIndex));
+        if(startIndex > endIndex) throw new IllegalArgumentException(msgs.format("msg.err.text.start_greater_than_end", startIndex, endIndex));
         if(startIndex == endIndex) return null;
-        if(startIndex < 0) throw new IllegalArgumentException(String.format(msgs.getString("msg.err.text.start_neg"), startIndex));
-        if(endIndex > str.length()) throw new IllegalArgumentException(String.format(msgs.getString("msg.err.text.end_greater_than_length"), endIndex, str.length()));
+        if(startIndex < 0) throw new IllegalArgumentException(msgs.format("msg.err.text.start_neg", startIndex));
+        if(endIndex > str.length()) throw new IllegalArgumentException(msgs.format("msg.err.text.end_greater_than_length", endIndex, str.length()));
 
         ObjectRef<T> retValue = new ObjectRef<>(defaultReturnValue);
         BooleanRef   stop     = new BooleanRef(false);
