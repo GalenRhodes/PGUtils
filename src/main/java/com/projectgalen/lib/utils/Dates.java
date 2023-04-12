@@ -24,6 +24,7 @@ import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -36,13 +37,7 @@ public final class Dates {
 
     @Contract("_,_,_ -> new")
     public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY, Calendar.FEBRUARY,
-            Calendar.MARCH,
-            Calendar.APRIL,
-            Calendar.MAY,
-            Calendar.JUNE,
-            Calendar.JULY,
-            Calendar.AUGUST,
+            Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST,
             Calendar.SEPTEMBER,
             Calendar.OCTOBER,
             Calendar.NOVEMBER,
@@ -50,6 +45,17 @@ public final class Dates {
             Calendar.UNDECIMBER
     }) int month, int date) {
         return createCalendar(year, month, date, null, null);
+    }
+
+    public static @Range(from = 29, to = 31) int daysInMonth(@Range(from = 1, to = 12) int month) {
+        switch(month) {/*@f0*/
+            case 2: return 29;  // February
+            case 4:             // April
+            case 6:             // June
+            case 9:             // September
+            case 11: return 30; // November
+            default: return 31; // January, March, May, July, August, October, December
+        }/*@f1*/
     }
 
     public static @NotNull String format(@NotNull String pattern, @NotNull Calendar calendar) {
