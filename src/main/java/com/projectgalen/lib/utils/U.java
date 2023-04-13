@@ -251,6 +251,18 @@ public final class U {
         return sha3_256Hash(text.toCharArray());
     }
 
+    public static @NotNull String sha3_256Hash(char @NotNull [] chars) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+            ByteBuffer    bytes  = StandardCharsets.UTF_8.newEncoder().encode(CharBuffer.wrap(chars));
+            digest.update(bytes);
+            String str = Base64.getEncoder().encodeToString(digest.digest());
+            for(int i = 0; i < bytes.limit(); i++) bytes.put(i, (byte)0);
+            return str;
+        }
+        catch(NoSuchAlgorithmException | CharacterCodingException e) { throw new RuntimeException(e); }
+    }
+
     public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
         int i = path.lastIndexOf('.');
         return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
@@ -285,18 +297,6 @@ public final class U {
 
     public static boolean z(@Nullable String str) {
         return ((str == null) || (str.trim().length() == 0));
-    }
-
-    private static @NotNull String sha3_256Hash(char @NotNull [] chars) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA3-256");
-            ByteBuffer    bytes  = StandardCharsets.UTF_8.newEncoder().encode(CharBuffer.wrap(chars));
-            digest.update(bytes);
-            String str = Base64.getEncoder().encodeToString(digest.digest());
-            for(int i = 0; i < bytes.limit(); i++) bytes.put(i, (byte)0);
-            return str;
-        }
-        catch(NoSuchAlgorithmException | CharacterCodingException e) { throw new RuntimeException(e); }
     }
 
     public enum Parts {
