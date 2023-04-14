@@ -92,6 +92,29 @@ public final class U {
         return ((str.length() == 0) ? str : ((str.length() == 1) ? str.toUpperCase() : (str.substring(0, 1).toUpperCase() + str.substring(1))));
     }
 
+    @Contract(value = "_, _, _ -> new", pure = true)
+    public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx, boolean backwards) {
+        if(!backwards) return codePointAt(chars, idx);
+        if(idx < 1 || idx > chars.length) return new int[] { -1, idx };
+        char c2 = chars[--idx];
+        if(Character.isLowSurrogate(c2) && (idx > 0)) {
+            char c1 = chars[idx - 1];
+            if(Character.isHighSurrogate(c1)) return new int[] { Character.toCodePoint(c1, c2), (idx - 1) };
+        }
+        return new int[] { c2, idx };
+    }
+
+    @Contract(value = "_, _ -> new", pure = true)
+    public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx) {
+        if(idx < 0 || idx >= chars.length) return new int[] { -1, idx };
+        char c1 = chars[idx++];
+        if(Character.isHighSurrogate(c1) && (idx < chars.length)) {
+            char c2 = chars[idx];
+            if(Character.isLowSurrogate(c2)) return new int[] { Character.toCodePoint(c1, c2), (idx + 1) };
+        }
+        return new int[] { c1, idx };
+    }
+
     @Contract("_, _ -> param1")
     public static @NotNull StringBuffer concat(@NotNull StringBuffer sb, Object @NotNull ... args) {
         for(Object o : args) sb.append(o);
@@ -268,6 +291,14 @@ public final class U {
         return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
     }
 
+    public static char[] tr(char[] chars) {
+        if((chars == null) || (chars.length == 0)) return chars;
+        int[] range = tr1(chars);
+        if(range[1] == 0) return new char[0];
+        if((range[0] == 0) && (range[1] == chars.length)) return chars;
+        return Arrays.copyOfRange(chars, range[0], range[1]);
+    }
+
     @Contract("!null -> !null; null -> null")
     public static String tr(@Nullable String str) {
         return ((str == null) ? null : str.trim());
@@ -295,8 +326,30 @@ public final class U {
         return wrapThrowable(null, t, throwableClass);
     }
 
+    public static boolean z(char[] chars) {
+        return ((chars == null) || (chars.length == 0) || (tr1(chars)[1] == 0));
+    }
+
     public static boolean z(@Nullable String str) {
         return ((str == null) || (str.trim().length() == 0));
+    }
+
+    private static int @NotNull [] tr1(char @NotNull [] chars) {
+        for(int i = 0; i < chars.length; ) {
+            int[] cp = codePointAt(chars, i);
+            if(!Character.isWhitespace(cp[0])) return tr2(chars, i);
+            i = cp[1];
+        }
+        return new int[] { 0, 0 };
+    }
+
+    private static int @NotNull [] tr2(char @NotNull [] chars, int i) {
+        for(int j = chars.length; j > i; ) {
+            int[] cp = codePointAt(chars, j, true);
+            if(!Character.isWhitespace(cp[0])) return new int[] { i, j };
+            j = cp[1];
+        }
+        return new int[] { i, (i + 1) };
     }
 
     public enum Parts {
