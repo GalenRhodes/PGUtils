@@ -30,22 +30,20 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.projectgalen.lib.utils.PGMath.mod;
-
 public final class Dates {
+    private static final PGResourceBundle              msgs       = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
     private static final Map<String, SimpleDateFormat> formatters = new TreeMap<>();
 
     private Dates() { }
 
+    @Contract("-> new")
+    public static @NotNull Timestamp getTimestamp() {
+        return new Timestamp(Calendar.getInstance().getTimeInMillis());
+    }
+
     @Contract("_,_,_ -> new")
     public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY,
-            Calendar.FEBRUARY,
-            Calendar.MARCH,
-            Calendar.APRIL,
-            Calendar.MAY,
-            Calendar.JUNE,
-            Calendar.JULY,
+            Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY,
             Calendar.AUGUST,
             Calendar.SEPTEMBER,
             Calendar.OCTOBER,
@@ -54,38 +52,6 @@ public final class Dates {
             Calendar.UNDECIMBER
     }) int month, int date) {
         return createCalendar(year, month, date, null, null);
-    }
-
-    public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = 1, to = 12) int month) {
-        switch(month) {/*@f0*/
-            case 2: return 28;  // February
-            case 4:             // April
-            case 6:             // June
-            case 9:             // September
-            case 11: return 30; // November
-            default: return 31; // January, March, May, July, August, October, December
-        }/*@f1*/
-    }
-
-    public static boolean isLeapYear(int year) {
-        return (mod(year, 4) && ((!mod(year, 100)) || mod(year, 400)));
-    }
-
-    public static @NotNull String format(@NotNull String pattern, @NotNull Calendar calendar) {
-        return format(pattern, calendar.getTime());
-    }
-
-    @Contract("-> new")
-    public static @NotNull Timestamp getTimestamp() {
-        return new Timestamp(Calendar.getInstance().getTimeInMillis());
-    }
-
-    public static @NotNull String format(@NotNull String pattern, @NotNull Date date) {
-        synchronized(formatters) {
-            SimpleDateFormat fmt = formatters.get(pattern);
-            if(fmt == null) formatters.put(pattern, (fmt = new SimpleDateFormat(pattern)));
-            return fmt.format(date);
-        }
     }
 
     @Contract("_,_,_,_,_ -> new")
@@ -137,15 +103,59 @@ public final class Dates {
             Calendar.JULY,
             Calendar.AUGUST,
             Calendar.SEPTEMBER,
-            Calendar.OCTOBER,
-            Calendar.NOVEMBER,
-            Calendar.DECEMBER,
-            Calendar.UNDECIMBER
+            Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER
     }) int month, int date, int hour24, int minute, int second, int ms, @Nullable TimeZone tz, @Nullable Locale locale) {
         Calendar c = getCalendarInstance(tz, locale);
         c.set(year, month, date, hour24, minute, second);
         c.set(Calendar.MILLISECOND, ms);
         return c;
+    }
+
+    /**
+     * Determines the number of days in a month for the given month. If the month is February then the number of days will depend on if the current year is a leap year.
+     *
+     * @param month the month.
+     * @return the number of days in the month.
+     */
+    public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = 1, to = 12) int month) {
+        return daysInMonth(month, Calendar.getInstance().get(Calendar.YEAR));
+    }
+
+    /**
+     * Determines the number of days in a month for the given month. If the month is February then the number of days will depend on if the given year is a leap year.
+     *
+     * @param month the month.
+     * @param year  the year that the month is in.
+     * @return the number of days in the month.
+     */
+    public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = 1, to = 12) int month, int year) {
+        switch(month) {/*@f0*/
+            case 1: return 31;
+            case 2: return (isLeapYear(year) ? 29 : 28);
+            case 3: return 31;
+            case 4: return 30;
+            case 5: return 31;
+            case 6: return 30;
+            case 7: return 31;
+            case 8: return 31;
+            case 9: return 30;
+            case 10: return 31;
+            case 11: return 30;
+            case 12: return 31;
+            default: throw new IllegalArgumentException(String.format(msgs.getString("msg.err.month_out_of_range"), month));
+        }/*@f1*/
+    }
+
+    public static @NotNull String format(@NotNull String pattern, @NotNull Calendar calendar) {
+        return format(pattern, calendar.getTime());
+    }
+
+    public static @NotNull String format(@NotNull String pattern, @NotNull Date date) {
+        synchronized(formatters) {
+            SimpleDateFormat fmt = formatters.get(pattern);
+            if(fmt == null) formatters.put(pattern, (fmt = new SimpleDateFormat(pattern)));
+            return fmt.format(date);
+        }
     }
 
     /**
@@ -192,6 +202,17 @@ public final class Dates {
         Calendar c = getCalendarInstance(tz, locale);
         c.setTimeInMillis(milliseconds);
         return c;
+    }
+
+    /**
+     * Convienience method for <code>new GregorianCalendar().isLeapYear(year)</code>. Determines if the given year is a leap year. Returns true if the given year is a leap year. To specify BC year
+     * numbers, 1 - year number must be given. For example, year BC 4 is specified as -3.
+     *
+     * @param year the given year.
+     * @return <code>true</code> if the given year is a leap year; <code>false</code> otherwise.
+     */
+    public static boolean isLeapYear(int year) {
+        return new GregorianCalendar().isLeapYear(year);
     }
 
     @Contract("!null,_,_ -> new; null,_,_ -> null")
