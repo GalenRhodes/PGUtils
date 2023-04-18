@@ -245,6 +245,55 @@ public final class U {
 
     @Contract(pure = true)
     @SafeVarargs
+    public static <T> boolean isEqualToAll(T obj, T @NotNull ... others) {
+        for(T other : others) if(!Objects.equals(obj, other)) return false;
+        return true;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAll(long num, long @NotNull ... others) {
+        for(long other : others) if(num != other) return false;
+        return true;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAll(int num, int @NotNull ... others) {
+        for(int other : others) if(num != other) return false;
+        return true;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAll(short num, short @NotNull ... others) {
+        for(short other : others) if(num != other) return false;
+        return true;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAll(byte num, byte @NotNull ... others) {
+        for(byte other : others) if(num != other) return false;
+        return true;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAll(char ch, char @NotNull ... others) {
+        for(char other : others) if(ch != other) return false;
+        return true;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAll(double dbl, double @NotNull ... others) {
+        for(double other : others) if(dbl != other) return false;
+        return true;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAll(float flt, float @NotNull ... others) {
+        for(float other : others) if(flt != other) return false;
+        return true;
+    }
+
+    @Contract(pure = true)
+    @SafeVarargs
     public static <T> boolean isEqualToAny(T obj, T @NotNull ... others) {
         for(T other : others) if(Objects.equals(obj, other)) return true;
         return false;
