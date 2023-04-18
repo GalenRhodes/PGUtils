@@ -29,7 +29,17 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            testGetRange();
+            String[] strings = {
+                    "Galen Rhodes", "     ", "     Galen Rhodes", "Galen Rhodes     ", "     Galen Rhodes     "
+            };
+
+            for(String inStr : strings) {
+                char[] inArr  = inStr.toCharArray();
+                char[] outArr = U.tr(inArr);
+                String outStr = new String(outArr);
+
+                System.out.printf("Input: \"%s\"; Output: \"%s\"\n", inStr, outStr);
+            }
         }
         catch(Exception e) {
             System.err.printf(String.format("\n\nERROR: %s\n", e));

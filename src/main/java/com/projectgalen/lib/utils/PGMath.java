@@ -38,4 +38,8 @@ public final class PGMath {
     public static BigInteger getBigInteger(@Nullable Number num) {
         return ((num == null) ? null : ((num instanceof BigInteger) ? (BigInteger)num : ((num instanceof BigDecimal) ? ((BigDecimal)num).toBigInteger() : BigInteger.valueOf(num.longValue()))));
     }
+
+    public static boolean mod(int a, int b) {
+        return ((a % b) == 0);
+    }
 }

@@ -30,6 +30,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.projectgalen.lib.utils.PGMath.mod;
+
 public final class Dates {
     private static final Map<String, SimpleDateFormat> formatters = new TreeMap<>();
 
@@ -37,7 +39,14 @@ public final class Dates {
 
     @Contract("_,_,_ -> new")
     public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST,
+            Calendar.JANUARY,
+            Calendar.FEBRUARY,
+            Calendar.MARCH,
+            Calendar.APRIL,
+            Calendar.MAY,
+            Calendar.JUNE,
+            Calendar.JULY,
+            Calendar.AUGUST,
             Calendar.SEPTEMBER,
             Calendar.OCTOBER,
             Calendar.NOVEMBER,
@@ -47,15 +56,19 @@ public final class Dates {
         return createCalendar(year, month, date, null, null);
     }
 
-    public static @Range(from = 29, to = 31) int daysInMonth(@Range(from = 1, to = 12) int month) {
+    public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = 1, to = 12) int month) {
         switch(month) {/*@f0*/
-            case 2: return 29;  // February
+            case 2: return 28;  // February
             case 4:             // April
             case 6:             // June
             case 9:             // September
             case 11: return 30; // November
             default: return 31; // January, March, May, July, August, October, December
         }/*@f1*/
+    }
+
+    public static boolean isLeapYear(int year) {
+        return (mod(year, 4) && ((!mod(year, 100)) || mod(year, 400)));
     }
 
     public static @NotNull String format(@NotNull String pattern, @NotNull Calendar calendar) {

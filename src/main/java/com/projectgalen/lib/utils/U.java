@@ -250,6 +250,48 @@ public final class U {
         return false;
     }
 
+    @Contract(pure = true)
+    public static boolean isEqualToAny(long num, long @NotNull ... others) {
+        for(long other : others) if(num == other) return true;
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAny(int num, int @NotNull ... others) {
+        for(int other : others) if(num == other) return true;
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAny(short num, short @NotNull ... others) {
+        for(short other : others) if(num == other) return true;
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAny(byte num, byte @NotNull ... others) {
+        for(byte other : others) if(num == other) return true;
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAny(char ch, char @NotNull ... others) {
+        for(char other : others) if(ch == other) return true;
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAny(double dbl, double @NotNull ... others) {
+        for(double other : others) if(dbl == other) return true;
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAny(float flt, float @NotNull ... others) {
+        for(float other : others) if(flt == other) return true;
+        return false;
+    }
+
     public static @NotNull String join(char separator, Object... args) {
         return join(Character.toString(separator), args);
     }
