@@ -43,7 +43,13 @@ public final class Dates {
 
     @Contract("_,_,_ -> new")
     public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY,
+            Calendar.JANUARY,
+            Calendar.FEBRUARY,
+            Calendar.MARCH,
+            Calendar.APRIL,
+            Calendar.MAY,
+            Calendar.JUNE,
+            Calendar.JULY,
             Calendar.AUGUST,
             Calendar.SEPTEMBER,
             Calendar.OCTOBER,
@@ -103,7 +109,10 @@ public final class Dates {
             Calendar.JULY,
             Calendar.AUGUST,
             Calendar.SEPTEMBER,
-            Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER
+            Calendar.OCTOBER,
+            Calendar.NOVEMBER,
+            Calendar.DECEMBER,
+            Calendar.UNDECIMBER
     }) int month, int date, int hour24, int minute, int second, int ms, @Nullable TimeZone tz, @Nullable Locale locale) {
         Calendar c = getCalendarInstance(tz, locale);
         c.set(year, month, date, hour24, minute, second);
@@ -129,18 +138,18 @@ public final class Dates {
      * @return the number of days in the month.
      */
     public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = 1, to = 12) int month, int year) {
-        switch(month) {/*@f0*/
-            case 1: return 31;
-            case 2: return (isLeapYear(year) ? 29 : 28);
-            case 3: return 31;
-            case 4: return 30;
-            case 5: return 31;
-            case 6: return 30;
-            case 7: return 31;
-            case 8: return 31;
-            case 9: return 30;
-            case 10: return 31;
+        switch(month) {
+            case 2:  return (isLeapYear(year) ? 29 : 28);/*@f0*/
+            case 4:
+            case 6:
+            case 9:
             case 11: return 30;
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
             case 12: return 31;
             default: throw new IllegalArgumentException(String.format(msgs.getString("msg.err.month_out_of_range"), month));
         }/*@f1*/
@@ -202,6 +211,14 @@ public final class Dates {
         Calendar c = getCalendarInstance(tz, locale);
         c.setTimeInMillis(milliseconds);
         return c;
+    }
+
+    public static int @NotNull [] getDateComponents(@NotNull Date date) {
+        GregorianCalendar c = new GregorianCalendar();
+        c.setTime(date);
+        return new int[] {
+                (c.get(Calendar.MONTH) + 1), c.get(Calendar.DATE), c.get(Calendar.YEAR), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND), c.get(Calendar.MILLISECOND)
+        };
     }
 
     /**
