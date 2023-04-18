@@ -42,4 +42,16 @@ public final class PGMath {
     public static boolean mod(int a, int b) {
         return ((a % b) == 0);
     }
+
+    /**
+     * Compares the given value <code>v</code> to see if it is in the range defined by the two values <code>a</code> and <code>b</code>.
+     *
+     * @param v The value.
+     * @param a The first value of the range.
+     * @param b The second value of the range.
+     * @return <code>true</code> if the value is in between values <code>a</code> and <code>b</code> inclusive.
+     */
+    public static boolean isInRangeInclusive(int v, int a, int b) {
+        return (((a <= b) ? ((v >= a) && (v <= b)) : ((v >= b) && (v <= a))));
+    }
 }
