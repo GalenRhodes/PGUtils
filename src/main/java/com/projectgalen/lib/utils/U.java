@@ -251,44 +251,44 @@ public final class U {
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAll(long num, long @NotNull ... others) {
-        for(long other : others) if(num != other) return false;
-        return true;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAll(int num, int @NotNull ... others) {
-        for(int other : others) if(num != other) return false;
-        return true;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAll(short num, short @NotNull ... others) {
-        for(short other : others) if(num != other) return false;
-        return true;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAll(byte num, byte @NotNull ... others) {
+    public static boolean isEqualToAllByte(byte num, byte @NotNull ... others) {
         for(byte other : others) if(num != other) return false;
         return true;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAll(char ch, char @NotNull ... others) {
+    public static boolean isEqualToAllChar(char ch, char @NotNull ... others) {
         for(char other : others) if(ch != other) return false;
         return true;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAll(double dbl, double @NotNull ... others) {
+    public static boolean isEqualToAllDouble(double dbl, double @NotNull ... others) {
         for(double other : others) if(dbl != other) return false;
         return true;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAll(float flt, float @NotNull ... others) {
+    public static boolean isEqualToAllFloat(float flt, float @NotNull ... others) {
         for(float other : others) if(flt != other) return false;
+        return true;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAllInt(int num, int @NotNull ... others) {
+        for(int other : others) if(num != other) return false;
+        return true;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAllLong(long num, long @NotNull ... others) {
+        for(long other : others) if(num != other) return false;
+        return true;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAllShort(short num, short @NotNull ... others) {
+        for(short other : others) if(num != other) return false;
         return true;
     }
 
@@ -300,44 +300,44 @@ public final class U {
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAny(long num, long @NotNull ... others) {
-        for(long other : others) if(num == other) return true;
-        return false;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAny(int num, int @NotNull ... others) {
-        for(int other : others) if(num == other) return true;
-        return false;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAny(short num, short @NotNull ... others) {
-        for(short other : others) if(num == other) return true;
-        return false;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAny(byte num, byte @NotNull ... others) {
+    public static boolean isEqualToAnyByte(byte num, byte @NotNull ... others) {
         for(byte other : others) if(num == other) return true;
         return false;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAny(char ch, char @NotNull ... others) {
+    public static boolean isEqualToAnyChar(char ch, char @NotNull ... others) {
         for(char other : others) if(ch == other) return true;
         return false;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAny(double dbl, double @NotNull ... others) {
+    public static boolean isEqualToAnyDouble(double dbl, double @NotNull ... others) {
         for(double other : others) if(dbl == other) return true;
         return false;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAny(float flt, float @NotNull ... others) {
+    public static boolean isEqualToAnyFloat(float flt, float @NotNull ... others) {
         for(float other : others) if(flt == other) return true;
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAnyInt(int num, int @NotNull ... others) {
+        for(int other : others) if(num == other) return true;
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAnyLong(long num, long @NotNull ... others) {
+        for(long other : others) if(num == other) return true;
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean isEqualToAnyShort(short num, short @NotNull ... others) {
+        for(short other : others) if(num == other) return true;
         return false;
     }
 
