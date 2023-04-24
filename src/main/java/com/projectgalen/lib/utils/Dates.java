@@ -36,6 +36,18 @@ public final class Dates {
 
     private Dates() { }
 
+    @Contract("_ -> new")
+    public static @NotNull Calendar copyOf(@NotNull Calendar c) {
+        Calendar copy = Calendar.getInstance();
+        copy.setTimeInMillis(c.getTimeInMillis());
+        return copy;
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull Date copyOf(@NotNull Date date) {
+        return new Date(date.getTime());
+    }
+
     @Contract("-> new")
     public static @NotNull Timestamp getTimestamp() {
         return new Timestamp(Calendar.getInstance().getTimeInMillis());
@@ -43,8 +55,7 @@ public final class Dates {
 
     @Contract("_,_,_ -> new")
     public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY,
-            Calendar.FEBRUARY,
+            Calendar.JANUARY, Calendar.FEBRUARY,
             Calendar.MARCH,
             Calendar.APRIL,
             Calendar.MAY,
