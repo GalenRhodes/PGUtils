@@ -186,6 +186,10 @@ public final class U {
         return array;
     }
 
+    public static <T extends Throwable> @Nullable T findNestedCause(@NotNull Throwable t, @NotNull Class<T> cls) {
+        return (cls.isInstance(t) ? cls.cast(t) : ((t.getCause() == null) ? null : findNestedCause(t.getCause(), cls)));
+    }
+
     public static @NotNull String getPart(@NotNull String str, @NotNull @NonNls @Language("RegExp") String separator, @NotNull Parts part) {
         Matcher m = Regex.getMatcher(separator, str);
 
