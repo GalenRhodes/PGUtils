@@ -52,17 +52,6 @@ public class PGProperties extends Properties {
         super(defaults);
     }
 
-    @Override
-    public String getProperty(@NotNull @NonNls String key) {
-        return getProperty(key, true);
-    }
-
-    @Override
-    @Contract("_,!null -> !null")
-    public String getProperty(@NotNull @NonNls String key, @Nullable String defaultValue) {
-        return getProperty(key, defaultValue, true);
-    }
-
     public String format(@NotNull @NonNls String key, Object... args) {
         String fmt = getProperty(key);
         return ((fmt == null) ? null : String.format(fmt, args));
@@ -219,6 +208,17 @@ public class PGProperties extends Properties {
 
     public @NotNull Map<String, String> getMap(@NotNull @NonNls String key) {
         return getMap(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_MAP_KV_PATTERN, Collections.emptyMap());
+    }
+
+    @Override
+    public String getProperty(@NotNull @NonNls String key) {
+        return getProperty(key, true);
+    }
+
+    @Override
+    @Contract("_,!null -> !null")
+    public String getProperty(@NotNull @NonNls String key, @Nullable String defaultValue) {
+        return getProperty(key, defaultValue, true);
     }
 
     @Contract("_,!null,_ -> !null")

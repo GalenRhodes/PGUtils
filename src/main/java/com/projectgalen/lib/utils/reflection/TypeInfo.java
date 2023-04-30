@@ -83,6 +83,20 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
         return ((this == o) || ((o instanceof TypeInfo) && _equals((TypeInfo)o)));
     }
 
+    public Class<?> getTypeClass() throws ClassNotFoundException {
+        switch(typeName) { //@f:0
+            case "boolean": return boolean.class;
+            case "char":    return char.class;
+            case "byte":    return byte.class;
+            case "short":   return short.class;
+            case "int":     return int.class;
+            case "long":    return long.class;
+            case "float":   return float.class;
+            case "double":  return double.class;
+            default:        return Class.forName(typeName);
+        } //@f:1
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(isParameterizedType, typeName, argTypes);
@@ -105,20 +119,6 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
         }
 
         return sb.toString();
-    }
-
-    public Class<?> getTypeClass() throws ClassNotFoundException {
-        switch(typeName) { //@f:0
-            case "boolean": return boolean.class;
-            case "char":    return char.class;
-            case "byte":    return byte.class;
-            case "short":   return short.class;
-            case "int":     return int.class;
-            case "long":    return long.class;
-            case "float":   return float.class;
-            case "double":  return double.class;
-            default:        return Class.forName(typeName);
-        } //@f:1
     }
 
     private boolean _equals(@NotNull TypeInfo other) {

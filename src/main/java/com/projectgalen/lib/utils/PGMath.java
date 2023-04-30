@@ -39,10 +39,6 @@ public final class PGMath {
         return ((num == null) ? null : ((num instanceof BigInteger) ? (BigInteger)num : ((num instanceof BigDecimal) ? ((BigDecimal)num).toBigInteger() : BigInteger.valueOf(num.longValue()))));
     }
 
-    public static boolean mod(int a, int b) {
-        return ((a % b) == 0);
-    }
-
     /**
      * Compares the given value <code>v</code> to see if it is in the range defined by the two values <code>a</code> and <code>b</code>.
      *
@@ -53,5 +49,9 @@ public final class PGMath {
      */
     public static boolean isInRangeInclusive(int v, int a, int b) {
         return (((a <= b) ? ((v >= a) && (v <= b)) : ((v >= b) && (v <= a))));
+    }
+
+    public static boolean mod(int a, int b) {
+        return ((a % b) == 0);
     }
 }

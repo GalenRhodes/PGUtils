@@ -45,28 +45,17 @@ public final class PGResourceBundle extends ResourceBundle {
         this.bundle = bundle;
     }
 
-    @Override
-    public @NotNull Enumeration<String> getKeys() {
-        return bundle.getKeys();
-    }
-
-    @Override
-    @Unmodifiable
-    protected @Nullable Object handleGetObject(@NotNull String key) {
-        try {
-            return Macro.replaceMacros(bundle.getString(key), this::getStringQuietly);
-        }
-        catch(MissingResourceException ignore) {
-            return null;
-        }
-    }
-
     public @NotNull String format(String key, Object... args) {
         return String.format(getString(key), args);
     }
 
     public @NotNull String format(boolean macroExpansion, @NotNull String key, Object... args) {
         return String.format(getString(key, macroExpansion), args);
+    }
+
+    @Override
+    public @NotNull Enumeration<String> getKeys() {
+        return bundle.getKeys();
     }
 
     public @NotNull String getString(@NotNull String key, boolean macroExpansion) {
@@ -83,6 +72,17 @@ public final class PGResourceBundle extends ResourceBundle {
         }
         catch(MissingResourceException e) {
             return (macroExpansion ? Macro.replaceMacros(defaultValue, this::getStringQuietly) : defaultValue);
+        }
+    }
+
+    @Override
+    @Unmodifiable
+    protected @Nullable Object handleGetObject(@NotNull String key) {
+        try {
+            return Macro.replaceMacros(bundle.getString(key), this::getStringQuietly);
+        }
+        catch(MissingResourceException ignore) {
+            return null;
         }
     }
 

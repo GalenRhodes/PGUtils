@@ -48,14 +48,10 @@ public final class Dates {
         return new Date(date.getTime());
     }
 
-    @Contract("-> new")
-    public static @NotNull Timestamp getTimestamp() {
-        return new Timestamp(Calendar.getInstance().getTimeInMillis());
-    }
-
     @Contract("_,_,_ -> new")
     public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY, Calendar.FEBRUARY,
+            Calendar.JANUARY,
+            Calendar.FEBRUARY,
             Calendar.MARCH,
             Calendar.APRIL,
             Calendar.MAY,
@@ -230,6 +226,11 @@ public final class Dates {
         return new int[] {
                 (c.get(Calendar.MONTH) + 1), c.get(Calendar.DATE), c.get(Calendar.YEAR), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND), c.get(Calendar.MILLISECOND)
         };
+    }
+
+    @Contract("-> new")
+    public static @NotNull Timestamp getTimestamp() {
+        return new Timestamp(Calendar.getInstance().getTimeInMillis());
     }
 
     /**
