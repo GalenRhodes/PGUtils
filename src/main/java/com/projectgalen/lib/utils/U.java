@@ -256,99 +256,83 @@ public final class U {
     }
 
     @Contract(pure = true)
-    @SafeVarargs
-    public static <T> boolean isEqualToAll(T obj, T @NotNull ... others) {
-        for(T other : others) if(!Objects.equals(obj, other)) return false;
-        return true;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAllByte(byte num, byte @NotNull ... others) {
-        for(byte other : others) if(num != other) return false;
-        return true;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAllChar(char ch, char @NotNull ... others) {
-        for(char other : others) if(ch != other) return false;
-        return true;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAllDouble(double dbl, double @NotNull ... others) {
-        for(double other : others) if(dbl != other) return false;
-        return true;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAllFloat(float flt, float @NotNull ... others) {
-        for(float other : others) if(flt != other) return false;
-        return true;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAllInt(int num, int @NotNull ... others) {
-        for(int other : others) if(num != other) return false;
-        return true;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAllLong(long num, long @NotNull ... others) {
-        for(long other : others) if(num != other) return false;
-        return true;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAllShort(short num, short @NotNull ... others) {
-        for(short other : others) if(num != other) return false;
-        return true;
-    }
-
-    @Contract(pure = true)
-    @SafeVarargs
-    public static <T> boolean isEqualToAny(T obj, T @NotNull ... others) {
-        for(T other : others) if(Objects.equals(obj, other)) return true;
-        return false;
-    }
-
-    @Contract(pure = true)
-    public static boolean isEqualToAnyByte(byte num, byte @NotNull ... others) {
+    public static boolean isByteIn(byte num, byte @NotNull ... others) {
         for(byte other : others) if(num == other) return true;
         return false;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAnyChar(char ch, char @NotNull ... others) {
+    public static boolean isCharIn(char ch, char @NotNull ... others) {
         for(char other : others) if(ch == other) return true;
         return false;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAnyDouble(double dbl, double @NotNull ... others) {
+    public static boolean isDoubleIn(double dbl, double @NotNull ... others) {
         for(double other : others) if(dbl == other) return true;
         return false;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAnyFloat(float flt, float @NotNull ... others) {
+    @SafeVarargs
+    @Deprecated(forRemoval = true)
+    public static <T> boolean isEqualToAny(T obj, T @NotNull ... others) { return isObjIn(obj, others); }
+
+    @Contract(pure = true)
+    @Deprecated(forRemoval = true)
+    public static boolean isEqualToAnyByte(byte num, byte @NotNull ... others) { return isByteIn(num, others); }
+
+    @Contract(pure = true)
+    @Deprecated(forRemoval = true)
+    public static boolean isEqualToAnyChar(char ch, char @NotNull ... others) { return isCharIn(ch, others); }
+
+    @Contract(pure = true)
+    @Deprecated(forRemoval = true)
+    public static boolean isEqualToAnyDouble(double dbl, double @NotNull ... others) { return isDoubleIn(dbl, others); }
+
+    @Contract(pure = true)
+    @Deprecated(forRemoval = true)
+    public static boolean isEqualToAnyFloat(float flt, float @NotNull ... others) { return isFloatIn(flt, others); }
+
+    @Contract(pure = true)
+    @Deprecated(forRemoval = true)
+    public static boolean isEqualToAnyInt(int num, int @NotNull ... others) { return isIntIn(num, others); }
+
+    @Contract(pure = true)
+    @Deprecated(forRemoval = true)
+    public static boolean isEqualToAnyLong(long num, long @NotNull ... others) { return isLongIn(num, others); }
+
+    @Contract(pure = true)
+    @Deprecated(forRemoval = true)
+    public static boolean isEqualToAnyShort(short num, short @NotNull ... others) { return isShortIn(num, others); }
+
+    @Contract(pure = true)
+    public static boolean isFloatIn(float flt, float @NotNull ... others) {
         for(float other : others) if(flt == other) return true;
         return false;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAnyInt(int num, int @NotNull ... others) {
+    public static boolean isIntIn(int num, int @NotNull ... others) {
         for(int other : others) if(num == other) return true;
         return false;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAnyLong(long num, long @NotNull ... others) {
+    public static boolean isLongIn(long num, long @NotNull ... others) {
         for(long other : others) if(num == other) return true;
         return false;
     }
 
     @Contract(pure = true)
-    public static boolean isEqualToAnyShort(short num, short @NotNull ... others) {
+    @SafeVarargs
+    public static <T> boolean isObjIn(T obj, T @NotNull ... others) {
+        for(T other : others) if(Objects.equals(obj, other)) return true;
+        return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean isShortIn(short num, short @NotNull ... others) {
         for(short other : others) if(num == other) return true;
         return false;
     }
