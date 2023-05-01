@@ -57,13 +57,6 @@ public final class PGMath {
         return ((a % b) == 0);
     }
 
-    @SafeVarargs
-    @Contract(pure = true)
-    public static <T extends Comparable<T>> T max(@NotNull T first, T @NotNull ... values) {
-        for(T v : values) if(first.compareTo(v) < 0) first = v;
-        return first;
-    }
-
     @Contract(pure = true)
     public static char max(char first, char @NotNull ... values) {
         for(char v : values) if(v > first) first = v;
@@ -103,13 +96,6 @@ public final class PGMath {
     @Contract(pure = true)
     public static double max(double first, double @NotNull ... values) {
         for(double v : values) if(v > first) first = v;
-        return first;
-    }
-
-    @SafeVarargs
-    @Contract(pure = true)
-    public static <T extends Comparable<T>> T min(@NotNull T first, T @NotNull ... values) {
-        for(T v : values) if(first.compareTo(v) > 0) first = v;
         return first;
     }
 
