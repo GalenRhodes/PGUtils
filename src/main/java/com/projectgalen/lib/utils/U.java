@@ -50,6 +50,12 @@ public final class U {
 
     private U() { }
 
+    public static <T> T @NotNull [] append(T[] array, T obj) {
+        T[] copy = Arrays.copyOf(array, array.length + 1);
+        copy[array.length] = obj;
+        return copy;
+    }
+
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
         return sb.append(String.format(format, args));
     }
@@ -348,6 +354,13 @@ public final class U {
         return sb.toString();
     }
 
+    public static <T> T @NotNull [] join(T @NotNull [] array1, T @NotNull [] array2) {
+        T[] copy = newArray(array1.getClass(), (array1.length + array2.length));
+        System.arraycopy(array1, 0, copy, 0, array1.length);
+        System.arraycopy(array2, 0, copy, array1.length, array2.length);
+        return copy;
+    }
+
     @Contract("!null -> !null; null -> null")
     public static String lc(@Nullable String str) {
         return ((str == null) ? null : str.toLowerCase());
@@ -355,6 +368,13 @@ public final class U {
 
     public static boolean nz(@Nullable String str) {
         return ((str != null) && (str.trim().length() > 0));
+    }
+
+    public static <T> T @NotNull [] prepend(T obj, T @NotNull [] array) {
+        T[] copy = newArray(array.getClass(), (array.length + 1));
+        System.arraycopy(array, 0, copy, 1, array.length);
+        copy[0] = obj;
+        return copy;
     }
 
     public static @NotNull String sha3_256Hash(@NotNull String text) {
@@ -492,6 +512,11 @@ public final class U {
 
     public static boolean z(@Nullable String str) {
         return ((str == null) || (str.trim().length() == 0));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T[] newArray(Class<? extends Object[]> arrayType, int length) {
+        return ((arrayType == Object[].class) ? (T[])new Object[length] : (T[])Array.newInstance(arrayType.getComponentType(), length));
     }
 
     private static int @NotNull [] tr1(char @NotNull [] chars) {
