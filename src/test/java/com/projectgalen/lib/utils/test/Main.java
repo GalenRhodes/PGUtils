@@ -1,9 +1,6 @@
 package com.projectgalen.lib.utils.test;
 
-import com.projectgalen.lib.utils.PGProperties;
-import com.projectgalen.lib.utils.PGResourceBundle;
-import com.projectgalen.lib.utils.Text;
-import com.projectgalen.lib.utils.U;
+import com.projectgalen.lib.utils.*;
 import com.projectgalen.lib.utils.reflection.Reflection;
 import com.projectgalen.lib.utils.reflection.TypeInfo;
 import com.projectgalen.lib.utils.test.casting.TestClass;
@@ -35,7 +32,7 @@ public class Main {
 
             for(String inStr : strings) {
                 char[] inArr  = inStr.toCharArray();
-                char[] outArr = U.tr(inArr);
+                char[] outArr = PGArrays.tr(inArr);
                 String outStr = new String(outArr);
 
                 System.out.printf("Input: \"%s\"; Output: \"%s\"\n", inStr, outStr);

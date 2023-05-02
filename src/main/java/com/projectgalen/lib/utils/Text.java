@@ -103,7 +103,7 @@ public final class Text {
     }
 
     public static @NotNull String pad(String str, Align align, int width, boolean trim) {
-        if(str == null) return String.valueOf(U.createAndFill(width, ' '));
+        if(str == null) return String.valueOf(PGArrays.createAndFill(width, ' '));
 
         str = str.strip();
         int strLen = str.length();
@@ -123,7 +123,7 @@ public final class Text {
     }
 
     public static String @NotNull [] padWithWrap(String str, Align align, int width, boolean stripEachLineLeading) {
-        if(str == null) return new String[] { String.valueOf(U.createAndFill(width, ' ')) };
+        if(str == null) return new String[] { String.valueOf(PGArrays.createAndFill(width, ' ')) };
 
         String[]     lines = str.split("\\r\\n|\\n");
         List<String> out   = new ArrayList<>();
@@ -154,7 +154,7 @@ public final class Text {
 
         if(strLen == width) return str;
 
-        char[] buffer = U.createAndFill(width, ' ');
+        char[] buffer = PGArrays.createAndFill(width, ' ');
 
         switch(align) {/*@f0*/
             case Left:  System.arraycopy(str.toCharArray(), 0, buffer, 0, strLen); break;
