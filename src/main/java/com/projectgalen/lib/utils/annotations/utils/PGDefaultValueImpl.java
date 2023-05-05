@@ -66,15 +66,17 @@ public final class PGDefaultValueImpl {
         PGDefaultValue dv = method.getAnnotation(PGDefaultValue.class);
         if((obj != null) && (dv != null)) {
             try { method.invoke(obj, getDefaultValue(dv, params[0])); }
-            catch(InvocationTargetException | IllegalAccessException e) { throw new PGDefaultValueError(msgs.format("msg.err.def.exception", e), e); }
+            catch(InvocationTargetException | IllegalAccessException e) {
+                throw new PGDefaultValueError(msgs.format("msg.err.def.exception",
+                                                          e), e);
+            }
         }
     }
 
     public static void populate(@NotNull Field field, @Nullable Object obj) throws PGDefaultValueError {
         PGDefaultValue dv = field.getAnnotation(PGDefaultValue.class);
         if((obj != null) && (dv != null)) {
-            try { field.set(obj, getDefaultValue(dv, field.getType())); }
-            catch(IllegalAccessException e) { throw new PGDefaultValueError(msgs.format("msg.err.def.exception", e), e); }
+            try { field.set(obj, getDefaultValue(dv, field.getType())); } catch(IllegalAccessException e) { throw new PGDefaultValueError(msgs.format("msg.err.def.exception", e), e); }
         }
     }
 
@@ -92,7 +94,10 @@ public final class PGDefaultValueImpl {
 
     private static @NotNull Object getDefaultByConstructor(@NotNull PGDefaultValue dv, @NotNull Class<?> type) throws PGDefaultValueError {
         try { return type.getConstructor(String.class).newInstance(dv.value()); }
-        catch(NoSuchMethodException e) { throw new PGDefaultValueError(msgs.format("msg.err.def.no_way", VALUE_OF_METHOD_NAME)); }
+        catch(NoSuchMethodException e) {
+            throw new PGDefaultValueError(msgs.format("msg.err.def.no_way",
+                                                      VALUE_OF_METHOD_NAME));
+        }
         catch(Exception e) { throw new PGDefaultValueError(msgs.format("msg.err.def.exception", e), e); }
     }
 
@@ -104,6 +109,9 @@ public final class PGDefaultValueImpl {
         }
         catch(PGDefaultValueError e) { throw e; }
         catch(NoSuchMethodException e) { return getDefaultByConstructor(dv, type); }
-        catch(Exception e) { throw new PGDefaultValueError(msgs.format("msg.err.def.exception", e), e); }
+        catch(Exception e) {
+            throw new PGDefaultValueError(msgs.format("msg.err.def.exception",
+                                                      e), e);
+        }
     }
 }

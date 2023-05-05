@@ -45,56 +45,6 @@ public final class PGResourceBundle extends ResourceBundle {
         this.bundle = bundle;
     }
 
-    public @NotNull String format(String key, Object... args) {
-        return String.format(getString(key), args);
-    }
-
-    public @NotNull String format(boolean macroExpansion, @NotNull String key, Object... args) {
-        return String.format(getString(key, macroExpansion), args);
-    }
-
-    @Override
-    public @NotNull Enumeration<String> getKeys() {
-        return bundle.getKeys();
-    }
-
-    public @NotNull String getString(@NotNull String key, boolean macroExpansion) {
-        return (macroExpansion ? bundle.getString(key) : getString(key));
-    }
-
-    public @NotNull String getString(@NotNull String key, @NotNull String defaultValue) {
-        return getString(key, defaultValue, true);
-    }
-
-    public @NotNull String getString(@NotNull String key, @NotNull String defaultValue, boolean macroExpansion) {
-        try {
-            return getString(key);
-        }
-        catch(MissingResourceException e) {
-            return (macroExpansion ? Macro.replaceMacros(defaultValue, this::getStringQuietly) : defaultValue);
-        }
-    }
-
-    @Override
-    @Unmodifiable
-    protected @Nullable Object handleGetObject(@NotNull String key) {
-        try {
-            return Macro.replaceMacros(bundle.getString(key), this::getStringQuietly);
-        }
-        catch(MissingResourceException ignore) {
-            return null;
-        }
-    }
-
-    private @Nullable String getStringQuietly(@NotNull String key) {
-        try {
-            return bundle.getString(key);
-        }
-        catch(MissingResourceException e) {
-            return null;
-        }
-    }
-
     @Contract("_ -> new")
     public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName));
@@ -148,6 +98,56 @@ public final class PGResourceBundle extends ResourceBundle {
     @Contract("_,_,_ -> new")
     public static @NotNull PGResourceBundle getXMLPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, loader, new XMLResourceBundleControl()));
+    }
+
+    public @NotNull String format(String key, Object... args) {
+        return String.format(getString(key), args);
+    }
+
+    public @NotNull String format(boolean macroExpansion, @NotNull String key, Object... args) {
+        return String.format(getString(key, macroExpansion), args);
+    }
+
+    @Override
+    public @NotNull Enumeration<String> getKeys() {
+        return bundle.getKeys();
+    }
+
+    public @NotNull String getString(@NotNull String key, boolean macroExpansion) {
+        return (macroExpansion ? bundle.getString(key) : getString(key));
+    }
+
+    public @NotNull String getString(@NotNull String key, @NotNull String defaultValue) {
+        return getString(key, defaultValue, true);
+    }
+
+    public @NotNull String getString(@NotNull String key, @NotNull String defaultValue, boolean macroExpansion) {
+        try {
+            return getString(key);
+        }
+        catch(MissingResourceException e) {
+            return (macroExpansion ? Macro.replaceMacros(defaultValue, this::getStringQuietly) : defaultValue);
+        }
+    }
+
+    @Override
+    @Unmodifiable
+    protected @Nullable Object handleGetObject(@NotNull String key) {
+        try {
+            return Macro.replaceMacros(bundle.getString(key), this::getStringQuietly);
+        }
+        catch(MissingResourceException ignore) {
+            return null;
+        }
+    }
+
+    private @Nullable String getStringQuietly(@NotNull String key) {
+        try {
+            return bundle.getString(key);
+        }
+        catch(MissingResourceException e) {
+            return null;
+        }
     }
 
     private static class XMLKeyEnumerator implements Enumeration<String> {

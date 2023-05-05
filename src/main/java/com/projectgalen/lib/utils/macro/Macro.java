@@ -41,6 +41,15 @@ public final class Macro {
     private static final                     String           rx4;
     private static final @Language("RegExp") String           rx5;
 
+    static {
+        msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+        rx1 = props.getProperty("macro.regexp", false);
+        rx2 = props.getProperty("macro.double_slash", false);
+        rx3 = props.getProperty("macro.double_slash.repl", false);
+        rx4 = props.getProperty("macro.single_slash", false);
+        rx5 = props.getProperty("macro.regexp.quiet", false);
+    }
+
     private Macro() { }
 
     public static String replaceMacros(String input, @NotNull MacroDelegate delegate) {
@@ -65,14 +74,5 @@ public final class Macro {
         Matcher       m   = Regex.getMatcher(rx5, str);
         while(m.find()) m.appendReplacement(sb, Matcher.quoteReplacement(m.group(1)));
         return m.appendTail(sb).toString().replace(rx3, rx4);
-    }
-
-    static {
-        msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
-        rx1  = props.getProperty("macro.regexp", false);
-        rx2  = props.getProperty("macro.double_slash", false);
-        rx3  = props.getProperty("macro.double_slash.repl", false);
-        rx4  = props.getProperty("macro.single_slash", false);
-        rx5  = props.getProperty("macro.regexp.quiet", false);
     }
 }

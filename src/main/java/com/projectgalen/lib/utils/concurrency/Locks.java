@@ -33,25 +33,21 @@ public final class Locks {
 
     public static void doWithLock(@NotNull Lock lock, @NotNull VoidDelegate delegate) {
         lock.lock();
-        try { delegate.action(); }
-        finally { lock.unlock(); }
+        try { delegate.action(); } finally { lock.unlock(); }
     }
 
     public static <E extends Throwable> void doWithLockThrows(@NotNull Lock lock, @NotNull VoidThrowsDelegate<E> delegate) throws E {
         lock.lock();
-        try { delegate.action(); }
-        finally { lock.unlock(); }
+        try { delegate.action(); } finally { lock.unlock(); }
     }
 
     public static <T> T getWithLock(@NotNull Lock lock, @NotNull GetDelegate<T> delegate) {
         lock.lock();
-        try { return delegate.action(); }
-        finally { lock.unlock(); }
+        try { return delegate.action(); } finally { lock.unlock(); }
     }
 
     public static <T, E extends Throwable> T getWithLockThrows(@NotNull Lock lock, @NotNull GetThrowsDelegate<T, E> delegate) throws E {
         lock.lock();
-        try { return delegate.action(); }
-        finally { lock.unlock(); }
+        try { return delegate.action(); } finally { lock.unlock(); }
     }
 }

@@ -40,6 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 
@@ -289,7 +290,9 @@ public final class U {
 
     public static @NotNull <T extends Throwable> T getThrowable(@NotNull String msg, @NotNull Class<T> throwableClass) {
         try { return throwableClass.getConstructor(String.class).newInstance(msg); }
-        catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) { throw new RuntimeException(ex); }
+        catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     public static @NotNull String ifNullOrEmpty(@Nullable String str, @NotNull String def) {
@@ -306,6 +309,11 @@ public final class U {
     public static boolean isCharIn(char ch, char @NotNull ... others) {
         for(char other : others) if(ch == other) return true;
         return false;
+    }
+
+    @Contract(pure = true)
+    public static boolean isCharIn(char ch, @NotNull String others) {
+        return isCharIn(ch, others.toCharArray());
     }
 
     @Contract(pure = true)
@@ -552,9 +560,9 @@ public final class U {
     @Deprecated(forRemoval = true)
     public static boolean[] wrap(boolean... bools) { return bools; }
 
-    public static @NotNull <T extends Throwable> T wrapThrowable(@Nullable String msg, @NotNull Throwable t, @NotNull Class<T> throwableClass) {
-        try { return throwableClass.getConstructor(String.class, Throwable.class).newInstance(((msg == null) ? t.getMessage() : msg), t); }
-        catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) { throw new RuntimeException(ex); }
+    @Contract(value = "_ -> new", pure = true)
+    public static @NotNull RuntimeException makeRuntimeException(@NotNull Exception e) {
+        return ((e instanceof RuntimeException) ? ((RuntimeException)e) : new RuntimeException(e));
     }
 
     public static @NotNull <T extends Throwable> T wrapThrowable(@NotNull Throwable t, @NotNull Class<T> throwableClass) {
@@ -571,6 +579,25 @@ public final class U {
     @Deprecated(forRemoval = true)
     public static boolean z(char[] chars) {
         return PGArrays.z(chars);
+    }
+
+    public static <T> @Nullable T propagate(boolean propagateExceptions, @NotNull Callable<T> callable) {
+        try {
+            return callable.call();
+        }
+        catch(Exception e) {
+            if(propagateExceptions) throw makeRuntimeException(e);
+            return null;
+        }
+    }
+
+    public static @NotNull <T extends Throwable> T wrapThrowable(@Nullable String msg, @NotNull Throwable t, @NotNull Class<T> throwableClass) {
+        try { return throwableClass.getConstructor(String.class, Throwable.class).newInstance(((msg == null) ? t.getMessage() : msg), t); }
+        catch(NoSuchMethodException | InstantiationException |
+              IllegalAccessException |
+              InvocationTargetException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     public enum Parts {

@@ -47,13 +47,13 @@ public final class Reflection {
             if(Number.class.isAssignableFrom(targetClass) && (value instanceof Number)) {
                 Class<?> l = objectClassForPrimitive(targetClass);
                 //@f:0
-                if(l == BigDecimal.class)                                                                                        return PGMath.getBigDecimal((Number)value);
-                if(l == BigInteger.class)                                                                                        return PGMath.getBigInteger((Number)value);
-                if((l == Double.class)    &&     !isAnyType(value.getClass(), BigDecimal.class, BigInteger.class))               return ((Number)value).doubleValue();
-                if((l == Float.class)     &&     !isAnyType(value.getClass(), BigDecimal.class, BigInteger.class, Double.class)) return ((Number)value).floatValue();
-                if((l == Long.class)      &&     isAnyType(value.getClass(), Integer.class, Short.class, Byte.class))            return ((Number)value).longValue();
-                if((l == Integer.class)   &&     isAnyType(value.getClass(), Short.class, Byte.class))                           return ((Number)value).intValue();
-                if((l == Short.class)     &&     (value.getClass() == Byte.class))                                               return ((Number)value).shortValue();
+                if(l == BigDecimal.class) return PGMath.getBigDecimal((Number)value);
+                if(l == BigInteger.class) return PGMath.getBigInteger((Number)value);
+                if((l == Double.class) && !isAnyType(value.getClass(), BigDecimal.class, BigInteger.class)) return ((Number)value).doubleValue();
+                if((l == Float.class) && !isAnyType(value.getClass(), BigDecimal.class, BigInteger.class, Double.class)) return ((Number)value).floatValue();
+                if((l == Long.class) && isAnyType(value.getClass(), Integer.class, Short.class, Byte.class)) return ((Number)value).longValue();
+                if((l == Integer.class) && isAnyType(value.getClass(), Short.class, Byte.class)) return ((Number)value).intValue();
+                if((l == Short.class) && (value.getClass() == Byte.class)) return ((Number)value).shortValue();
                 //@f:1
             }
         }
@@ -334,13 +334,13 @@ public final class Reflection {
 
     public static @NotNull Class<?> objectClassForPrimitive(@NotNull Class<?> cls) {
         //@f:0
-        if(!cls.isPrimitive())  return cls;
-        if(cls == char.class)   return Character.class;
-        if(cls == byte.class)   return Byte.class;
-        if(cls == short.class)  return Short.class;
-        if(cls == int.class)    return Integer.class;
-        if(cls == long.class)   return Long.class;
-        if(cls == float.class)  return Float.class;
+        if(!cls.isPrimitive()) return cls;
+        if(cls == char.class) return Character.class;
+        if(cls == byte.class) return Byte.class;
+        if(cls == short.class) return Short.class;
+        if(cls == int.class) return Integer.class;
+        if(cls == long.class) return Long.class;
+        if(cls == float.class) return Float.class;
         if(cls == double.class) return Double.class;
         //@f:1
         return Boolean.class;
@@ -348,15 +348,15 @@ public final class Reflection {
 
     public static @Nullable Class<?> primitiveClassForObject(@NotNull Class<?> cls) {
         //@f:0
-        if(cls.isPrimitive())      return cls;
+        if(cls.isPrimitive()) return cls;
         if(cls == Character.class) return char.class;
-        if(cls == Byte.class)      return byte.class;
-        if(cls == Short.class)     return short.class;
-        if(cls == Integer.class)   return int.class;
-        if(cls == Long.class)      return long.class;
-        if(cls == Float.class)     return float.class;
-        if(cls == Double.class)    return double.class;
-        if(cls == Boolean.class)   return boolean.class;
+        if(cls == Byte.class) return byte.class;
+        if(cls == Short.class) return short.class;
+        if(cls == Integer.class) return int.class;
+        if(cls == Long.class) return long.class;
+        if(cls == Float.class) return float.class;
+        if(cls == Double.class) return double.class;
+        if(cls == Boolean.class) return boolean.class;
         //@f:1
         return null;
     }
@@ -374,14 +374,14 @@ public final class Reflection {
     private static boolean _isNumericallyAssignable(@NotNull Class<?> l, @NotNull Class<?> r) {
         //@f:0
         if(!(isNumericObject(l) && isNumericObject(r))) return false;
-        if((l == r) || (l == BigDecimal.class))         return true;
-        if(l == BigInteger.class)                       return isAnyType(r, BigDecimal.class, Double.class, Float.class);
-        if(l == Short.class)                            return (r == Byte.class);
-        if(l == Character.class)                        return isAnyType(r, Short.class, Byte.class);
-        if(l == Integer.class)                          return isAnyType(r, Character.class, Short.class, Byte.class);
-        if(l == Long.class)                             return isAnyType(r, Integer.class, Character.class, Short.class, Byte.class);
-        if(l == Float.class)                            return isAnyType(r, Long.class, Integer.class, Character.class, Short.class, Byte.class);
-        if(l == Double.class)                           return isAnyType(r, Float.class, Long.class, Integer.class, Character.class, Short.class, Byte.class);
+        if((l == r) || (l == BigDecimal.class)) return true;
+        if(l == BigInteger.class) return isAnyType(r, BigDecimal.class, Double.class, Float.class);
+        if(l == Short.class) return (r == Byte.class);
+        if(l == Character.class) return isAnyType(r, Short.class, Byte.class);
+        if(l == Integer.class) return isAnyType(r, Character.class, Short.class, Byte.class);
+        if(l == Long.class) return isAnyType(r, Integer.class, Character.class, Short.class, Byte.class);
+        if(l == Float.class) return isAnyType(r, Long.class, Integer.class, Character.class, Short.class, Byte.class);
+        if(l == Double.class) return isAnyType(r, Float.class, Long.class, Integer.class, Character.class, Short.class, Byte.class);
         //@f:1
         return false;
     }

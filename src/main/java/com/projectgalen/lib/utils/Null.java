@@ -31,27 +31,6 @@ import org.jetbrains.annotations.Nullable;
 public final class Null implements Cloneable {
     private Null() { }
 
-    @Override
-    public boolean equals(Object obj) {
-        return ((obj instanceof Null) && (obj == NULL()));
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
-    }
-
-    @Override
-    public String toString() {
-        return "null";
-    }
-
-    @SuppressWarnings("RedundantThrows")
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return NULL();
-    }
-
     public static Null NULL() {
         return NullHolder.INSTANCE;
     }
@@ -92,6 +71,27 @@ public final class Null implements Cloneable {
 
     public static @NotNull Object set(@Nullable Object o) {
         return ifNull(o, NULL());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return ((obj instanceof Null) && (obj == NULL()));
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "null";
+    }
+
+    @SuppressWarnings("RedundantThrows")
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return NULL();
     }
 
     private static final class NullHolder {

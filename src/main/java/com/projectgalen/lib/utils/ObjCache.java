@@ -38,6 +38,10 @@ public class ObjCache {
         super();
     }
 
+    public static ObjCache getInstance() {
+        return ObjCacheHolder.INSTANCE;
+    }
+
     public <T> T get(@NotNull String key, @NotNull Class<T> cls) {
         return Locks.getWithLock(lock, () -> cls.cast(cache.get(key)));
     }
@@ -56,10 +60,6 @@ public class ObjCache {
 
     public <T> T store(@NotNull String key, @NotNull T obj) {
         return Locks.getWithLock(lock, () -> ((Class<T>)obj.getClass()).cast(cache.put(key, obj)));
-    }
-
-    public static ObjCache getInstance() {
-        return ObjCacheHolder.INSTANCE;
     }
 
     private static final class ObjCacheHolder {

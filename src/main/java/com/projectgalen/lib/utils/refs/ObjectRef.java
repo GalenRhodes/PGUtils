@@ -27,7 +27,7 @@ import java.util.Objects;
 public class ObjectRef<T> {
     public T value;
 
-    public ObjectRef() { }
+    public ObjectRef() { value = null; }
 
     public ObjectRef(T initialValue) { value = initialValue; }
 

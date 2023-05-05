@@ -22,17 +22,15 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.delegates.GetDelegate;
-import com.projectgalen.lib.utils.refs.ObjectRef;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
 
+@SuppressWarnings({ "unchecked", "unused" })
 public final class PGArrays {
     private PGArrays() { }
 
@@ -64,7 +62,6 @@ public final class PGArrays {
         return ((ch1 == null) && (ch2 == null));
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T @NotNull [] createAndFill(int length, @NotNull T value) {
         T[] array = (T[])Array.newInstance(value.getClass(), length);
         Arrays.fill(array, value);
@@ -128,13 +125,6 @@ public final class PGArrays {
     public static <T> int getIndex(@Nullable T item, T @NotNull ... items) {
         for(int i = 0; i < items.length; i++) if(Objects.equals(item, items[i])) return i;
         return -1;
-    }
-
-    public static <T> T invokeAndGet(GetDelegate<T> delegate) {
-        if(SwingUtilities.isEventDispatchThread()) return delegate.action();
-        ObjectRef<T> val = new ObjectRef<>(null);
-        try { SwingUtilities.invokeAndWait(() -> val.value = delegate.action()); } catch(Exception ignore) { }
-        return val.value;
     }
 
     public static <T> T @NotNull [] join(T @NotNull [] array1, T @NotNull [] array2) {
