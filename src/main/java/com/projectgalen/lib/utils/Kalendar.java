@@ -25,9 +25,13 @@ package com.projectgalen.lib.utils;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.*;
+import java.util.Locale.Category;
 
 public class Kalendar extends GregorianCalendar implements Cloneable {
 
@@ -244,9 +248,25 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
 
     public void setYear(int value) { set(Calendar.YEAR, value); }
 
+    public java.sql.Date toSQLDate() { return new java.sql.Date(getTimeInMillis()); }
+
+    public Time toTime() { return new Time(getTimeInMillis()); }
+
+    public Timestamp toTimestamp() { return new Timestamp(getTimeInMillis()); }
+
     public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = Calendar.JANUARY, to = Calendar.DECEMBER) int month, int year) { return Dates.daysInMonth(month + 1, year); }
 
     public static @Range(from = 28, to = 31) int daysInRealMonth(@Range(from = 1, to = 12) int realMonth, int year) { return Dates.daysInMonth(realMonth, year); }
 
     @Contract(" -> new") public static @NotNull Kalendar getInstance() { return new Kalendar(); }
+
+    @Contract("null -> null; !null -> new") public static Kalendar getInstance(@Nullable Date dt) { return getInstance(dt, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT)); }
+
+    @Contract("null, _ -> null; !null, _ -> new") public static Kalendar getInstance(@Nullable Date dt, @NotNull Locale aLocale) { return getInstance(dt, TimeZone.getDefault(), aLocale); }
+
+    @Contract("null, _ -> null; !null, _ -> new") public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone) { return getInstance(dt, zone, Locale.getDefault(Category.FORMAT)); }
+
+    @Contract("null, _, _ -> null; !null, _, _ -> new") public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+        return ((dt == null) ? null : new Kalendar(dt, zone, aLocale));
+    }
 }
