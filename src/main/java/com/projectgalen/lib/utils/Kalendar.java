@@ -35,6 +35,23 @@ import java.util.Locale.Category;
 
 public class Kalendar extends GregorianCalendar implements Cloneable {
 
+    public Kalendar(long millis) {
+        this(millis, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT));
+    }
+
+    public Kalendar(long millis, @NotNull Locale aLocale) {
+        this(millis, TimeZone.getDefault(), aLocale);
+    }
+
+    public Kalendar(long millis, @NotNull TimeZone zone) {
+        this(millis, zone, Locale.getDefault(Locale.Category.FORMAT));
+    }
+
+    public Kalendar(long millis, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+        this(zone, aLocale);
+        setTimeInMillis(millis);
+    }
+
     public Kalendar(@NotNull Calendar c) {
         this(c, c.getTimeZone(), Locale.getDefault(Locale.Category.FORMAT));
     }
@@ -194,7 +211,8 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
 
     public void addYears(int value) { add(Calendar.YEAR, value); }
 
-    @Override public Kalendar clone() { return (Kalendar)super.clone(); }
+    @Override
+    public Kalendar clone() { return (Kalendar)super.clone(); }
 
     public @Range(from = 28, to = 31) int daysInMonth() { return Dates.daysInMonth(getRealMonth(), getYear()); }
 
@@ -258,15 +276,30 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
 
     public static @Range(from = 28, to = 31) int daysInRealMonth(@Range(from = 1, to = 12) int realMonth, int year) { return Dates.daysInMonth(realMonth, year); }
 
-    @Contract(" -> new") public static @NotNull Kalendar getInstance() { return new Kalendar(); }
+    @Contract(" -> new")
+    public static @NotNull Kalendar distantFuture() {
+        return new Kalendar(Long.MAX_VALUE);
+    }
 
-    @Contract("null -> null; !null -> new") public static Kalendar getInstance(@Nullable Date dt) { return getInstance(dt, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT)); }
+    @Contract(" -> new")
+    public static @NotNull Kalendar distantPast() {
+        return new Kalendar(Long.MIN_VALUE);
+    }
 
-    @Contract("null, _ -> null; !null, _ -> new") public static Kalendar getInstance(@Nullable Date dt, @NotNull Locale aLocale) { return getInstance(dt, TimeZone.getDefault(), aLocale); }
+    @Contract("null, _ -> null; !null, _ -> new")
+    public static Kalendar getInstance(@Nullable Date dt, @NotNull Locale aLocale) { return getInstance(dt, TimeZone.getDefault(), aLocale); }
 
-    @Contract("null, _ -> null; !null, _ -> new") public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone) { return getInstance(dt, zone, Locale.getDefault(Category.FORMAT)); }
+    @Contract("null, _ -> null; !null, _ -> new")
+    public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone) { return getInstance(dt, zone, Locale.getDefault(Category.FORMAT)); }
 
-    @Contract("null, _, _ -> null; !null, _, _ -> new") public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+    @Contract("null, _, _ -> null; !null, _, _ -> new")
+    public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
         return ((dt == null) ? null : new Kalendar(dt, zone, aLocale));
     }
+
+    @Contract(" -> new")
+    public static @NotNull Kalendar getInstance() { return new Kalendar(); }
+
+    @Contract("null -> null; !null -> new")
+    public static Kalendar getInstance(@Nullable Date dt) { return getInstance(dt, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT)); }
 }

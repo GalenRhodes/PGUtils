@@ -127,10 +127,26 @@ public final class Dates {
         return c;
     }
 
+    public static boolean datesOverlap(Date dateStart1, Date dateEnd1, Date dateStart2, Date dateEnd2) {
+        return datesOverlap(Kalendar.getInstance(dateStart1), Kalendar.getInstance(dateEnd1), Kalendar.getInstance(dateStart2), Kalendar.getInstance(dateEnd2));
+    }
+
+    public static boolean datesOverlap(Calendar startDate1, Calendar endDate1, Calendar startDate2, Calendar endDate2) {
+        Calendar start1 = ((startDate1 == null) ? Kalendar.distantPast() : startDate1);
+        Calendar start2 = ((startDate2 == null) ? Kalendar.distantPast() : startDate2);
+        Calendar end1   = ((endDate1 == null) ? Kalendar.distantFuture() : endDate1);
+        Calendar end2   = ((endDate2 == null) ? Kalendar.distantFuture() : endDate2);
+
+        if(end1.before(start1)) return datesOverlap(end1, start1, start2, end2);
+        if(end2.after(start2)) return datesOverlap(start1, end1, end2, start2);
+        return !((end2.compareTo(start1) <= 0) || (end1.compareTo(start2) <= 0));
+    }
+
     /**
      * Determines the number of days in a month for the given month. If the month is February then the number of days will depend on if the current year is a leap year.
      *
      * @param month the month.
+     *
      * @return the number of days in the month.
      */
     public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = 1, to = 12) int month) {
@@ -142,6 +158,7 @@ public final class Dates {
      *
      * @param month the month.
      * @param year  the year that the month is in.
+     *
      * @return the number of days in the month.
      */
     public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = 1, to = 12) int month, int year) {
@@ -162,6 +179,18 @@ public final class Dates {
         }/*@f1*/
     }
 
+    public static @NotNull Calendar distantFuture() {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(Long.MAX_VALUE);
+        return c;
+    }
+
+    public static @NotNull Calendar distantPast() {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(Long.MIN_VALUE);
+        return c;
+    }
+
     public static @NotNull String format(@NotNull String pattern, @NotNull Calendar calendar) {
         return format(pattern, calendar.getTime());
     }
@@ -178,6 +207,7 @@ public final class Dates {
      * Create and return a new instance of Calendar from the given milliseconds since the epoch.
      *
      * @param milliseconds The current date and time in milliseconds since the epoch.
+     *
      * @return A new instance of Calendar.
      */
     @Contract("_ -> new")
@@ -189,6 +219,7 @@ public final class Dates {
      * Create and return a new instance of Calendar from the given milliseconds since the epoch.
      *
      * @param milliseconds The current date and time in milliseconds since the epoch.
+     *
      * @return A new instance of Calendar.
      */
     @Contract("_,_ -> new")
@@ -200,6 +231,7 @@ public final class Dates {
      * Create and return a new instance of Calendar from the given milliseconds since the epoch.
      *
      * @param milliseconds The current date and time in milliseconds since the epoch.
+     *
      * @return A new instance of Calendar.
      */
     @Contract("_,_ -> new")
@@ -211,6 +243,7 @@ public final class Dates {
      * Create and return a new instance of Calendar from the given milliseconds since the epoch.
      *
      * @param milliseconds The current date and time in milliseconds since the epoch.
+     *
      * @return A new instance of Calendar.
      */
     @Contract("_,_,_ -> new")
@@ -223,7 +256,7 @@ public final class Dates {
     public static int @NotNull [] getDateComponents(@NotNull Date date) {
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(date);
-        return new int[] {
+        return new int[]{
                 (c.get(Calendar.MONTH) + 1), c.get(Calendar.DATE), c.get(Calendar.YEAR), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND), c.get(Calendar.MILLISECOND)
         };
     }
@@ -238,10 +271,43 @@ public final class Dates {
      * numbers, 1 - year number must be given. For example, year BC 4 is specified as -3.
      *
      * @param year the given year.
+     *
      * @return <code>true</code> if the given year is a leap year; <code>false</code> otherwise.
      */
     public static boolean isLeapYear(int year) {
         return new GregorianCalendar().isLeapYear(year);
+    }
+
+    @Contract(pure = true)
+    public static <T extends Calendar> @NotNull T max(@Nullable T c1, @Nullable T c2) {
+        if((c1 == null) && (c2 == null)) throw new NullPointerException(msgs.getString("msg.err.both_dates_null"));
+        if(c1 == null) return c2;
+        if(c2 == null) return c1;
+        return ((c1.compareTo(c2) >= 0) ? c1 : c2);
+    }
+
+    @Contract(pure = true)
+    public static <T extends Date> @NotNull T max(@Nullable T c1, @Nullable T c2) {
+        if((c1 == null) && (c2 == null)) throw new NullPointerException(msgs.getString("msg.err.both_dates_null"));
+        if(c1 == null) return c2;
+        if(c2 == null) return c1;
+        return ((c1.compareTo(c2) >= 0) ? c1 : c2);
+    }
+
+    @Contract(pure = true)
+    public static <T extends Calendar> @NotNull T min(@Nullable T c1, @Nullable T c2) {
+        if((c1 == null) && (c2 == null)) throw new NullPointerException(msgs.getString("msg.err.both_dates_null"));
+        if(c1 == null) return c2;
+        if(c2 == null) return c1;
+        return ((c1.compareTo(c2) <= 0) ? c1 : c2);
+    }
+
+    @Contract(pure = true)
+    public static <T extends Date> @NotNull T min(@Nullable T c1, @Nullable T c2) {
+        if((c1 == null) && (c2 == null)) throw new NullPointerException(msgs.getString("msg.err.both_dates_null"));
+        if(c1 == null) return c2;
+        if(c2 == null) return c1;
+        return ((c1.compareTo(c2) <= 0) ? c1 : c2);
     }
 
     @Contract("!null,_,_ -> new; null,_,_ -> null")

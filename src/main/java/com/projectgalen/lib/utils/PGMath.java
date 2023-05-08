@@ -140,4 +140,12 @@ public final class PGMath {
         for(double v : values) if(v < first) first = v;
         return first;
     }
+
+    public static <T extends Comparable<T>> @NotNull T max(@NotNull T o1, @NotNull T o2) {
+        return ((o1.compareTo(o2) >= 0) ? o1 : o2);
+    }
+
+    public static <T extends Comparable<T>> @NotNull T min(@NotNull T o1, @NotNull T o2) {
+        return ((o1.compareTo(o2) <= 0) ? o1 : o2);
+    }
 }

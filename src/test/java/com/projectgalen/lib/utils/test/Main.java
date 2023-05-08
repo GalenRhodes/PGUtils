@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.nio.charset.StandardCharsets;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -26,22 +27,30 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            String[] strings = {
-                    "Galen Rhodes", "     ", "     Galen Rhodes", "Galen Rhodes     ", "     Galen Rhodes     "
-            };
+            System.out.println();
+            Calendar c = Calendar.getInstance();
+            System.out.printf("Class: %s\n\n", c.getClass().getName());
 
-            for(String inStr : strings) {
-                char[] inArr  = inStr.toCharArray();
-                char[] outArr = PGArrays.tr(inArr);
-                String outStr = new String(outArr);
+            c.setTimeInMillis(Long.MAX_VALUE);
+            printCalendar("Distant Future", c);
 
-                System.out.printf("Input: \"%s\"; Output: \"%s\"\n", inStr, outStr);
-            }
+            c.setTimeInMillis(Long.MIN_VALUE);
+            printCalendar("Distant Past", c);
+
+            System.out.println();
         }
         catch(Exception e) {
             System.err.printf(String.format("\n\nERROR: %s\n", e));
             e.printStackTrace(System.err);
         }
+    }
+
+    private static void printCalendar(String desc, Calendar c) {
+        String era    = ((c.get(Calendar.ERA) == GregorianCalendar.BC) ? "BC" : "AD");
+        String millis = NumberFormat.getIntegerInstance().format(c.getTimeInMillis());
+        String date   = Dates.format("MM/dd/yyyy", c);
+
+        System.out.printf("%20s: %s %s (%s)\n", desc, date, era, millis);
     }
 
     private static void checkAssignability(Field @NotNull [] fields) {
@@ -161,6 +170,20 @@ public class Main {
         System.out.print(msgs.format("form02", msgs.getString("long_field"), obj.getLongField()));
         f.set(obj, Long.valueOf((byte)4));
         System.out.print(msgs.format("form02", msgs.getString("long_field"), obj.getLongField()));
+    }
+
+    private static void testCharArrayTrim() {
+        String[] strings = {
+                "Galen Rhodes", "     ", "     Galen Rhodes", "Galen Rhodes     ", "     Galen Rhodes     "
+        };
+
+        for(String inStr : strings) {
+            char[] inArr  = inStr.toCharArray();
+            char[] outArr = PGArrays.tr(inArr);
+            String outStr = new String(outArr);
+
+            System.out.printf("Input: \"%s\"; Output: \"%s\"\n", inStr, outStr);
+        }
     }
 
     private static void testDashReplacement() {
