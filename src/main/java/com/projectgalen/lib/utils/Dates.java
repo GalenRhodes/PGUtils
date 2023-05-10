@@ -363,4 +363,32 @@ public final class Dates {
     private static @NotNull Calendar getCalendarInstance(@Nullable TimeZone tz, @Nullable Locale locale) {
         return Calendar.getInstance(((tz == null) ? TimeZone.getDefault() : tz), ((locale == null) ? Locale.getDefault() : locale));
     }
+
+    public static boolean isInOpenRange(@NotNull Calendar when, Calendar date1, Calendar date2) {
+        if(date1 == null) date1 = distantPast();
+        if(date2 == null) date2 = distantFuture();
+        if(date2.before(date1)) return isInOpenRange(when, date2, date1);
+        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) < 0));
+    }
+
+    public static boolean isInOpenRange(@NotNull Date when, Date date1, Date date2) {
+        if(date1 == null) date1 = distantPast().getTime();
+        if(date2 == null) date2 = distantFuture().getTime();
+        if(date2.before(date1)) return isInOpenRange(when, date2, date1);
+        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) < 0));
+    }
+
+    public static boolean isInRange(@NotNull Date when, Date date1, Date date2) {
+        if(date1 == null) date1 = distantPast().getTime();
+        if(date2 == null) date2 = distantFuture().getTime();
+        if(date2.before(date1)) return isInRange(when, date2, date1);
+        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) <= 0));
+    }
+
+    public static boolean isInRange(@NotNull Calendar when, Calendar date1, Calendar date2) {
+        if(date1 == null) date1 = distantPast();
+        if(date2 == null) date2 = distantFuture();
+        if(date2.before(date1)) return isInRange(when, date2, date1);
+        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) <= 0));
+    }
 }

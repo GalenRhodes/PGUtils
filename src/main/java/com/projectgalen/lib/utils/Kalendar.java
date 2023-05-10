@@ -302,4 +302,20 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
 
     @Contract("null -> null; !null -> new")
     public static Kalendar getInstance(@Nullable Date dt) { return getInstance(dt, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT)); }
+
+    public boolean isInOpenRange(Kalendar date1, Kalendar date2) {
+        return Dates.isInOpenRange(this, date1, date2);
+    }
+
+    public boolean isInOpenRange(Date date1, Date date2) {
+        return Dates.isInOpenRange(this.getTime(), date1, date2);
+    }
+
+    public boolean isInRange(Date date1, Date date2) {
+        return Dates.isInRange(this.getTime(), date1, date2);
+    }
+
+    public boolean isInRange(Kalendar date1, Kalendar date2) {
+        return Dates.isInRange(this, date1, date2);
+    }
 }
