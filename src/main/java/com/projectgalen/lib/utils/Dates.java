@@ -50,78 +50,90 @@ public final class Dates {
     }
 
     @Contract("_,_,_ -> new")
-    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY,
-            Calendar.FEBRUARY,
-            Calendar.MARCH,
-            Calendar.APRIL,
-            Calendar.MAY,
-            Calendar.JUNE,
-            Calendar.JULY,
-            Calendar.AUGUST,
-            Calendar.SEPTEMBER,
-            Calendar.OCTOBER,
-            Calendar.NOVEMBER,
-            Calendar.DECEMBER,
-            Calendar.UNDECIMBER
-    }) int month, int date) {
+    public static @NotNull Calendar createCalendar(int year,
+                                                   @MagicConstant(intValues = { Calendar.JANUARY,
+                                                                                Calendar.FEBRUARY,
+                                                                                Calendar.MARCH,
+                                                                                Calendar.APRIL,
+                                                                                Calendar.MAY,
+                                                                                Calendar.JUNE,
+                                                                                Calendar.JULY,
+                                                                                Calendar.AUGUST,
+                                                                                Calendar.SEPTEMBER,
+                                                                                Calendar.OCTOBER,
+                                                                                Calendar.NOVEMBER,
+                                                                                Calendar.DECEMBER,
+                                                                                Calendar.UNDECIMBER }) int month,
+                                                   int date) {
         return createCalendar(year, month, date, null, null);
     }
 
     @Contract("_,_,_,_,_ -> new")
-    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY,
-            Calendar.FEBRUARY,
-            Calendar.MARCH,
-            Calendar.APRIL,
-            Calendar.MAY,
-            Calendar.JUNE,
-            Calendar.JULY,
-            Calendar.AUGUST,
-            Calendar.SEPTEMBER,
-            Calendar.OCTOBER,
-            Calendar.NOVEMBER,
-            Calendar.DECEMBER,
-            Calendar.UNDECIMBER
-    }) int month, int date, @Nullable TimeZone tz, @Nullable Locale locale) {
+    public static @NotNull Calendar createCalendar(int year,
+                                                   @MagicConstant(intValues = { Calendar.JANUARY,
+                                                                                Calendar.FEBRUARY,
+                                                                                Calendar.MARCH,
+                                                                                Calendar.APRIL,
+                                                                                Calendar.MAY,
+                                                                                Calendar.JUNE,
+                                                                                Calendar.JULY,
+                                                                                Calendar.AUGUST,
+                                                                                Calendar.SEPTEMBER,
+                                                                                Calendar.OCTOBER,
+                                                                                Calendar.NOVEMBER,
+                                                                                Calendar.DECEMBER,
+                                                                                Calendar.UNDECIMBER }) int month,
+                                                   int date,
+                                                   @Nullable TimeZone tz,
+                                                   @Nullable Locale locale) {
         return createCalendar(year, month, date, 0, 0, 0, 0, tz, locale);
     }
 
     @Contract("_,_,_,_,_,_,_ -> new")
-    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY,
-            Calendar.FEBRUARY,
-            Calendar.MARCH,
-            Calendar.APRIL,
-            Calendar.MAY,
-            Calendar.JUNE,
-            Calendar.JULY,
-            Calendar.AUGUST,
-            Calendar.SEPTEMBER,
-            Calendar.OCTOBER,
-            Calendar.NOVEMBER,
-            Calendar.DECEMBER,
-            Calendar.UNDECIMBER
-    }) int month, int date, int hour24, int minute, int second, int ms) {
+    public static @NotNull Calendar createCalendar(int year,
+                                                   @MagicConstant(intValues = { Calendar.JANUARY,
+                                                                                Calendar.FEBRUARY,
+                                                                                Calendar.MARCH,
+                                                                                Calendar.APRIL,
+                                                                                Calendar.MAY,
+                                                                                Calendar.JUNE,
+                                                                                Calendar.JULY,
+                                                                                Calendar.AUGUST,
+                                                                                Calendar.SEPTEMBER,
+                                                                                Calendar.OCTOBER,
+                                                                                Calendar.NOVEMBER,
+                                                                                Calendar.DECEMBER,
+                                                                                Calendar.UNDECIMBER }) int month,
+                                                   int date,
+                                                   int hour24,
+                                                   int minute,
+                                                   int second,
+                                                   int ms) {
         return createCalendar(year, month, date, hour24, minute, second, ms, null, null);
     }
 
     @Contract("_,_,_,_,_,_,_,_,_ -> new")
-    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = {
-            Calendar.JANUARY,
-            Calendar.FEBRUARY,
-            Calendar.MARCH,
-            Calendar.APRIL,
-            Calendar.MAY,
-            Calendar.JUNE,
-            Calendar.JULY,
-            Calendar.AUGUST,
-            Calendar.SEPTEMBER,
-            Calendar.OCTOBER,
-            Calendar.NOVEMBER,
-            Calendar.DECEMBER,
-            Calendar.UNDECIMBER
-    }) int month, int date, int hour24, int minute, int second, int ms, @Nullable TimeZone tz, @Nullable Locale locale) {
+    public static @NotNull Calendar createCalendar(int year,
+                                                   @MagicConstant(intValues = { Calendar.JANUARY,
+                                                                                Calendar.FEBRUARY,
+                                                                                Calendar.MARCH,
+                                                                                Calendar.APRIL,
+                                                                                Calendar.MAY,
+                                                                                Calendar.JUNE,
+                                                                                Calendar.JULY,
+                                                                                Calendar.AUGUST,
+                                                                                Calendar.SEPTEMBER,
+                                                                                Calendar.OCTOBER,
+                                                                                Calendar.NOVEMBER,
+                                                                                Calendar.DECEMBER,
+                                                                                Calendar.UNDECIMBER }) int month,
+                                                   int date,
+                                                   int hour24,
+                                                   int minute,
+                                                   int second,
+                                                   int ms,
+                                                   @Nullable TimeZone tz,
+                                                   @Nullable Locale locale) {
         Calendar c = getCalendarInstance(tz, locale);
         c.set(year, month, date, hour24, minute, second);
         c.set(Calendar.MILLISECOND, ms);
@@ -143,7 +155,9 @@ public final class Dates {
         return !((end2.compareTo(start1) <= 0) || (end1.compareTo(start2) <= 0));
     }
 
-    public static @Range(from = 28, to = 31) int daysInMonth(@NotNull Calendar c) { return Dates.daysInMonth(getRealMonth(c), getYear(c)); }
+    public static @Range(from = 28, to = 31) int daysInMonth(@NotNull Calendar c) {
+        return Dates.daysInMonth(getRealMonth(c), getYear(c));
+    }
 
     /**
      * Determines the number of days in a month for the given month. If the month is February then the number of days will depend on if the current year is a leap year.
@@ -206,9 +220,13 @@ public final class Dates {
         }
     }
 
-    public static @Range(from = 0, to = 1) int getAmPm(@NotNull Calendar c) { return c.get(Calendar.AM_PM); }
+    public static @Range(from = 0, to = 1) int getAmPm(@NotNull Calendar c) {
+        return c.get(Calendar.AM_PM);
+    }
 
-    public static @Range(from = 0, to = 11) int getAmPmHour(@NotNull Calendar c) { return c.get(Calendar.HOUR); }
+    public static @Range(from = 0, to = 11) int getAmPmHour(@NotNull Calendar c) {
+        return c.get(Calendar.HOUR);
+    }
 
     /**
      * Create and return a new instance of Calendar from the given milliseconds since the epoch.
@@ -260,38 +278,62 @@ public final class Dates {
         return c;
     }
 
-    public static @Range(from = 1, to = 31) int getDate(@NotNull Calendar c) { return c.get(Calendar.DATE); }
+    public static @Range(from = 1, to = 31) int getDate(@NotNull Calendar c) {
+        return c.get(Calendar.DATE);
+    }
 
     public static int @NotNull [] getDateComponents(@NotNull Date date) {
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(date);
-        return new int[]{
-                (c.get(Calendar.MONTH) + 1), c.get(Calendar.DATE), c.get(Calendar.YEAR), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND), c.get(Calendar.MILLISECOND)
-        };
+        return new int[]{ (c.get(Calendar.MONTH) + 1),
+                          c.get(Calendar.DATE),
+                          c.get(Calendar.YEAR),
+                          c.get(Calendar.HOUR_OF_DAY),
+                          c.get(Calendar.MINUTE),
+                          c.get(Calendar.SECOND),
+                          c.get(Calendar.MILLISECOND) };
     }
 
-    public static @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int getDayOfWeek(@NotNull Calendar c) { return c.get(Calendar.DAY_OF_WEEK); }
+    public static @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int getDayOfWeek(@NotNull Calendar c) {
+        return c.get(Calendar.DAY_OF_WEEK);
+    }
 
-    public static int getDstOffset(@NotNull Calendar c) { return c.get(Calendar.DST_OFFSET); }
+    public static int getDstOffset(@NotNull Calendar c) {
+        return c.get(Calendar.DST_OFFSET);
+    }
 
-    public static @Range(from = 0, to = 23) int getHour(@NotNull Calendar c) { return c.get(Calendar.HOUR_OF_DAY); }
+    public static @Range(from = 0, to = 23) int getHour(@NotNull Calendar c) {
+        return c.get(Calendar.HOUR_OF_DAY);
+    }
 
-    public static @Range(from = 0, to = 999) int getMillisecond(@NotNull Calendar c) { return c.get(Calendar.MILLISECOND); }
+    public static @Range(from = 0, to = 999) int getMillisecond(@NotNull Calendar c) {
+        return c.get(Calendar.MILLISECOND);
+    }
 
-    public static @Range(from = 0, to = 59) int getMinute(@NotNull Calendar c) { return c.get(Calendar.MINUTE); }
+    public static @Range(from = 0, to = 59) int getMinute(@NotNull Calendar c) {
+        return c.get(Calendar.MINUTE);
+    }
 
-    public static @Range(from = 0, to = 11) int getMonth(@NotNull Calendar c) { return c.get(Calendar.MONTH); }
+    public static @Range(from = 0, to = 11) int getMonth(@NotNull Calendar c) {
+        return c.get(Calendar.MONTH);
+    }
 
-    public static @Range(from = 1, to = 12) int getRealMonth(@NotNull Calendar c) { return c.get(Calendar.MONTH) + 1; }
+    public static @Range(from = 1, to = 12) int getRealMonth(@NotNull Calendar c) {
+        return c.get(Calendar.MONTH) + 1;
+    }
 
-    public static @Range(from = 0, to = 59) int getSecond(@NotNull Calendar c) { return c.get(Calendar.SECOND); }
+    public static @Range(from = 0, to = 59) int getSecond(@NotNull Calendar c) {
+        return c.get(Calendar.SECOND);
+    }
 
     @Contract("-> new")
     public static @NotNull Timestamp getTimestamp() {
         return new Timestamp(Calendar.getInstance().getTimeInMillis());
     }
 
-    public static int getYear(@NotNull Calendar c) { return c.get(Calendar.YEAR); }
+    public static int getYear(@NotNull Calendar c) {
+        return c.get(Calendar.YEAR);
+    }
 
     public static boolean isInOpenRange(@NotNull Calendar when, Calendar date1, Calendar date2) {
         if(date1 == null) date1 = distantPast();
@@ -321,7 +363,9 @@ public final class Dates {
         return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) <= 0));
     }
 
-    public static boolean isLeapYear(@NotNull Calendar c) { return isLeapYear(getYear(c)); }
+    public static boolean isLeapYear(@NotNull Calendar c) {
+        return isLeapYear(getYear(c));
+    }
 
     /**
      * Convienience method for <code>new GregorianCalendar().isLeapYear(year)</code>. Determines if the given year is a leap year. Returns true if the given year is a leap year. To specify BC year
@@ -367,29 +411,137 @@ public final class Dates {
         return ((c1.compareTo(c2) <= 0) ? c1 : c2);
     }
 
-    public static void setAmPm(@NotNull Calendar c, @MagicConstant(intValues = { Calendar.AM, Calendar.PM }) int value) { c.set(Calendar.AM_PM, value); }
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setAmPm(@NotNull Calendar c, @MagicConstant(intValues = { Calendar.AM, Calendar.PM }) int value) {
+        c.set(Calendar.AM_PM, value);
+        return c;
+    }
 
-    public static void setAmPmHour(@NotNull Calendar c, @Range(from = 0, to = 11) int value) { c.set(Calendar.HOUR, value); }
+    @Contract("_, _ -> new")
+    public static @NotNull Date setAmPm(@NotNull Date c, @MagicConstant(intValues = { Calendar.AM, Calendar.PM }) int value) {
+        return setAmPm(toCalendar(c), value).getTime();
+    }
 
-    public static void setDate(@NotNull Calendar c, @Range(from = 1, to = 31) int value) { c.set(Calendar.DATE, value); }
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setAmPmHour(@NotNull Calendar c, @Range(from = 0, to = 11) int value) {
+        c.set(Calendar.HOUR, value);
+        return c;
+    }
 
-    public static void setDayOfWeek(@NotNull Calendar c, @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int value) { c.set(Calendar.DAY_OF_WEEK, value); }
+    @Contract("_, _ -> new")
+    public static @NotNull Date setAmPmHour(@NotNull Date c, @Range(from = 0, to = 11) int value) {
+        return setAmPmHour(toCalendar(c), value).getTime();
+    }
 
-    public static void setDstOffset(@NotNull Calendar c, int value) { c.set(Calendar.DST_OFFSET, value); }
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setDate(@NotNull Calendar c, @Range(from = 1, to = 31) int value) {
+        c.set(Calendar.DATE, value);
+        return c;
+    }
 
-    public static void setHour(@NotNull Calendar c, @Range(from = 0, to = 23) int value) { c.set(Calendar.HOUR_OF_DAY, value); }
+    @Contract("_, _ -> new")
+    public static @NotNull Date setDate(@NotNull Date c, @Range(from = 1, to = 31) int value) {
+        return setDate(toCalendar(c), value).getTime();
+    }
 
-    public static void setMillisecond(@NotNull Calendar c, @Range(from = 0, to = 999) int value) { c.set(Calendar.MILLISECOND, value); }
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setDayOfWeek(@NotNull Calendar c, @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int value) {
+        c.set(Calendar.DAY_OF_WEEK, value);
+        return c;
+    }
 
-    public static void setMinute(@NotNull Calendar c, @Range(from = 0, to = 59) int value) { c.set(Calendar.MINUTE, value); }
+    @Contract("_, _ -> new")
+    public static @NotNull Date setDayOfWeek(@NotNull Date c, @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int value) {
+        return setDayOfWeek(toCalendar(c), value).getTime();
+    }
 
-    public static void setMonth(@NotNull Calendar c, @Range(from = 0, to = 11) int value) { c.set(Calendar.MONTH, value); }
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setDstOffset(@NotNull Calendar c, int value) {
+        c.set(Calendar.DST_OFFSET, value);
+        return c;
+    }
 
-    public static void setRealMonth(@NotNull Calendar c, @Range(from = 1, to = 12) int value) { c.set(Calendar.MONTH, value - 1); }
+    @Contract("_, _ -> new")
+    public static @NotNull Date setDstOffset(@NotNull Date c, int value) {
+        return setDstOffset(toCalendar(c), value).getTime();
+    }
 
-    public static void setSecond(@NotNull Calendar c, @Range(from = 0, to = 59) int value) { c.set(Calendar.SECOND, value); }
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setHour(@NotNull Calendar c, @Range(from = 0, to = 23) int value) {
+        c.set(Calendar.HOUR_OF_DAY, value);
+        return c;
+    }
 
-    public static void setYear(@NotNull Calendar c, int value) { c.set(Calendar.YEAR, value); }
+    @Contract("_, _ -> new")
+    public static @NotNull Date setHour(@NotNull Date c, @Range(from = 0, to = 23) int value) {
+        return setHour(toCalendar(c), value).getTime();
+    }
+
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setMillisecond(@NotNull Calendar c, @Range(from = 0, to = 999) int value) {
+        c.set(Calendar.MILLISECOND, value);
+        return c;
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull Date setMillisecond(@NotNull Date c, @Range(from = 0, to = 999) int value) {
+        return setMillisecond(toCalendar(c), value).getTime();
+    }
+
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setMinute(@NotNull Calendar c, @Range(from = 0, to = 59) int value) {
+        c.set(Calendar.MINUTE, value);
+        return c;
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull Date setMinute(@NotNull Date c, @Range(from = 0, to = 59) int value) {
+        return setMinute(toCalendar(c), value).getTime();
+    }
+
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setMonth(@NotNull Calendar c, @Range(from = 0, to = 11) int value) {
+        c.set(Calendar.MONTH, value);
+        return c;
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull Date setMonth(@NotNull Date c, @Range(from = 0, to = 11) int value) {
+        return setMonth(toCalendar(c), value).getTime();
+    }
+
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setRealMonth(@NotNull Calendar c, @Range(from = 1, to = 12) int value) {
+        c.set(Calendar.MONTH, value - 1);
+        return c;
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull Date setRealMonth(@NotNull Date c, @Range(from = 1, to = 12) int value) {
+        return setRealMonth(toCalendar(c), value).getTime();
+    }
+
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setSecond(@NotNull Calendar c, @Range(from = 0, to = 59) int value) {
+        c.set(Calendar.SECOND, value);
+        return c;
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull Date setSecond(@NotNull Date c, @Range(from = 0, to = 59) int value) {
+        return setSecond(toCalendar(c), value).getTime();
+    }
+
+    @Contract("_, _ -> param1")
+    public static @NotNull Calendar setYear(@NotNull Calendar c, int value) {
+        c.set(Calendar.YEAR, value);
+        return c;
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull Date setYear(@NotNull Date c, int value) {
+        return setYear(toCalendar(c), value).getTime();
+    }
 
     @Contract("!null,_,_ -> new; null,_,_ -> null")
     public static Calendar toCalendar(@Nullable Date dt, @Nullable TimeZone tz, @Nullable Locale locale) {

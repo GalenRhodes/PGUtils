@@ -195,113 +195,94 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
         setTime(dt);
     }
 
-    public void addAmPmHours(int value) { add(Calendar.HOUR, value); }
+    public void addAmPmHours(int value) {
+        add(Calendar.HOUR, value);
+    }
 
-    public void addDays(int value) { add(Calendar.DATE, value); }
+    public void addDays(int value) {
+        add(Calendar.DATE, value);
+    }
 
-    public void addHours(int value) { add(Calendar.HOUR_OF_DAY, value); }
+    public void addHours(int value) {
+        add(Calendar.HOUR_OF_DAY, value);
+    }
 
-    public void addMilliseconds(int value) { add(Calendar.MILLISECOND, value); }
+    public void addMilliseconds(int value) {
+        add(Calendar.MILLISECOND, value);
+    }
 
-    public void addMinutes(int value) { add(Calendar.MINUTE, value); }
+    public void addMinutes(int value) {
+        add(Calendar.MINUTE, value);
+    }
 
-    public void addMonths(int value) { add(Calendar.MONTH, value); }
+    public void addMonths(int value) {
+        add(Calendar.MONTH, value);
+    }
 
-    public void addSeconds(int value) { add(Calendar.SECOND, value); }
+    public void addSeconds(int value) {
+        add(Calendar.SECOND, value);
+    }
 
-    public void addYears(int value) { add(Calendar.YEAR, value); }
+    public void addYears(int value) {
+        add(Calendar.YEAR, value);
+    }
 
     @Override
-    public Kalendar clone() { return (Kalendar)super.clone(); }
-
-    public @Range(from = 28, to = 31) int daysInMonth() { return Dates.daysInMonth(getRealMonth(), getYear()); }
-
-    public @Range(from = 0, to = 1) int getAmPm() { return get(Calendar.AM_PM); }
-
-    public @Range(from = 0, to = 11) int getAmPmHour() { return get(Calendar.HOUR); }
-
-    public @Range(from = 1, to = 31) int getDate() { return get(Calendar.DATE); }
-
-    public @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int getDayOfWeek() { return get(Calendar.DAY_OF_WEEK); }
-
-    public int getDstOffset() { return get(Calendar.DST_OFFSET); }
-
-    public @Range(from = 0, to = 23) int getHour() { return get(Calendar.HOUR_OF_DAY); }
-
-    public @Range(from = 0, to = 999) int getMillisecond() { return get(Calendar.MILLISECOND); }
-
-    public @Range(from = 0, to = 59) int getMinute() { return get(Calendar.MINUTE); }
-
-    public @Range(from = 0, to = 11) int getMonth() { return get(Calendar.MONTH); }
-
-    public @Range(from = 1, to = 12) int getRealMonth() { return get(Calendar.MONTH) + 1; }
-
-    public @Range(from = 0, to = 59) int getSecond() { return get(Calendar.SECOND); }
-
-    public int getYear() { return get(Calendar.YEAR); }
-
-    public boolean isLeapYear() { return isLeapYear(getYear()); }
-
-    public void setAmPm(@MagicConstant(intValues = { Calendar.AM, Calendar.PM }) int value) { set(Calendar.AM_PM, value); }
-
-    public void setAmPmHour(@Range(from = 0, to = 11) int value) { set(Calendar.HOUR, value); }
-
-    public void setDate(@Range(from = 1, to = 31) int value) { set(Calendar.DATE, value); }
-
-    public void setDayOfWeek(@Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int value) { set(Calendar.DAY_OF_WEEK, value); }
-
-    public void setDstOffset(int value) { set(Calendar.DST_OFFSET, value); }
-
-    public void setHour(@Range(from = 0, to = 23) int value) { set(Calendar.HOUR_OF_DAY, value); }
-
-    public void setMillisecond(@Range(from = 0, to = 999) int value) { set(Calendar.MILLISECOND, value); }
-
-    public void setMinute(@Range(from = 0, to = 59) int value) { set(Calendar.MINUTE, value); }
-
-    public void setMonth(@Range(from = 0, to = 11) int value) { set(Calendar.MONTH, value); }
-
-    public void setRealMonth(@Range(from = 1, to = 12) int value) { set(Calendar.MONTH, value - 1); }
-
-    public void setSecond(@Range(from = 0, to = 59) int value) { set(Calendar.SECOND, value); }
-
-    public void setYear(int value) { set(Calendar.YEAR, value); }
-
-    public java.sql.Date toSQLDate() { return new java.sql.Date(getTimeInMillis()); }
-
-    public Time toSQLTime() { return new Time(getTimeInMillis()); }
-
-    public Timestamp toSQLTimestamp() { return new Timestamp(getTimeInMillis()); }
-
-    public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = Calendar.JANUARY, to = Calendar.DECEMBER) int month, int year) { return Dates.daysInMonth(month + 1, year); }
-
-    public static @Range(from = 28, to = 31) int daysInRealMonth(@Range(from = 1, to = 12) int realMonth, int year) { return Dates.daysInMonth(realMonth, year); }
-
-    @Contract(" -> new")
-    public static @NotNull Kalendar distantFuture() {
-        return new Kalendar(Long.MAX_VALUE);
+    public Kalendar clone() {
+        return (Kalendar)super.clone();
     }
 
-    @Contract(" -> new")
-    public static @NotNull Kalendar distantPast() {
-        return new Kalendar(Long.MIN_VALUE);
+    public @Range(from = 28, to = 31) int daysInMonth() {
+        return Dates.daysInMonth(getRealMonth(), getYear());
     }
 
-    @Contract("null, _ -> null; !null, _ -> new")
-    public static Kalendar getInstance(@Nullable Date dt, @NotNull Locale aLocale) { return getInstance(dt, TimeZone.getDefault(), aLocale); }
-
-    @Contract("null, _ -> null; !null, _ -> new")
-    public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone) { return getInstance(dt, zone, Locale.getDefault(Category.FORMAT)); }
-
-    @Contract("null, _, _ -> null; !null, _, _ -> new")
-    public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
-        return ((dt == null) ? null : new Kalendar(dt, zone, aLocale));
+    public @Range(from = 0, to = 1) int getAmPm() {
+        return get(Calendar.AM_PM);
     }
 
-    @Contract(" -> new")
-    public static @NotNull Kalendar getInstance() { return new Kalendar(); }
+    public @Range(from = 0, to = 11) int getAmPmHour() {
+        return get(Calendar.HOUR);
+    }
 
-    @Contract("null -> null; !null -> new")
-    public static Kalendar getInstance(@Nullable Date dt) { return getInstance(dt, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT)); }
+    public @Range(from = 1, to = 31) int getDate() {
+        return get(Calendar.DATE);
+    }
+
+    public @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int getDayOfWeek() {
+        return get(Calendar.DAY_OF_WEEK);
+    }
+
+    public int getDstOffset() {
+        return get(Calendar.DST_OFFSET);
+    }
+
+    public @Range(from = 0, to = 23) int getHour() {
+        return get(Calendar.HOUR_OF_DAY);
+    }
+
+    public @Range(from = 0, to = 999) int getMillisecond() {
+        return get(Calendar.MILLISECOND);
+    }
+
+    public @Range(from = 0, to = 59) int getMinute() {
+        return get(Calendar.MINUTE);
+    }
+
+    public @Range(from = 0, to = 11) int getMonth() {
+        return get(Calendar.MONTH);
+    }
+
+    public @Range(from = 1, to = 12) int getRealMonth() {
+        return get(Calendar.MONTH) + 1;
+    }
+
+    public @Range(from = 0, to = 59) int getSecond() {
+        return get(Calendar.SECOND);
+    }
+
+    public int getYear() {
+        return get(Calendar.YEAR);
+    }
 
     public boolean isInOpenRange(Kalendar date1, Kalendar date2) {
         return Dates.isInOpenRange(this, date1, date2);
@@ -317,5 +298,124 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
 
     public boolean isInRange(Kalendar date1, Kalendar date2) {
         return Dates.isInRange(this, date1, date2);
+    }
+
+    public boolean isLeapYear() {
+        return isLeapYear(getYear());
+    }
+
+    public Kalendar setAmPm(@MagicConstant(intValues = { Calendar.AM, Calendar.PM }) int value) {
+        set(Calendar.AM_PM, value);
+        return this;
+    }
+
+    public Kalendar setAmPmHour(@Range(from = 0, to = 11) int value) {
+        set(Calendar.HOUR, value);
+        return this;
+    }
+
+    public Kalendar setDate(@Range(from = 1, to = 31) int value) {
+        set(Calendar.DATE, value);
+        return this;
+    }
+
+    public Kalendar setDayOfWeek(@Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int value) {
+        set(Calendar.DAY_OF_WEEK, value);
+        return this;
+    }
+
+    public Kalendar setDstOffset(int value) {
+        set(Calendar.DST_OFFSET, value);
+        return this;
+    }
+
+    public Kalendar setHour(@Range(from = 0, to = 23) int value) {
+        set(Calendar.HOUR_OF_DAY, value);
+        return this;
+    }
+
+    public Kalendar setMillisecond(@Range(from = 0, to = 999) int value) {
+        set(Calendar.MILLISECOND, value);
+        return this;
+    }
+
+    public Kalendar setMinute(@Range(from = 0, to = 59) int value) {
+        set(Calendar.MINUTE, value);
+        return this;
+    }
+
+    public Kalendar setMonth(@Range(from = 0, to = 11) int value) {
+        set(Calendar.MONTH, value);
+        return this;
+    }
+
+    public Kalendar setRealMonth(@Range(from = 1, to = 12) int value) {
+        set(Calendar.MONTH, value - 1);
+        return this;
+    }
+
+    public Kalendar setSecond(@Range(from = 0, to = 59) int value) {
+        set(Calendar.SECOND, value);
+        return this;
+    }
+
+    public Kalendar setYear(int value) {
+        set(Calendar.YEAR, value);
+        return this;
+    }
+
+    public java.sql.Date toSQLDate() {
+        return new java.sql.Date(getTimeInMillis());
+    }
+
+    public Time toSQLTime() {
+        return new Time(getTimeInMillis());
+    }
+
+    public Timestamp toSQLTimestamp() {
+        return new Timestamp(getTimeInMillis());
+    }
+
+    public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = Calendar.JANUARY, to = Calendar.DECEMBER) int month, int year) {
+        return Dates.daysInMonth(month + 1, year);
+    }
+
+    public static @Range(from = 28, to = 31) int daysInRealMonth(@Range(from = 1, to = 12) int realMonth, int year) {
+        return Dates.daysInMonth(realMonth, year);
+    }
+
+    @Contract(" -> new")
+    public static @NotNull Kalendar distantFuture() {
+        return new Kalendar(Long.MAX_VALUE);
+    }
+
+    @Contract(" -> new")
+    public static @NotNull Kalendar distantPast() {
+        return new Kalendar(Long.MIN_VALUE);
+    }
+
+    @Contract("null, _ -> null; !null, _ -> new")
+    public static Kalendar getInstance(@Nullable Date dt, @NotNull Locale aLocale) {
+        return getInstance(dt, TimeZone.getDefault(), aLocale);
+    }
+
+    @Contract("null, _ -> null; !null, _ -> new")
+    public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone) {
+        return getInstance(dt, zone, Locale.getDefault(Category.FORMAT));
+    }
+
+    @Contract("null, _, _ -> null; !null, _, _ -> new")
+    public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+        return ((dt == null) ? null : new Kalendar(dt, zone, aLocale));
+    }
+
+    @Contract(" -> new")
+    public static @NotNull Kalendar getInstance() {
+        return new Kalendar();
+    }
+
+    @Contract("null -> null; !null -> new")
+    public static Kalendar getInstance(@Nullable Date dt) {
+        return getInstance(dt, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT));
     }
 }
