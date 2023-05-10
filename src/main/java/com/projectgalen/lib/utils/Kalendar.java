@@ -195,36 +195,44 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
         setTime(dt);
     }
 
-    public void addAmPmHours(int value) {
+    public Kalendar addAmPmHours(int value) {
         add(Calendar.HOUR, value);
+        return this;
     }
 
-    public void addDays(int value) {
+    public Kalendar addDays(int value) {
         add(Calendar.DATE, value);
+        return this;
     }
 
-    public void addHours(int value) {
+    public Kalendar addHours(int value) {
         add(Calendar.HOUR_OF_DAY, value);
+        return this;
     }
 
-    public void addMilliseconds(int value) {
+    public Kalendar addMilliseconds(int value) {
         add(Calendar.MILLISECOND, value);
+        return this;
     }
 
-    public void addMinutes(int value) {
+    public Kalendar addMinutes(int value) {
         add(Calendar.MINUTE, value);
+        return this;
     }
 
-    public void addMonths(int value) {
+    public Kalendar addMonths(int value) {
         add(Calendar.MONTH, value);
+        return this;
     }
 
-    public void addSeconds(int value) {
+    public Kalendar addSeconds(int value) {
         add(Calendar.SECOND, value);
+        return this;
     }
 
-    public void addYears(int value) {
+    public Kalendar addYears(int value) {
         add(Calendar.YEAR, value);
+        return this;
     }
 
     @Override
