@@ -30,6 +30,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@SuppressWarnings("DuplicatedCode")
 public final class Dates {
     private static final PGResourceBundle              msgs       = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
     private static final Map<String, SimpleDateFormat> formatters = new TreeMap<>();
@@ -278,7 +279,7 @@ public final class Dates {
         return new GregorianCalendar().isLeapYear(year);
     }
 
-    @Contract(pure = true)
+    @Contract(pure = true, value = "null, null -> fail")
     public static <T extends Calendar> @NotNull T max(@Nullable T c1, @Nullable T c2) {
         if((c1 == null) && (c2 == null)) throw new NullPointerException(msgs.getString("msg.err.both_dates_null"));
         if(c1 == null) return c2;
@@ -286,7 +287,7 @@ public final class Dates {
         return ((c1.compareTo(c2) >= 0) ? c1 : c2);
     }
 
-    @Contract(pure = true)
+    @Contract(pure = true, value = "null, null -> fail")
     public static <T extends Date> @NotNull T max(@Nullable T c1, @Nullable T c2) {
         if((c1 == null) && (c2 == null)) throw new NullPointerException(msgs.getString("msg.err.both_dates_null"));
         if(c1 == null) return c2;
@@ -294,7 +295,7 @@ public final class Dates {
         return ((c1.compareTo(c2) >= 0) ? c1 : c2);
     }
 
-    @Contract(pure = true)
+    @Contract(pure = true, value = "null, null -> fail")
     public static <T extends Calendar> @NotNull T min(@Nullable T c1, @Nullable T c2) {
         if((c1 == null) && (c2 == null)) throw new NullPointerException(msgs.getString("msg.err.both_dates_null"));
         if(c1 == null) return c2;
@@ -302,7 +303,7 @@ public final class Dates {
         return ((c1.compareTo(c2) <= 0) ? c1 : c2);
     }
 
-    @Contract(pure = true)
+    @Contract(pure = true, value = "null, null -> fail")
     public static <T extends Date> @NotNull T min(@Nullable T c1, @Nullable T c2) {
         if((c1 == null) && (c2 == null)) throw new NullPointerException(msgs.getString("msg.err.both_dates_null"));
         if(c1 == null) return c2;
@@ -340,7 +341,7 @@ public final class Dates {
 
     @Contract("!null->new;null->null")
     public static java.sql.Date toSQLDate(Date dt) {
-        return ((dt == null) ? null : new java.sql.Date(dt.getTime()));
+        return ((dt instanceof java.sql.Date) ? ((java.sql.Date)dt) : ((dt == null) ? null : new java.sql.Date(dt.getTime())));
     }
 
     @Contract("!null->new;null->null")
@@ -351,6 +352,11 @@ public final class Dates {
     @Contract("null -> null; !null -> new")
     public static Timestamp toTimestamp(@Nullable Calendar cal) {
         return ((cal == null) ? null : new Timestamp(cal.getTimeInMillis()));
+    }
+
+    @Contract("null -> null; !null -> new")
+    public static Timestamp toTimestamp(@Nullable Date dt) {
+        return ((dt instanceof Timestamp) ? ((Timestamp)dt) : ((dt == null) ? null : new Timestamp(dt.getTime())));
     }
 
     @Contract("_,_ -> new")
