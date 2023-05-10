@@ -268,9 +268,9 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
 
     public java.sql.Date toSQLDate() { return new java.sql.Date(getTimeInMillis()); }
 
-    public Time toTime() { return new Time(getTimeInMillis()); }
+    public Time toSQLTime() { return new Time(getTimeInMillis()); }
 
-    public Timestamp toTimestamp() { return new Timestamp(getTimeInMillis()); }
+    public Timestamp toSQLTimestamp() { return new Timestamp(getTimeInMillis()); }
 
     public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = Calendar.JANUARY, to = Calendar.DECEMBER) int month, int year) { return Dates.daysInMonth(month + 1, year); }
 

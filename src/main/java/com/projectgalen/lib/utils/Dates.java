@@ -143,6 +143,8 @@ public final class Dates {
         return !((end2.compareTo(start1) <= 0) || (end1.compareTo(start2) <= 0));
     }
 
+    public static @Range(from = 28, to = 31) int daysInMonth(@NotNull Calendar c) { return Dates.daysInMonth(getRealMonth(c), getYear(c)); }
+
     /**
      * Determines the number of days in a month for the given month. If the month is February then the number of days will depend on if the current year is a leap year.
      *
@@ -204,6 +206,10 @@ public final class Dates {
         }
     }
 
+    public static @Range(from = 0, to = 1) int getAmPm(@NotNull Calendar c) { return c.get(Calendar.AM_PM); }
+
+    public static @Range(from = 0, to = 11) int getAmPmHour(@NotNull Calendar c) { return c.get(Calendar.HOUR); }
+
     /**
      * Create and return a new instance of Calendar from the given milliseconds since the epoch.
      *
@@ -254,6 +260,8 @@ public final class Dates {
         return c;
     }
 
+    public static @Range(from = 1, to = 31) int getDate(@NotNull Calendar c) { return c.get(Calendar.DATE); }
+
     public static int @NotNull [] getDateComponents(@NotNull Date date) {
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(date);
@@ -262,10 +270,58 @@ public final class Dates {
         };
     }
 
+    public static @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int getDayOfWeek(@NotNull Calendar c) { return c.get(Calendar.DAY_OF_WEEK); }
+
+    public static int getDstOffset(@NotNull Calendar c) { return c.get(Calendar.DST_OFFSET); }
+
+    public static @Range(from = 0, to = 23) int getHour(@NotNull Calendar c) { return c.get(Calendar.HOUR_OF_DAY); }
+
+    public static @Range(from = 0, to = 999) int getMillisecond(@NotNull Calendar c) { return c.get(Calendar.MILLISECOND); }
+
+    public static @Range(from = 0, to = 59) int getMinute(@NotNull Calendar c) { return c.get(Calendar.MINUTE); }
+
+    public static @Range(from = 0, to = 11) int getMonth(@NotNull Calendar c) { return c.get(Calendar.MONTH); }
+
+    public static @Range(from = 1, to = 12) int getRealMonth(@NotNull Calendar c) { return c.get(Calendar.MONTH) + 1; }
+
+    public static @Range(from = 0, to = 59) int getSecond(@NotNull Calendar c) { return c.get(Calendar.SECOND); }
+
     @Contract("-> new")
     public static @NotNull Timestamp getTimestamp() {
         return new Timestamp(Calendar.getInstance().getTimeInMillis());
     }
+
+    public static int getYear(@NotNull Calendar c) { return c.get(Calendar.YEAR); }
+
+    public static boolean isInOpenRange(@NotNull Calendar when, Calendar date1, Calendar date2) {
+        if(date1 == null) date1 = distantPast();
+        if(date2 == null) date2 = distantFuture();
+        if(date2.before(date1)) return isInOpenRange(when, date2, date1);
+        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) < 0));
+    }
+
+    public static boolean isInOpenRange(@NotNull Date when, Date date1, Date date2) {
+        if(date1 == null) date1 = distantPast().getTime();
+        if(date2 == null) date2 = distantFuture().getTime();
+        if(date2.before(date1)) return isInOpenRange(when, date2, date1);
+        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) < 0));
+    }
+
+    public static boolean isInRange(@NotNull Date when, Date date1, Date date2) {
+        if(date1 == null) date1 = distantPast().getTime();
+        if(date2 == null) date2 = distantFuture().getTime();
+        if(date2.before(date1)) return isInRange(when, date2, date1);
+        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) <= 0));
+    }
+
+    public static boolean isInRange(@NotNull Calendar when, Calendar date1, Calendar date2) {
+        if(date1 == null) date1 = distantPast();
+        if(date2 == null) date2 = distantFuture();
+        if(date2.before(date1)) return isInRange(when, date2, date1);
+        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) <= 0));
+    }
+
+    public static boolean isLeapYear(@NotNull Calendar c) { return isLeapYear(getYear(c)); }
 
     /**
      * Convienience method for <code>new GregorianCalendar().isLeapYear(year)</code>. Determines if the given year is a leap year. Returns true if the given year is a leap year. To specify BC year
@@ -310,6 +366,30 @@ public final class Dates {
         if(c2 == null) return c1;
         return ((c1.compareTo(c2) <= 0) ? c1 : c2);
     }
+
+    public static void setAmPm(@NotNull Calendar c, @MagicConstant(intValues = { Calendar.AM, Calendar.PM }) int value) { c.set(Calendar.AM_PM, value); }
+
+    public static void setAmPmHour(@NotNull Calendar c, @Range(from = 0, to = 11) int value) { c.set(Calendar.HOUR, value); }
+
+    public static void setDate(@NotNull Calendar c, @Range(from = 1, to = 31) int value) { c.set(Calendar.DATE, value); }
+
+    public static void setDayOfWeek(@NotNull Calendar c, @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int value) { c.set(Calendar.DAY_OF_WEEK, value); }
+
+    public static void setDstOffset(@NotNull Calendar c, int value) { c.set(Calendar.DST_OFFSET, value); }
+
+    public static void setHour(@NotNull Calendar c, @Range(from = 0, to = 23) int value) { c.set(Calendar.HOUR_OF_DAY, value); }
+
+    public static void setMillisecond(@NotNull Calendar c, @Range(from = 0, to = 999) int value) { c.set(Calendar.MILLISECOND, value); }
+
+    public static void setMinute(@NotNull Calendar c, @Range(from = 0, to = 59) int value) { c.set(Calendar.MINUTE, value); }
+
+    public static void setMonth(@NotNull Calendar c, @Range(from = 0, to = 11) int value) { c.set(Calendar.MONTH, value); }
+
+    public static void setRealMonth(@NotNull Calendar c, @Range(from = 1, to = 12) int value) { c.set(Calendar.MONTH, value - 1); }
+
+    public static void setSecond(@NotNull Calendar c, @Range(from = 0, to = 59) int value) { c.set(Calendar.SECOND, value); }
+
+    public static void setYear(@NotNull Calendar c, int value) { c.set(Calendar.YEAR, value); }
 
     @Contract("!null,_,_ -> new; null,_,_ -> null")
     public static Calendar toCalendar(@Nullable Date dt, @Nullable TimeZone tz, @Nullable Locale locale) {
@@ -362,33 +442,5 @@ public final class Dates {
     @Contract("_,_ -> new")
     private static @NotNull Calendar getCalendarInstance(@Nullable TimeZone tz, @Nullable Locale locale) {
         return Calendar.getInstance(((tz == null) ? TimeZone.getDefault() : tz), ((locale == null) ? Locale.getDefault() : locale));
-    }
-
-    public static boolean isInOpenRange(@NotNull Calendar when, Calendar date1, Calendar date2) {
-        if(date1 == null) date1 = distantPast();
-        if(date2 == null) date2 = distantFuture();
-        if(date2.before(date1)) return isInOpenRange(when, date2, date1);
-        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) < 0));
-    }
-
-    public static boolean isInOpenRange(@NotNull Date when, Date date1, Date date2) {
-        if(date1 == null) date1 = distantPast().getTime();
-        if(date2 == null) date2 = distantFuture().getTime();
-        if(date2.before(date1)) return isInOpenRange(when, date2, date1);
-        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) < 0));
-    }
-
-    public static boolean isInRange(@NotNull Date when, Date date1, Date date2) {
-        if(date1 == null) date1 = distantPast().getTime();
-        if(date2 == null) date2 = distantFuture().getTime();
-        if(date2.before(date1)) return isInRange(when, date2, date1);
-        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) <= 0));
-    }
-
-    public static boolean isInRange(@NotNull Calendar when, Calendar date1, Calendar date2) {
-        if(date1 == null) date1 = distantPast();
-        if(date2 == null) date2 = distantFuture();
-        if(date2.before(date1)) return isInRange(when, date2, date1);
-        return ((when.compareTo(date1) >= 0) && (when.compareTo(date2) <= 0));
     }
 }
