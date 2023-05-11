@@ -77,15 +77,18 @@ public final class UI {
                 SwingUtilities.invokeAndWait(() -> { try { runnable.run(); } catch(Exception e) { err.value = e; } });
                 if(propagateExceptions && (err.value != null)) throw U.makeRuntimeException(err.value);
             }
-        }
-        catch(Exception e) {
-            if(propagateExceptions) throw U.makeRuntimeException(e);
+        } catch (Exception e) {
+            if (propagateExceptions) throw U.makeRuntimeException(e);
         }
     }
 
-    public static void invokeLater(@NotNull Runnable runnable) {
-        if(SwingUtilities.isEventDispatchThread()) runnable.run();
+    public static void invokeLater2(@NotNull Runnable runnable) {
+        if (SwingUtilities.isEventDispatchThread()) runnable.run();
         else SwingUtilities.invokeLater(runnable);
+    }
+
+    public static void invokeLater(@NotNull Runnable runnable) {
+        SwingUtilities.invokeLater(runnable);
     }
 
     @Contract(value = "_, _ -> new", pure = true)

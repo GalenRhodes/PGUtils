@@ -141,17 +141,17 @@ public final class Dates {
     }
 
     public static boolean datesOverlap(Date dateStart1, Date dateEnd1, Date dateStart2, Date dateEnd2) {
-        return datesOverlap(Kalendar.getInstance(dateStart1), Kalendar.getInstance(dateEnd1), Kalendar.getInstance(dateStart2), Kalendar.getInstance(dateEnd2));
+        return datesOverlap(PGCalendar.getInstance(dateStart1), PGCalendar.getInstance(dateEnd1), PGCalendar.getInstance(dateStart2), PGCalendar.getInstance(dateEnd2));
     }
 
     public static boolean datesOverlap(Calendar startDate1, Calendar endDate1, Calendar startDate2, Calendar endDate2) {
-        Calendar start1 = ((startDate1 == null) ? Kalendar.distantPast() : startDate1);
-        Calendar start2 = ((startDate2 == null) ? Kalendar.distantPast() : startDate2);
-        Calendar end1   = ((endDate1 == null) ? Kalendar.distantFuture() : endDate1);
-        Calendar end2   = ((endDate2 == null) ? Kalendar.distantFuture() : endDate2);
+        Calendar start1 = ((startDate1 == null) ? PGCalendar.distantPast() : startDate1);
+        Calendar start2 = ((startDate2 == null) ? PGCalendar.distantPast() : startDate2);
+        Calendar end1 = ((endDate1 == null) ? PGCalendar.distantFuture() : endDate1);
+        Calendar end2 = ((endDate2 == null) ? PGCalendar.distantFuture() : endDate2);
 
-        if(end1.before(start1)) return datesOverlap(end1, start1, start2, end2);
-        if(end2.after(start2)) return datesOverlap(start1, end1, end2, start2);
+        if (end1.before(start1)) return datesOverlap(end1, start1, start2, end2);
+        if (end2.after(start2)) return datesOverlap(start1, end1, end2, start2);
         return !((end2.compareTo(start1) <= 0) || (end1.compareTo(start2) <= 0));
     }
 

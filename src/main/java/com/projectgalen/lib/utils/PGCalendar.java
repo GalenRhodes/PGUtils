@@ -33,78 +33,78 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.Locale.Category;
 
-public class Kalendar extends GregorianCalendar implements Cloneable {
+public class PGCalendar extends GregorianCalendar implements Cloneable {
 
-    public Kalendar(long millis) {
+    public PGCalendar(long millis) {
         this(millis, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT));
     }
 
-    public Kalendar(long millis, @NotNull Locale aLocale) {
+    public PGCalendar(long millis, @NotNull Locale aLocale) {
         this(millis, TimeZone.getDefault(), aLocale);
     }
 
-    public Kalendar(long millis, @NotNull TimeZone zone) {
+    public PGCalendar(long millis, @NotNull TimeZone zone) {
         this(millis, zone, Locale.getDefault(Locale.Category.FORMAT));
     }
 
-    public Kalendar(long millis, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+    public PGCalendar(long millis, @NotNull TimeZone zone, @NotNull Locale aLocale) {
         this(zone, aLocale);
         setTimeInMillis(millis);
     }
 
-    public Kalendar(@NotNull Calendar c) {
+    public PGCalendar(@NotNull Calendar c) {
         this(c, c.getTimeZone(), Locale.getDefault(Locale.Category.FORMAT));
     }
 
-    public Kalendar(@NotNull Calendar c, @NotNull TimeZone zone) {
+    public PGCalendar(@NotNull Calendar c, @NotNull TimeZone zone) {
         this(c, zone, Locale.getDefault(Locale.Category.FORMAT));
     }
 
-    public Kalendar(@NotNull Calendar c, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+    public PGCalendar(@NotNull Calendar c, @NotNull TimeZone zone, @NotNull Locale aLocale) {
         this(zone, aLocale);
         setTime(c.getTime());
     }
 
-    public Kalendar(@NotNull Calendar c, @NotNull Locale aLocale) {
+    public PGCalendar(@NotNull Calendar c, @NotNull Locale aLocale) {
         this(c, c.getTimeZone(), aLocale);
     }
 
-    public Kalendar() {
+    public PGCalendar() {
         super();
     }
 
-    public Kalendar(TimeZone zone) {
+    public PGCalendar(TimeZone zone) {
         super(zone);
     }
 
-    public Kalendar(Locale aLocale) {
+    public PGCalendar(Locale aLocale) {
         super(aLocale);
     }
 
-    public Kalendar(TimeZone zone, Locale aLocale) {
+    public PGCalendar(TimeZone zone, Locale aLocale) {
         super(zone, aLocale);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth) {
+    public PGCalendar(int year, int month, int dayOfMonth) {
         super(year, month, dayOfMonth);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute) {
+    public PGCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute) {
         super(year, month, dayOfMonth, hourOfDay, minute);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second) {
+    public PGCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second) {
         super(year, month, dayOfMonth, hourOfDay, minute, second);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth, @NotNull TimeZone zone) {
+    public PGCalendar(int year, int month, int dayOfMonth, @NotNull TimeZone zone) {
         super(zone);
         set(YEAR, year);
         set(MONTH, month);
         set(DATE, dayOfMonth);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, @NotNull TimeZone zone) {
+    public PGCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, @NotNull TimeZone zone) {
         super(zone);
         set(YEAR, year);
         set(MONTH, month);
@@ -113,7 +113,7 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
         set(MINUTE, minute);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second, @NotNull TimeZone zone) {
+    public PGCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second, @NotNull TimeZone zone) {
         super(zone);
         set(YEAR, year);
         set(MONTH, month);
@@ -123,14 +123,14 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
         set(SECOND, second);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth, @NotNull Locale aLocale) {
+    public PGCalendar(int year, int month, int dayOfMonth, @NotNull Locale aLocale) {
         super(aLocale);
         set(YEAR, year);
         set(MONTH, month);
         set(DATE, dayOfMonth);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, @NotNull Locale aLocale) {
+    public PGCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, @NotNull Locale aLocale) {
         super(aLocale);
         set(YEAR, year);
         set(MONTH, month);
@@ -139,7 +139,7 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
         set(MINUTE, minute);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second, @NotNull Locale aLocale) {
+    public PGCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second, @NotNull Locale aLocale) {
         super(aLocale);
         set(YEAR, year);
         set(MONTH, month);
@@ -149,14 +149,14 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
         set(SECOND, second);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+    public PGCalendar(int year, int month, int dayOfMonth, @NotNull TimeZone zone, @NotNull Locale aLocale) {
         super(zone, aLocale);
         set(YEAR, year);
         set(MONTH, month);
         set(DATE, dayOfMonth);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+    public PGCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, @NotNull TimeZone zone, @NotNull Locale aLocale) {
         super(zone, aLocale);
         set(YEAR, year);
         set(MONTH, month);
@@ -165,7 +165,7 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
         set(MINUTE, minute);
     }
 
-    public Kalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+    public PGCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second, @NotNull TimeZone zone, @NotNull Locale aLocale) {
         super(zone, aLocale);
         set(YEAR, year);
         set(MONTH, month);
@@ -175,69 +175,69 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
         set(SECOND, second);
     }
 
-    public Kalendar(@NotNull Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+    public PGCalendar(@NotNull Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
         super(zone, aLocale);
         setTime(dt);
     }
 
-    public Kalendar(@NotNull Date dt) {
+    public PGCalendar(@NotNull Date dt) {
         super();
         setTime(dt);
     }
 
-    public Kalendar(@NotNull Date dt, @NotNull TimeZone zone) {
+    public PGCalendar(@NotNull Date dt, @NotNull TimeZone zone) {
         super(zone);
         setTime(dt);
     }
 
-    public Kalendar(@NotNull Date dt, @NotNull Locale aLocale) {
+    public PGCalendar(@NotNull Date dt, @NotNull Locale aLocale) {
         super(aLocale);
         setTime(dt);
     }
 
-    public Kalendar addAmPmHours(int value) {
+    @Contract(" -> new")
+    public static @NotNull PGCalendar distantFuture() {
+        return new PGCalendar(Long.MAX_VALUE);
+    }
+
+    @Contract(" -> new")
+    public static @NotNull PGCalendar distantPast() {
+        return new PGCalendar(Long.MIN_VALUE);
+    }
+
+    @Contract("null, _ -> null; !null, _ -> new")
+    public static PGCalendar getInstance(@Nullable Date dt, @NotNull Locale aLocale) {
+        return getInstance(dt, TimeZone.getDefault(), aLocale);
+    }
+
+    @Contract("null, _ -> null; !null, _ -> new")
+    public static PGCalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone) {
+        return getInstance(dt, zone, Locale.getDefault(Category.FORMAT));
+    }
+
+    @Contract("null, _, _ -> null; !null, _, _ -> new")
+    public static PGCalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+        return ((dt == null) ? null : new PGCalendar(dt, zone, aLocale));
+    }
+
+    @Contract(" -> new")
+    public static @NotNull PGCalendar getInstance() {
+        return new PGCalendar();
+    }
+
+    @Contract("null -> null; !null -> new")
+    public static PGCalendar getInstance(@Nullable Date dt) {
+        return getInstance(dt, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT));
+    }
+
+    public PGCalendar addAmPmHours(int value) {
         add(Calendar.HOUR, value);
         return this;
     }
 
-    public Kalendar addDays(int value) {
+    public PGCalendar addDays(int value) {
         add(Calendar.DATE, value);
         return this;
-    }
-
-    public Kalendar addHours(int value) {
-        add(Calendar.HOUR_OF_DAY, value);
-        return this;
-    }
-
-    public Kalendar addMilliseconds(int value) {
-        add(Calendar.MILLISECOND, value);
-        return this;
-    }
-
-    public Kalendar addMinutes(int value) {
-        add(Calendar.MINUTE, value);
-        return this;
-    }
-
-    public Kalendar addMonths(int value) {
-        add(Calendar.MONTH, value);
-        return this;
-    }
-
-    public Kalendar addSeconds(int value) {
-        add(Calendar.SECOND, value);
-        return this;
-    }
-
-    public Kalendar addYears(int value) {
-        add(Calendar.YEAR, value);
-        return this;
-    }
-
-    @Override
-    public Kalendar clone() {
-        return (Kalendar)super.clone();
     }
 
     public @Range(from = 28, to = 31) int daysInMonth() {
@@ -292,8 +292,9 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
         return get(Calendar.YEAR);
     }
 
-    public boolean isInOpenRange(Kalendar date1, Kalendar date2) {
-        return Dates.isInOpenRange(this, date1, date2);
+    public PGCalendar addHours(int value) {
+        add(Calendar.HOUR_OF_DAY, value);
+        return this;
     }
 
     public boolean isInOpenRange(Date date1, Date date2) {
@@ -304,71 +305,70 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
         return Dates.isInRange(this.getTime(), date1, date2);
     }
 
-    public boolean isInRange(Kalendar date1, Kalendar date2) {
-        return Dates.isInRange(this, date1, date2);
+    public PGCalendar addMilliseconds(int value) {
+        add(Calendar.MILLISECOND, value);
+        return this;
     }
 
     public boolean isLeapYear() {
         return isLeapYear(getYear());
     }
 
-    public Kalendar setAmPm(@MagicConstant(intValues = { Calendar.AM, Calendar.PM }) int value) {
+    public PGCalendar addMinutes(int value) {
+        add(Calendar.MINUTE, value);
+        return this;
+    }
+
+    public PGCalendar addMonths(int value) {
+        add(Calendar.MONTH, value);
+        return this;
+    }
+
+    public PGCalendar addSeconds(int value) {
+        add(Calendar.SECOND, value);
+        return this;
+    }
+
+    public PGCalendar addYears(int value) {
+        add(Calendar.YEAR, value);
+        return this;
+    }
+
+    @Override
+    public PGCalendar clone() {
+        return (PGCalendar) super.clone();
+    }
+
+    public boolean isInOpenRange(PGCalendar date1, PGCalendar date2) {
+        return Dates.isInOpenRange(this, date1, date2);
+    }
+
+    public boolean isInRange(PGCalendar date1, PGCalendar date2) {
+        return Dates.isInRange(this, date1, date2);
+    }
+
+    public PGCalendar setAmPm(@MagicConstant(intValues = {Calendar.AM, Calendar.PM}) int value) {
         set(Calendar.AM_PM, value);
         return this;
     }
 
-    public Kalendar setAmPmHour(@Range(from = 0, to = 11) int value) {
+    public PGCalendar setAmPmHour(@Range(from = 0, to = 11) int value) {
         set(Calendar.HOUR, value);
         return this;
     }
 
-    public Kalendar setDate(@Range(from = 1, to = 31) int value) {
+    public PGCalendar setDate(@Range(from = 1, to = 31) int value) {
         set(Calendar.DATE, value);
         return this;
     }
 
-    public Kalendar setDayOfWeek(@Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int value) {
+    public PGCalendar setDayOfWeek(@Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int value) {
         set(Calendar.DAY_OF_WEEK, value);
         return this;
     }
 
-    public Kalendar setDstOffset(int value) {
+    public PGCalendar setDstOffset(int value) {
         set(Calendar.DST_OFFSET, value);
-        return this;
-    }
-
-    public Kalendar setHour(@Range(from = 0, to = 23) int value) {
-        set(Calendar.HOUR_OF_DAY, value);
-        return this;
-    }
-
-    public Kalendar setMillisecond(@Range(from = 0, to = 999) int value) {
-        set(Calendar.MILLISECOND, value);
-        return this;
-    }
-
-    public Kalendar setMinute(@Range(from = 0, to = 59) int value) {
-        set(Calendar.MINUTE, value);
-        return this;
-    }
-
-    public Kalendar setMonth(@Range(from = 0, to = 11) int value) {
-        set(Calendar.MONTH, value);
-        return this;
-    }
-
-    public Kalendar setRealMonth(@Range(from = 1, to = 12) int value) {
-        set(Calendar.MONTH, value - 1);
-        return this;
-    }
-
-    public Kalendar setSecond(@Range(from = 0, to = 59) int value) {
-        set(Calendar.SECOND, value);
-        return this;
-    }
-
-    public Kalendar setYear(int value) {
-        set(Calendar.YEAR, value);
         return this;
     }
 
@@ -392,38 +392,38 @@ public class Kalendar extends GregorianCalendar implements Cloneable {
         return Dates.daysInMonth(realMonth, year);
     }
 
-    @Contract(" -> new")
-    public static @NotNull Kalendar distantFuture() {
-        return new Kalendar(Long.MAX_VALUE);
+    public PGCalendar setHour(@Range(from = 0, to = 23) int value) {
+        set(Calendar.HOUR_OF_DAY, value);
+        return this;
     }
 
-    @Contract(" -> new")
-    public static @NotNull Kalendar distantPast() {
-        return new Kalendar(Long.MIN_VALUE);
+    public PGCalendar setMillisecond(@Range(from = 0, to = 999) int value) {
+        set(Calendar.MILLISECOND, value);
+        return this;
     }
 
-    @Contract("null, _ -> null; !null, _ -> new")
-    public static Kalendar getInstance(@Nullable Date dt, @NotNull Locale aLocale) {
-        return getInstance(dt, TimeZone.getDefault(), aLocale);
+    public PGCalendar setMinute(@Range(from = 0, to = 59) int value) {
+        set(Calendar.MINUTE, value);
+        return this;
     }
 
-    @Contract("null, _ -> null; !null, _ -> new")
-    public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone) {
-        return getInstance(dt, zone, Locale.getDefault(Category.FORMAT));
+    public PGCalendar setMonth(@Range(from = 0, to = 11) int value) {
+        set(Calendar.MONTH, value);
+        return this;
     }
 
-    @Contract("null, _, _ -> null; !null, _, _ -> new")
-    public static Kalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
-        return ((dt == null) ? null : new Kalendar(dt, zone, aLocale));
+    public PGCalendar setRealMonth(@Range(from = 1, to = 12) int value) {
+        set(Calendar.MONTH, value - 1);
+        return this;
     }
 
-    @Contract(" -> new")
-    public static @NotNull Kalendar getInstance() {
-        return new Kalendar();
+    public PGCalendar setSecond(@Range(from = 0, to = 59) int value) {
+        set(Calendar.SECOND, value);
+        return this;
     }
 
-    @Contract("null -> null; !null -> new")
-    public static Kalendar getInstance(@Nullable Date dt) {
-        return getInstance(dt, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT));
+    public PGCalendar setYear(int value) {
+        set(Calendar.YEAR, value);
+        return this;
     }
 }
