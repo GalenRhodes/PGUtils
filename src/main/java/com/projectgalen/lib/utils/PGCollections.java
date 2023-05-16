@@ -23,11 +23,13 @@ package com.projectgalen.lib.utils;
 // ===========================================================================
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.Collection;
+import java.util.List;
 
 public final class PGCollections {
     public PGCollections() { }
@@ -38,19 +40,28 @@ public final class PGCollections {
 
     public static <T, C extends Collection<T>> BigDecimal bigDecimalSum(@NotNull C collection, MathContext mathContext, @NotNull GetBigDecFromDelegate<T> delegate) {
         BigDecimal sum = null;
-        for(T obj : collection) sum = ((sum == null) ? delegate.getBigDecimal(obj) : sum.add(delegate.getBigDecimal(obj), mathContext));
+        for (T obj : collection)
+            sum = ((sum == null) ? delegate.getBigDecimal(obj) : sum.add(delegate.getBigDecimal(obj), mathContext));
         return ((sum == null) ? BigDecimal.ZERO : sum);
+    }
+
+    public static <T> T getFirst(@Nullable List<T> list) {
+        return (((list == null) || list.isEmpty()) ? null : list.get(0));
+    }
+
+    public static <T> T getLast(@Nullable List<T> list) {
+        return (((list == null) || list.isEmpty()) ? null : list.get(list.size() - 1));
     }
 
     public static <T, C extends Collection<T>> BigInteger bigIntegerSum(@NotNull C collection, @NotNull GetBigIntFromDelegate<T> delegate) {
         BigInteger sum = BigInteger.ZERO;
-        for(T obj : collection) sum = sum.add(delegate.getBigInteger(obj));
+        for (T obj : collection) sum = sum.add(delegate.getBigInteger(obj));
         return sum;
     }
 
     public static <T, C extends Collection<T>> double doubleSum(@NotNull C collection, @NotNull GetDoubleFromDelegate<T> delegate) {
         double sum = 0;
-        for(T obj : collection) sum += delegate.getDouble(obj);
+        for (T obj : collection) sum += delegate.getDouble(obj);
         return sum;
     }
 
