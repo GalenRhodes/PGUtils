@@ -29,20 +29,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Trigger {
-    private final ReentrantLock            lock            = new ReentrantLock(true);
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService executorService;
     private final VoidDelegate             delegate;
     private final int                      delay;
     private final TimeUnit                 unit;
-    private       boolean                  triggered       = false;
+    private       boolean                  triggered;
 
     public Trigger(int delay, @NotNull TimeUnit unit, @NotNull VoidDelegate delegate) {
         this.delegate = delegate;
-        this.delay    = delay;
-        this.unit     = unit;
+        this.delay = delay;
+        this.unit = unit;
+        this.triggered = false;
+        this.executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
     public void cancel() {
@@ -50,29 +50,30 @@ public class Trigger {
     }
 
     public void cancel(@Nullable VoidDelegate delegateOverride) {
-        Locks.doWithLock(lock, () -> runDelegate(delegateOverride));
+        synchronized(unit) { runDelegate(delegateOverride); }
     }
 
     public void trigger(int delayOverride, TimeUnit unitOverride) {
-        Locks.doWithLock(lock, () -> setTrigger(delayOverride, unitOverride));
+        synchronized(unit) { setTrigger(delayOverride, unitOverride); }
     }
 
     public void trigger() {
-        Locks.doWithLock(lock, () -> setTrigger(delay, unit));
+        synchronized(unit) { setTrigger(delay, unit); }
     }
 
     private void doTriggerAction() {
-        if(triggered) runDelegate(delegate);
+        synchronized(unit) { if(triggered) runDelegate(delegate); }
     }
 
     private void runDelegate(@Nullable VoidDelegate _delegate) {
-        try { if(_delegate != null) _delegate.action(); } finally { triggered = false; }
+        try { if(_delegate != null) _delegate.action(); }
+        finally { triggered = false; }
     }
 
     private void setTrigger(int _delay, TimeUnit _unit) {
         if(!triggered) {
             triggered = true;
-            executorService.schedule(() -> Locks.doWithLock(lock, this::doTriggerAction), _delay, _unit);
+            executorService.schedule(this::doTriggerAction, _delay, _unit);
         }
     }
 }
