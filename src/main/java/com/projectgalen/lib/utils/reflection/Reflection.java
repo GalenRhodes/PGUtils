@@ -38,6 +38,8 @@ public final class Reflection {
     private static final PGResourceBundle msgs  = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
     private static final PGProperties     props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
 
+    public static final Class<?>[] NO_TYPES = {};
+
     private Reflection() { }
 
     public static Object callMethod(Object obj, String methodName, Class<?>[] parameterTypes, Object... parameters) {
