@@ -40,6 +40,29 @@ public final class Reflection {
 
     private Reflection() { }
 
+    public static Object callMethod(Object obj, String methodName, Class<?>[] parameterTypes, Object... parameters) {
+        try {
+            Method method = obj.getClass().getMethod(methodName, parameterTypes);
+            return method.invoke(obj, parameters);
+        }
+        catch(Exception e) {
+            if(e instanceof RuntimeException) throw (RuntimeException)e;
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Object callStaticMethod(String className, String methodName, Class<?>[] parameterTypes, Object... parameters) {
+        try {
+            Class<?> cls    = Class.forName(className);
+            Method   method = cls.getMethod(methodName, parameterTypes);
+            return method.invoke(null, parameters);
+        }
+        catch(Exception e) {
+            if(e instanceof RuntimeException) throw (RuntimeException)e;
+            throw new RuntimeException(e);
+        }
+    }
+
     public static @Nullable Object castIfNumeric(@Nullable Object value, @NotNull Class<?> targetClass) {
         if((value != null) && !targetClass.isAssignableFrom(value.getClass())) {
             if(value instanceof Character) value = (int)((Character)value);
@@ -222,7 +245,9 @@ public final class Reflection {
      * @param cls            The class that will be searched for the specified method.
      * @param name           The name of the method.
      * @param parameterTypes The parameter types.
+     *
      * @return The method.
+     *
      * @throws NoSuchMethodException If the method cannot be found.
      */
     public static @NotNull Method getMethod(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
@@ -239,6 +264,7 @@ public final class Reflection {
      * @param cls            The class that will be searched for the specified method.
      * @param name           The name of the method.
      * @param parameterTypes The parameter types.
+     *
      * @return The method.
      */
     public static @Nullable Method getMethodOrNull(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) {
