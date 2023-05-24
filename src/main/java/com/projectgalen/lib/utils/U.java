@@ -58,6 +58,14 @@ public final class U {
         return PGArrays.append(array, obj);
     }
 
+    public static @NotNull String cleanNumberString(String numberString) {
+        return requireNonEmptyOrElse(Objects.toString(numberString, "0").replaceAll("[^0-9.+-]", ""), "0");
+    }
+
+    public static @NotNull String requireNonEmptyOrElse(@Nullable String str, @NotNull String defaultString) {
+        return (U.z(str) ? defaultString : str.trim());
+    }
+
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
         return sb.append(String.format(format, args));
     }

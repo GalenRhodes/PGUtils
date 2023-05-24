@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils.reflection;
 
 import com.projectgalen.lib.utils.*;
 import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@SuppressWarnings({ "unused", "SpellCheckingInspection" })
 public final class Reflection {
     private static final PGResourceBundle msgs  = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
     private static final PGProperties     props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
@@ -42,7 +44,7 @@ public final class Reflection {
 
     private Reflection() { }
 
-    public static Object callMethod(Object obj, String methodName, Class<?>[] parameterTypes, Object... parameters) {
+    public static @Nullable Object callMethod(@NotNull Object obj, @NotNull String methodName, Class<?> @NotNull [] parameterTypes, Object @NotNull ... parameters) {
         try {
             Method method = obj.getClass().getMethod(methodName, parameterTypes);
             return method.invoke(obj, parameters);
@@ -53,7 +55,7 @@ public final class Reflection {
         }
     }
 
-    public static Object callStaticMethod(String className, String methodName, Class<?>[] parameterTypes, Object... parameters) {
+    public static @Nullable Object callStaticMethod(@NotNull String className, @NotNull String methodName, Class<?> @NotNull [] parameterTypes, Object @NotNull ... parameters) {
         try {
             Class<?> cls    = Class.forName(className);
             Method   method = cls.getMethod(methodName, parameterTypes);
@@ -71,7 +73,6 @@ public final class Reflection {
 
             if(Number.class.isAssignableFrom(targetClass) && (value instanceof Number)) {
                 Class<?> l = objectClassForPrimitive(targetClass);
-                //@f:0
                 if(l == BigDecimal.class) return PGMath.getBigDecimal((Number)value);
                 if(l == BigInteger.class) return PGMath.getBigInteger((Number)value);
                 if((l == Double.class) && !isAnyType(value.getClass(), BigDecimal.class, BigInteger.class)) return ((Number)value).doubleValue();
@@ -79,7 +80,6 @@ public final class Reflection {
                 if((l == Long.class) && isAnyType(value.getClass(), Integer.class, Short.class, Byte.class)) return ((Number)value).longValue();
                 if((l == Integer.class) && isAnyType(value.getClass(), Short.class, Byte.class)) return ((Number)value).intValue();
                 if((l == Short.class) && (value.getClass() == Byte.class)) return ((Number)value).shortValue();
-                //@f:1
             }
         }
 
@@ -108,7 +108,7 @@ public final class Reflection {
         return findSettersForTypes(cls, false, paramTypes);
     }
 
-    public static @NotNull List<Method> findSettersForTypes(@NotNull Class<?> cls, boolean exact, @NotNull Class<?>... pTypes) {
+    public static @NotNull List<Method> findSettersForTypes(@NotNull Class<?> cls, boolean exact, @NotNull Class<?> @NotNull ... pTypes) {
         List<Method> a      = new ArrayList<>();
         boolean      getAll = (pTypes.length == 0);
         forEachSuperclass(cls, c -> {
@@ -320,13 +320,13 @@ public final class Reflection {
     }
 
     @SafeVarargs
-    public static boolean hasAllAnnotations(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static boolean hasAllAnnotations(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> @NotNull ... annotationClasses) {
         for(Class<? extends Annotation> ac : annotationClasses) if(!isAnnotationPresent(element, ac)) return false;
         return true;
     }
 
     @SafeVarargs
-    public static boolean hasAnyAnnotation(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static boolean hasAnyAnnotation(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> @NotNull ... annotationClasses) {
         for(Class<? extends Annotation> ac : annotationClasses) if(isAnnotationPresent(element, ac)) return true;
         return false;
     }
@@ -361,7 +361,6 @@ public final class Reflection {
     }
 
     public static @NotNull Class<?> objectClassForPrimitive(@NotNull Class<?> cls) {
-        //@f:0
         if(!cls.isPrimitive()) return cls;
         if(cls == char.class) return Character.class;
         if(cls == byte.class) return Byte.class;
@@ -370,12 +369,10 @@ public final class Reflection {
         if(cls == long.class) return Long.class;
         if(cls == float.class) return Float.class;
         if(cls == double.class) return Double.class;
-        //@f:1
         return Boolean.class;
     }
 
     public static @Nullable Class<?> primitiveClassForObject(@NotNull Class<?> cls) {
-        //@f:0
         if(cls.isPrimitive()) return cls;
         if(cls == Character.class) return char.class;
         if(cls == Byte.class) return byte.class;
@@ -385,7 +382,6 @@ public final class Reflection {
         if(cls == Float.class) return float.class;
         if(cls == Double.class) return double.class;
         if(cls == Boolean.class) return boolean.class;
-        //@f:1
         return null;
     }
 
@@ -400,7 +396,6 @@ public final class Reflection {
     }
 
     private static boolean _isNumericallyAssignable(@NotNull Class<?> l, @NotNull Class<?> r) {
-        //@f:0
         if(!(isNumericObject(l) && isNumericObject(r))) return false;
         if((l == r) || (l == BigDecimal.class)) return true;
         if(l == BigInteger.class) return isAnyType(r, BigDecimal.class, Double.class, Float.class);
@@ -410,7 +405,6 @@ public final class Reflection {
         if(l == Long.class) return isAnyType(r, Integer.class, Character.class, Short.class, Byte.class);
         if(l == Float.class) return isAnyType(r, Long.class, Integer.class, Character.class, Short.class, Byte.class);
         if(l == Double.class) return isAnyType(r, Float.class, Long.class, Integer.class, Character.class, Short.class, Byte.class);
-        //@f:1
         return false;
     }
 
@@ -420,7 +414,8 @@ public final class Reflection {
         return list;
     }
 
-    private static boolean isAnyType(@NotNull Class<?> cls, @NotNull Class<?>... others) {
+    @Contract(pure = true)
+    private static boolean isAnyType(@NotNull Class<?> cls, @NotNull Class<?> @NotNull ... others) {
         for(Class<?> oCls : others) if(cls == oCls) return true;
         return false;
     }
@@ -429,7 +424,7 @@ public final class Reflection {
         return ((r == l) || (!exact && (l.isAssignableFrom(r) || isNumericallyAssignable(l, r) || isBooleanMismatch(l, r))));
     }
 
-    private static boolean isTypeMatches(boolean exact, @NotNull Class<?> l, @NotNull Class<?>... pTypes) {
+    private static boolean isTypeMatches(boolean exact, @NotNull Class<?> l, @NotNull Class<?> @NotNull ... pTypes) {
         for(Class<?> r : pTypes) if(isTypeMatch(exact, l, r)) return true;
         return false;
     }
