@@ -20,7 +20,10 @@ package com.projectgalen.lib.utils.reflection;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.*;
+import com.projectgalen.lib.utils.PGMath;
+import com.projectgalen.lib.utils.PGProperties;
+import com.projectgalen.lib.utils.PGResourceBundle;
+import com.projectgalen.lib.utils.U;
 import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +36,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SuppressWarnings({ "unused", "SpellCheckingInspection" })
@@ -46,7 +50,20 @@ public final class Reflection {
 
     public static @Nullable Object callMethod(@NotNull Object obj, @NotNull String methodName, Class<?> @NotNull [] parameterTypes, Object @NotNull ... parameters) {
         try {
-            Method method = obj.getClass().getMethod(methodName, parameterTypes);
+            return callMethod(obj.getClass().getMethod(methodName, parameterTypes), obj, parameters);
+        }
+        catch(Exception e) {
+            if(e instanceof RuntimeException) throw (RuntimeException)e;
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Object callMethod(@NotNull Method method, @Nullable Object obj, Object @NotNull [] parameters) {
+        try {
+            boolean isStatic = Modifier.isStatic(method.getModifiers());
+            if((obj == null) && !isStatic) throw new NullPointerException();
+            if(isStatic && (obj != null)) throw new IllegalArgumentException(msgs.getString("msg.err.reflect.non_null_instance_object_to_static_method"));
+            if(!method.canAccess(obj)) method.setAccessible(true);
             return method.invoke(obj, parameters);
         }
         catch(Exception e) {
@@ -57,9 +74,7 @@ public final class Reflection {
 
     public static @Nullable Object callStaticMethod(@NotNull String className, @NotNull String methodName, Class<?> @NotNull [] parameterTypes, Object @NotNull ... parameters) {
         try {
-            Class<?> cls    = Class.forName(className);
-            Method   method = cls.getMethod(methodName, parameterTypes);
-            return method.invoke(null, parameters);
+            return callMethod(Class.forName(className).getMethod(methodName, parameterTypes), null, parameters);
         }
         catch(Exception e) {
             if(e instanceof RuntimeException) throw (RuntimeException)e;
@@ -135,14 +150,20 @@ public final class Reflection {
 
     public static void forEachField(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Field, Boolean> delegate) {
         forEachSuperclass(cls, c -> {
-            for(Field field : c.getDeclaredFields()) if(Null.ifNull(delegate.action(field), false)) return true;
+            for(Field field : c.getDeclaredFields()) {
+                @Nullable Boolean obj = delegate.action(field);
+                if(Objects.requireNonNullElse(obj, false)) return true;
+            }
             return false;
         });
     }
 
     public static void forEachMethod(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Method, Boolean> delegate) {
         forEachSuperclass(cls, c -> {
-            for(Method method : c.getDeclaredMethods()) if(Null.ifNull(delegate.action(method), false)) return true;
+            for(Method method : c.getDeclaredMethods()) {
+                @Nullable Boolean obj = delegate.action(method);
+                if(Objects.requireNonNullElse(obj, false)) return true;
+            }
             return false;
         });
     }
@@ -150,7 +171,8 @@ public final class Reflection {
     public static void forEachSuperclass(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Class<?>, Boolean> delegate) {
         Class<?> c = cls;
         while(c != null) {
-            if(Null.ifNull(delegate.action(c), false)) break;
+            @Nullable Boolean obj = delegate.action(c);
+            if(Objects.requireNonNullElse(obj, false)) break;
             c = c.getSuperclass();
         }
     }
@@ -210,6 +232,7 @@ public final class Reflection {
 
     public static @Nullable Object getFieldValue(@NotNull Field field, @Nullable Object obj) {
         try {
+            if(!field.canAccess(obj)) field.setAccessible(true);
             return field.get(obj);
         }
         catch(Exception e) {

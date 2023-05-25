@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public final class Text {
@@ -81,12 +82,14 @@ public final class Text {
     }
 
     public static boolean isAllWhitespace(@NotNull String str, int startIndex, int endIndex) {
-        return Null.ifNull(forEachCodePoint(str, startIndex, endIndex, true, (cp, stop, returnValueRef) -> {
+        //noinspection ConstantValue
+        @Nullable Boolean obj = forEachCodePoint(str, startIndex, endIndex, true, (cp, stop, returnValueRef) -> {
             if(!Character.isWhitespace(cp)) {
                 //noinspection ConstantValue
                 returnValueRef.value = !(stop.value = true);
             }
-        }), false);
+        });
+        return Objects.requireNonNullElse(obj, false);
     }
 
     public static boolean isAllWhitespace(@NotNull String str) {

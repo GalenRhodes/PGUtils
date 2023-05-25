@@ -24,12 +24,38 @@ import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
 import com.projectgalen.lib.utils.delegates.GetWithValueThrowsDelegate;
 import com.projectgalen.lib.utils.delegates.WithValueDelegate;
 import com.projectgalen.lib.utils.delegates.WithValueThrowsDelegate;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
-@SuppressWarnings("SameParameterValue")
+import java.util.Objects;
+
+@SuppressWarnings({ "SameParameterValue", "unchecked" })
 public final class Null implements Cloneable {
     private Null() { }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof Null);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    @Contract(pure = true)
+    @Override
+    public @NotNull String toString() {
+        return "null";
+    }
+
+    @Contract(pure = true)
+    @Override
+    protected @Unmodifiable Object clone() {
+        return NULL();
+    }
 
     public static Null NULL() {
         return NullHolder.INSTANCE;
@@ -43,8 +69,7 @@ public final class Null implements Cloneable {
         if(value != null) delegate.action(value);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> T get(@NotNull Object o) {
+    public static <T> @Nullable T get(@NotNull Object o) {
         if(NULL().equals(o)) return null;
         return (T)o;
     }
@@ -65,33 +90,13 @@ public final class Null implements Cloneable {
         return ((value == null) ? defaultValue : delegate.action(value));
     }
 
+    @Deprecated(forRemoval = true)
     public static @NotNull <T> T ifNull(@Nullable T obj, @NotNull T defaultValue) {
-        return ((obj == null) ? defaultValue : obj);
+        return Objects.requireNonNullElse(obj, defaultValue);
     }
 
     public static @NotNull Object set(@Nullable Object o) {
-        return ifNull(o, NULL());
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return ((obj instanceof Null) && (obj == NULL()));
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
-    }
-
-    @Override
-    public String toString() {
-        return "null";
-    }
-
-    @SuppressWarnings("RedundantThrows")
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return NULL();
+        return Objects.requireNonNullElse(o, NULL());
     }
 
     private static final class NullHolder {
