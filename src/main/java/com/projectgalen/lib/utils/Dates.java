@@ -208,11 +208,20 @@ public final class Dates {
         return c;
     }
 
-    public static @NotNull String format(@NotNull String pattern, @NotNull Calendar calendar) {
-        return format(pattern, calendar.getTime());
+    public static @NotNull String format(@NotNull String pattern, @Nullable Calendar calendar) {
+        return format(pattern, calendar, "");
     }
 
-    public static @NotNull String format(@NotNull String pattern, @NotNull Date date) {
+    public static @NotNull String format(@NotNull String pattern, @Nullable Calendar calendar, @NotNull String defaultString) {
+        return ((calendar == null) ? defaultString : format(pattern, calendar.getTime()));
+    }
+
+    public static @NotNull String format(@NotNull String pattern, @Nullable Date date) {
+        return format(pattern, date, "");
+    }
+
+    public static @NotNull String format(@NotNull String pattern, @Nullable Date date, @NotNull String defaultString) {
+        if(date == null) return defaultString;
         synchronized(formatters) {
             SimpleDateFormat fmt = formatters.get(pattern);
             if(fmt == null) formatters.put(pattern, (fmt = new SimpleDateFormat(pattern)));
