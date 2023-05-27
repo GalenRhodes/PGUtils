@@ -50,41 +50,12 @@ public final class U {
 
     private U() { }
 
-    /**
-     * @deprecated Use {@link PGArrays#append(Object[], Object)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static <T> T @NotNull [] append(T[] array, T obj) {
-        return PGArrays.append(array, obj);
-    }
-
-    public static @NotNull String cleanNumberString(String numberString) {
-        return requireNonEmptyOrElse(Objects.toString(numberString, "0").replaceAll("[^0-9.+-]", ""), "0");
-    }
-
-    public static @NotNull String requireNonEmptyOrElse(@Nullable String str, @NotNull String defaultString) {
-        return (U.z(str) ? defaultString : str.trim());
-    }
-
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
         return sb.append(String.format(format, args));
     }
 
     public static @NotNull StringBuffer appendFormat(@NotNull StringBuffer sb, @NotNull String format, @Nullable Object... args) {
         return sb.append(String.format(format, args));
-    }
-
-    /**
-     * Quick way to wrap elements in an array.
-     *
-     * @param elements The elements to return as an array.
-     * @return An array of the elements
-     * @deprecated Use {@link PGArrays#wrap(Object[])} instead.
-     */
-    @SafeVarargs
-    @Deprecated(forRemoval = true)
-    public static <T> T[] asArray(T... elements) {
-        return PGArrays.wrap(elements);
     }
 
     public static <T1, T2> @NotNull Map<T1, T2> asMap(Class<? extends Map<T1, T2>> cls, T1 @NotNull [] keys, T2 @NotNull [] values) {
@@ -116,36 +87,31 @@ public final class U {
         return ((str.length() == 0) ? str : ((str.length() == 1) ? str.toUpperCase() : (str.substring(0, 1).toUpperCase() + str.substring(1))));
     }
 
+    public static @NotNull String cleanNumberString(String numberString) {
+        return requireNonEmptyOrElse(Objects.toString(numberString, "0").replaceAll("[^0-9.+-]", ""), "0");
+    }
+
     @Contract(value = "_, _, _ -> new", pure = true)
     public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx, boolean backwards) {
         if(!backwards) return codePointAt(chars, idx);
-        if(idx < 1 || idx > chars.length) return new int[] { -1, idx };
+        if(idx < 1 || idx > chars.length) return new int[]{ -1, idx };
         char c2 = chars[--idx];
         if(Character.isLowSurrogate(c2) && (idx > 0)) {
             char c1 = chars[idx - 1];
-            if(Character.isHighSurrogate(c1)) return new int[] { Character.toCodePoint(c1, c2), (idx - 1) };
+            if(Character.isHighSurrogate(c1)) return new int[]{ Character.toCodePoint(c1, c2), (idx - 1) };
         }
-        return new int[] { c2, idx };
+        return new int[]{ c2, idx };
     }
 
     @Contract(value = "_, _ -> new", pure = true)
     public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx) {
-        if(idx < 0 || idx >= chars.length) return new int[] { -1, idx };
+        if(idx < 0 || idx >= chars.length) return new int[]{ -1, idx };
         char c1 = chars[idx++];
         if(Character.isHighSurrogate(c1) && (idx < chars.length)) {
             char c2 = chars[idx];
-            if(Character.isLowSurrogate(c2)) return new int[] { Character.toCodePoint(c1, c2), (idx + 1) };
+            if(Character.isLowSurrogate(c2)) return new int[]{ Character.toCodePoint(c1, c2), (idx + 1) };
         }
-        return new int[] { c1, idx };
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#compareCharArrays(char[], char[])} instead.
-     */
-    @Contract(pure = true)
-    @Deprecated(forRemoval = true)
-    public static boolean compareCharArrays(char[] ch1, char[] ch2) {
-        return PGArrays.compareCharArrays(ch1, ch2);
+        return new int[]{ c1, idx };
     }
 
     @Contract("_, _ -> param1")
@@ -164,88 +130,8 @@ public final class U {
         return concat(new StringBuilder(), args).toString();
     }
 
-    /**
-     * @deprecated Use {@link PGArrays#createAndFill(int, Object)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static <T> T @NotNull [] createAndFill(int length, @NotNull T value) {
-        return PGArrays.createAndFill(length, value);
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#createAndFill(int, double)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static double @NotNull [] createAndFill(int length, double value) {
-        return PGArrays.createAndFill(length, value);
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#createAndFill(int, float)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static float @NotNull [] createAndFill(int length, float value) {
-        return PGArrays.createAndFill(length, value);
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#createAndFill(int, long)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static long @NotNull [] createAndFill(int length, long value) {
-        return PGArrays.createAndFill(length, value);
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#createAndFill(int, int)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static int @NotNull [] createAndFill(int length, int value) {
-        return PGArrays.createAndFill(length, value);
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#createAndFill(int, short)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static short @NotNull [] createAndFill(int length, short value) {
-        return PGArrays.createAndFill(length, value);
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#createAndFill(int, byte)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static byte @NotNull [] createAndFill(int length, byte value) {
-        return PGArrays.createAndFill(length, value);
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#createAndFill(int, char)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static char @NotNull [] createAndFill(int length, char value) {
-        return PGArrays.createAndFill(length, value);
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#createAndFill(int, boolean)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static boolean @NotNull [] createAndFill(int length, boolean value) {
-        return PGArrays.createAndFill(length, value);
-    }
-
     public static <T extends Throwable> @Nullable T findNestedCause(@NotNull Throwable t, @NotNull Class<T> cls) {
         return (cls.isInstance(t) ? cls.cast(t) : ((t.getCause() == null) ? null : findNestedCause(t.getCause(), cls)));
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#getFromArray(Object[], int, Object)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static <T> T getFromArray(T[] array, int index, T defaultValue) {
-        return PGArrays.getFromArray(array, index, defaultValue);
     }
 
     public static @NotNull String getPart(@NotNull String str, @NotNull @NonNls @Language("RegExp") String separator, @NotNull Parts part) {
@@ -331,39 +217,6 @@ public final class U {
     }
 
     @Contract(pure = true)
-    @SafeVarargs
-    @Deprecated(forRemoval = true)
-    public static <T> boolean isEqualToAny(T obj, T @NotNull ... others) { return isObjIn(obj, others); }
-
-    @Contract(pure = true)
-    @Deprecated(forRemoval = true)
-    public static boolean isEqualToAnyByte(byte num, byte @NotNull ... others) { return isByteIn(num, others); }
-
-    @Contract(pure = true)
-    @Deprecated(forRemoval = true)
-    public static boolean isEqualToAnyChar(char ch, char @NotNull ... others) { return isCharIn(ch, others); }
-
-    @Contract(pure = true)
-    @Deprecated(forRemoval = true)
-    public static boolean isEqualToAnyDouble(double dbl, double @NotNull ... others) { return isDoubleIn(dbl, others); }
-
-    @Contract(pure = true)
-    @Deprecated(forRemoval = true)
-    public static boolean isEqualToAnyFloat(float flt, float @NotNull ... others) { return isFloatIn(flt, others); }
-
-    @Contract(pure = true)
-    @Deprecated(forRemoval = true)
-    public static boolean isEqualToAnyInt(int num, int @NotNull ... others) { return isIntIn(num, others); }
-
-    @Contract(pure = true)
-    @Deprecated(forRemoval = true)
-    public static boolean isEqualToAnyLong(long num, long @NotNull ... others) { return isLongIn(num, others); }
-
-    @Contract(pure = true)
-    @Deprecated(forRemoval = true)
-    public static boolean isEqualToAnyShort(short num, short @NotNull ... others) { return isShortIn(num, others); }
-
-    @Contract(pure = true)
     public static boolean isFloatIn(float flt, float @NotNull ... others) {
         for(float other : others) if(flt == other) return true;
         return false;
@@ -405,29 +258,37 @@ public final class U {
         return sb.toString();
     }
 
-    /**
-     * @deprecated Use {@link PGArrays#join(Object[], Object[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static <T> T @NotNull [] join(T @NotNull [] array1, T @NotNull [] array2) {
-        return PGArrays.join(array1, array2);
-    }
-
     @Contract("!null -> !null; null -> null")
     public static String lc(@Nullable String str) {
         return ((str == null) ? null : str.toLowerCase());
+    }
+
+    @Contract(value = "_ -> new", pure = true)
+    public static @NotNull RuntimeException makeRuntimeException(@NotNull Exception e) {
+        return ((e instanceof RuntimeException) ? ((RuntimeException)e) : new RuntimeException(e));
+    }
+
+    @Contract(pure = true)
+    public static @Nullable String nullIfEmpty(@Nullable String str) {
+        return (U.z(str) ? null : str);
     }
 
     public static boolean nz(@Nullable String str) {
         return ((str != null) && (str.trim().length() > 0));
     }
 
-    /**
-     * @deprecated Use {@link PGArrays#prepend(Object, Object[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static <T> T @NotNull [] prepend(T obj, T @NotNull [] array) {
-        return PGArrays.prepend(obj, array);
+    public static <T> @Nullable T propagate(boolean propagateExceptions, @NotNull Callable<T> callable) {
+        try {
+            return callable.call();
+        }
+        catch(Exception e) {
+            if(propagateExceptions) throw makeRuntimeException(e);
+            return null;
+        }
+    }
+
+    public static @NotNull String requireNonEmptyOrElse(@Nullable String str, @NotNull String defaultString) {
+        return (U.z(str) ? defaultString : str.trim());
     }
 
     public static @NotNull String sha3_256Hash(@NotNull String text) {
@@ -448,20 +309,12 @@ public final class U {
 
     public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
         int i = path.lastIndexOf('.');
-        return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
+        return ((i >= 0) ? new String[]{ path.substring(0, i), path.substring(i + 1) } : new String[]{ path });
     }
 
     @Contract("!null -> !null; null -> null")
     public static String tr(@Nullable String str) {
         return ((str == null) ? null : str.trim());
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#tr(char[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static char[] tr(char[] chars) {
-        return PGArrays.tr(chars);
     }
 
     @SuppressWarnings("unchecked")
@@ -477,126 +330,8 @@ public final class U {
         return ((str == null) ? null : str.toUpperCase());
     }
 
-    /**
-     * Quick way to wrap elements in an array.
-     *
-     * @param elements The elements to return as an array.
-     * @return An array of the elements.
-     * @deprecated Use {@link PGArrays#wrap(Object[])} instead.
-     */
-    @SafeVarargs
-    @Deprecated(forRemoval = true)
-    public static <T> T[] wrap(T... elements) { return elements; }
-
-    /**
-     * Quick way to wrap characters in an array.
-     *
-     * @param characters The characters to return as an array.
-     * @return An array of the characters.
-     * @deprecated Use {@link PGArrays#wrap(char[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static char[] wrap(char... characters) { return characters; }
-
-    /**
-     * Quick way to wrap integer numbers in an array.
-     *
-     * @param numbers The integer numbers to return as an array.
-     * @return An array of the integer numbers.
-     * @deprecated Use {@link PGArrays#wrap(int[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static int[] wrap(int... numbers) { return numbers; }
-
-    /**
-     * Quick way to wrap bytes in an array.
-     *
-     * @param numbers The bytes to return as an array.
-     * @return An array of the bytes.
-     * @deprecated Use {@link PGArrays#wrap(byte[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static byte[] wrap(byte... numbers) { return numbers; }
-
-    /**
-     * Quick way to wrap short integer numbers in an array.
-     *
-     * @param numbers The short integer numbers to return as an array.
-     * @return An array of the short integer numbers.
-     * @deprecated Use {@link PGArrays#wrap(short[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static short[] wrap(short... numbers) { return numbers; }
-
-    /**
-     * Quick way to wrap long integer numbers in an array.
-     *
-     * @param numbers The long integer numbers to return as an array.
-     * @return An array of the long integer numbers.
-     * @deprecated Use {@link PGArrays#wrap(long[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static long[] wrap(long... numbers) { return numbers; }
-
-    /**
-     * Quick way to wrap single precision floating point numbers in an array.
-     *
-     * @param numbers The single precision floating point numbers to return as an array.
-     * @return An array of the single precision floating point numbers.
-     * @deprecated Use {@link PGArrays#wrap(float[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static float[] wrap(float... numbers) { return numbers; }
-
-    /**
-     * Quick way to wrap double precision floating point numbers in an array.
-     *
-     * @param numbers The double precision floating point numbers to return as an array.
-     * @return An array of the double precision floating point numbers.
-     * @deprecated Use {@link PGArrays#wrap(double[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static double[] wrap(double... numbers) { return numbers; }
-
-    /**
-     * Quick way to wrap boolean values in an array.
-     *
-     * @param bools The boolean values to return as an array.
-     * @return An array of the boolean values.
-     * @deprecated Use {@link PGArrays#wrap(boolean[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static boolean[] wrap(boolean... bools) { return bools; }
-
-    @Contract(value = "_ -> new", pure = true)
-    public static @NotNull RuntimeException makeRuntimeException(@NotNull Exception e) {
-        return ((e instanceof RuntimeException) ? ((RuntimeException)e) : new RuntimeException(e));
-    }
-
     public static @NotNull <T extends Throwable> T wrapThrowable(@NotNull Throwable t, @NotNull Class<T> throwableClass) {
         return wrapThrowable(null, t, throwableClass);
-    }
-
-    public static boolean z(@Nullable String str) {
-        return ((str == null) || (str.trim().length() == 0));
-    }
-
-    /**
-     * @deprecated Use {@link PGArrays#z(char[])} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static boolean z(char[] chars) {
-        return PGArrays.z(chars);
-    }
-
-    public static <T> @Nullable T propagate(boolean propagateExceptions, @NotNull Callable<T> callable) {
-        try {
-            return callable.call();
-        }
-        catch(Exception e) {
-            if(propagateExceptions) throw makeRuntimeException(e);
-            return null;
-        }
     }
 
     public static @NotNull <T extends Throwable> T wrapThrowable(@Nullable String msg, @NotNull Throwable t, @NotNull Class<T> throwableClass) {
@@ -606,6 +341,10 @@ public final class U {
               InvocationTargetException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public static boolean z(@Nullable String str) {
+        return ((str == null) || (str.trim().length() == 0));
     }
 
     public enum Parts {

@@ -32,6 +32,10 @@ public final class IO {
 
     private IO() { }
 
+    public static File getCanonicalFileQuietly(@NotNull File file) {
+        try { return file.getCanonicalFile(); } catch(IOException ignore) { return file; }
+    }
+
     public static void closeQuietly(@NotNull Closeable closeable) {
         try { closeable.close(); } catch(Exception ignore) { }
     }
