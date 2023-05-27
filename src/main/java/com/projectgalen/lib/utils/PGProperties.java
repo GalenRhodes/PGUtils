@@ -23,6 +23,7 @@ package com.projectgalen.lib.utils;
 import com.projectgalen.lib.utils.errors.InvalidPropertyKeyValuePair;
 import com.projectgalen.lib.utils.macro.Macro;
 import org.intellij.lang.annotations.Language;
+import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -35,14 +36,15 @@ import java.util.*;
 @SuppressWarnings("unused")
 public class PGProperties extends Properties {
 
-    public static final @Language("RegExp") String           DEFAULT_LIST_SEPARATOR_PATTERN = "\\s*,\\s*";
-    public static final @Language("RegExp") String           DEFAULT_MAP_KV_PATTERN         = "\\s*:\\s*";
-    public static final                     String           DEFAULT_DATE_FORMAT            = "yyyy-MM-dd";
-    public static final                     String           DEFAULT_TIME_FORMAT            = "HH:mm:ss.SSSZ";
-    public static final                     String           DEFAULT_DATETIME_FORMAT        = String.format("%s'T'%s", DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT);
-    public static final                     int              DEFAULT_LIMIT                  = -1;
-    private static final                    PGResourceBundle msgs                           = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
-    private static final                    PGProperties     props                          = getXMLProperties("pg_properties.xml", PGProperties.class);
+    private static final PGResourceBundle msgs  = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final PGProperties     props = getXMLProperties("pg_properties.xml", PGProperties.class);
+
+    public static final @Language("RegExp") @RegExp String DEFAULT_LIST_SEPARATOR_PATTERN = "\\s*,\\s*";
+    public static final @Language("RegExp") @RegExp String DEFAULT_MAP_KV_PATTERN         = "\\s*:\\s*";
+    public static final                             String DEFAULT_DATE_FORMAT            = "yyyy-MM-dd";
+    public static final                             String DEFAULT_TIME_FORMAT            = "HH:mm:ss.SSSZ";
+    public static final                             String DEFAULT_DATETIME_FORMAT        = String.format("%s'T'%s", DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT);
+    public static final                             int    DEFAULT_LIMIT                  = -1;
 
     public PGProperties() {
         super();
@@ -50,115 +52,6 @@ public class PGProperties extends Properties {
 
     public PGProperties(@Nullable Properties defaults) {
         super(defaults);
-    }
-
-    @Contract("_,_,!null -> !null")
-    public Date getDateProperty(@NotNull @NonNls String key, @NotNull @NonNls String format, @Nullable Date defaultDate) {
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        String           val = getProperty(key);
-        if(val == null) return defaultDate;
-        try { return sdf.parse(val); } catch(Exception e) { return defaultDate; }
-    }
-
-    public static @NotNull PGProperties getProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz) {
-        return getProperties(resourceName, clazz, null);
-    }
-
-    public static @NotNull PGProperties getProperties(@NotNull @NonNls String resourceName, @Nullable Properties defaults) {
-        Class<?> clazz = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
-        return getProperties(resourceName, clazz, defaults);
-    }
-
-    public static @NotNull PGProperties getProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz, @Nullable Properties defaults) {
-        try {
-            return getProperties(clazz.getResourceAsStream(resourceName), defaults);
-        }
-        catch(Exception e) {
-            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.res", resourceName), e);
-        }
-    }
-
-    public static @NotNull PGProperties getProperties(@NotNull File file) {
-        return getProperties(file, null);
-    }
-
-    public static @NotNull PGProperties getProperties(@NotNull File file, @Nullable Properties defaults) {
-        try(InputStream inputStream = new FileInputStream(file)) {
-            return getProperties(inputStream, defaults);
-        }
-        catch(Exception e) {
-            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.file", file), e);
-        }
-    }
-
-    public static @NotNull PGProperties getProperties(InputStream inputStream) {
-        return getProperties(inputStream, new Properties());
-    }
-
-    public static @NotNull PGProperties getProperties(InputStream inputStream, @Nullable Properties defaults) {
-        if(inputStream == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.input.stream"), new NullPointerException());
-        try(BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
-            PGProperties props = new PGProperties(defaults);
-            props.load(bufferedInputStream);
-            return props;
-        }
-        catch(Exception e) {
-            throw new PGPropertiesException(msgs.getString("msg.err.props.load.failed"), e);
-        }
-    }
-
-    public static @NotNull PGProperties getProperties(Reader reader) {
-        return getProperties(reader, null);
-    }
-
-    public static @NotNull PGProperties getProperties(Reader reader, @Nullable Properties defaults) {
-        if(reader == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.reader"), new NullPointerException());
-        try(BufferedReader bufferedReader = new BufferedReader(reader)) {
-            PGProperties props = new PGProperties(defaults);
-            props.load(bufferedReader);
-            return props;
-        }
-        catch(Exception e) {
-            throw new PGPropertiesException(msgs.getString("msg.err.props.load.failed"), e);
-        }
-    }
-
-    public static @NotNull PGProperties getXMLProperties(InputStream inputStream) {
-        return getXMLProperties(inputStream, null);
-    }
-
-    public static @NotNull PGProperties getXMLProperties(InputStream inputStream, @Nullable Properties defaults) {
-        if(inputStream == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.input.stream"), new NullPointerException());
-        try(BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
-            PGProperties props = new PGProperties(defaults);
-            props.loadFromXML(bufferedInputStream);
-            return props;
-        }
-        catch(Exception e) {
-            throw new PGPropertiesException(msgs.getString("msg.err.props.load.failed"), e);
-        }
-    }
-
-    public static @NotNull PGProperties getXMLProperties(@NotNull File file) {
-        return getXMLProperties(file, null);
-    }
-
-    public static @NotNull PGProperties getXMLProperties(@NotNull File file, @Nullable Properties defaults) {
-        try(InputStream inputStream = new FileInputStream(file)) {
-            return getXMLProperties(inputStream, defaults);
-        }
-        catch(Exception e) {
-            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.file", file), e);
-        }
-    }
-
-    public static @NotNull PGProperties getXMLProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz) {
-        return getXMLProperties(resourceName, clazz, null);
-    }
-
-    public static @NotNull PGProperties getXMLProperties(@NotNull @NonNls String resourceName, @Nullable Properties defaults) {
-        Class<?> clazz = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
-        return getXMLProperties(resourceName, clazz, defaults);
     }
 
     public String format(@NotNull @NonNls String key, Object... args) {
@@ -191,13 +84,12 @@ public class PGProperties extends Properties {
         return getByte(key, (byte)0);
     }
 
-    public static @NotNull PGProperties getXMLProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz, @Nullable Properties defaults) {
-        try {
-            return getXMLProperties(clazz.getResourceAsStream(resourceName), defaults);
-        }
-        catch(Exception e) {
-            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.res", resourceName), e);
-        }
+    @Contract("_,_,!null -> !null")
+    public Date getDateProperty(@NotNull @NonNls String key, @NotNull @NonNls String format, @Nullable Date defaultDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        String           val = getProperty(key);
+        if(val == null) return defaultDate;
+        try { return sdf.parse(val); } catch(Exception e) { return defaultDate; }
     }
 
     @Contract("_,!null -> !null")
@@ -365,6 +257,151 @@ public class PGProperties extends Properties {
         return value.replaceAll("_", "").replaceAll(",", "");
     }
 
+    public static void debugProperties(@NotNull Properties props) {
+        debugProperties(props, System.out);
+    }
+
+    public static void debugProperties(@NotNull Properties props, @NotNull PrintStream out) {
+        Set<String> propNames = props.stringPropertyNames();
+        int         max1      = 0;
+        int         max2      = 0;
+
+        for(String name : propNames) {
+            max1 = Math.max(max1, name.length());
+            max2 = Math.max(max2, Objects.toString(props.getProperty(name), "").length());
+        }
+
+        String fmt = String.format("| %%%ds | %%%ds |\n", max1, max2);
+        String bar = String.format("+%s+%s+\n", "-".repeat(max1 + 2), "-".repeat(max2 + 2));
+
+        out.print(bar);
+        for(String name : propNames) out.printf(fmt, name, Objects.toString(props.getProperty(name), ""));
+        out.print(bar);
+    }
+
+    public static void debugSystemProperties() {
+        debugSystemProperties(System.out);
+    }
+
+    public static void debugSystemProperties(@NotNull PrintStream out) {
+        Properties sysProps = System.getProperties();
+        debugProperties(sysProps, out);
+    }
+
+    public static @NotNull PGProperties getProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz) {
+        return getProperties(resourceName, clazz, null);
+    }
+
+    public static @NotNull PGProperties getProperties(@NotNull @NonNls String resourceName, @Nullable Properties defaults) {
+        Class<?> clazz = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
+        return getProperties(resourceName, clazz, defaults);
+    }
+
+    public static @NotNull PGProperties getProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz, @Nullable Properties defaults) {
+        try {
+            return getProperties(clazz.getResourceAsStream(resourceName), defaults);
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.res", resourceName), e);
+        }
+    }
+
+    public static @NotNull PGProperties getProperties(@NotNull File file) {
+        return getProperties(file, null);
+    }
+
+    public static @NotNull PGProperties getProperties(@NotNull File file, @Nullable Properties defaults) {
+        try(InputStream inputStream = new FileInputStream(file)) {
+            return getProperties(inputStream, defaults);
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.file", file), e);
+        }
+    }
+
+    public static @NotNull PGProperties getProperties(InputStream inputStream) {
+        return getProperties(inputStream, new Properties());
+    }
+
+    public static @NotNull PGProperties getProperties(InputStream inputStream, @Nullable Properties defaults) {
+        if(inputStream == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.input.stream"), new NullPointerException());
+        try(BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
+            PGProperties props = new PGProperties(defaults);
+            props.load(bufferedInputStream);
+            return props;
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.getString("msg.err.props.load.failed"), e);
+        }
+    }
+
+    public static @NotNull PGProperties getProperties(Reader reader) {
+        return getProperties(reader, null);
+    }
+
+    public static @NotNull PGProperties getProperties(Reader reader, @Nullable Properties defaults) {
+        if(reader == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.reader"), new NullPointerException());
+        try(BufferedReader bufferedReader = new BufferedReader(reader)) {
+            PGProperties props = new PGProperties(defaults);
+            props.load(bufferedReader);
+            return props;
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.getString("msg.err.props.load.failed"), e);
+        }
+    }
+
+    public static @NotNull PGProperties getXMLProperties(InputStream inputStream) {
+        return getXMLProperties(inputStream, null);
+    }
+
+    public static @NotNull PGProperties getXMLProperties(InputStream inputStream, @Nullable Properties defaults) {
+        if(inputStream == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.input.stream"), new NullPointerException());
+        try(BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
+            PGProperties props = new PGProperties(defaults);
+            props.loadFromXML(bufferedInputStream);
+            return props;
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.getString("msg.err.props.load.failed"), e);
+        }
+    }
+
+    public static @NotNull PGProperties getXMLProperties(@NotNull File file) {
+        return getXMLProperties(file, null);
+    }
+
+    public static @NotNull PGProperties getXMLProperties(@NotNull File file, @Nullable Properties defaults) {
+        try(InputStream inputStream = new FileInputStream(file)) {
+            return getXMLProperties(inputStream, defaults);
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.file", file), e);
+        }
+    }
+
+    public static @NotNull PGProperties getXMLProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz) {
+        return getXMLProperties(resourceName, clazz, null);
+    }
+
+    public static @NotNull PGProperties getXMLProperties(@NotNull @NonNls String resourceName, @Nullable Properties defaults) {
+        Class<?> clazz = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
+        return getXMLProperties(resourceName, clazz, defaults);
+    }
+
+    public static @NotNull PGProperties getXMLProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz, @Nullable Properties defaults) {
+        try {
+            return getXMLProperties(clazz.getResourceAsStream(resourceName), defaults);
+        }
+        catch(Exception e) {
+            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.res", resourceName), e);
+        }
+    }
+
+    private static final class CacheHolder {
+        private static final ObjCache CACHE = new ObjCache();
+    }
+
     public static class PGPropertiesException extends RuntimeException {
         public PGPropertiesException() {
             super();
@@ -381,9 +418,5 @@ public class PGProperties extends Properties {
         public PGPropertiesException(Throwable cause) {
             super(cause);
         }
-    }
-
-    private static final class CacheHolder {
-        private static final ObjCache CACHE = new ObjCache();
     }
 }

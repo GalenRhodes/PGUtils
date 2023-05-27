@@ -22,6 +22,8 @@ package com.projectgalen.lib.utils;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.macro.Macro;
+import org.intellij.lang.annotations.Language;
+import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +36,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 
+import static com.projectgalen.lib.utils.PGProperties.DEFAULT_LIST_SEPARATOR_PATTERN;
+import static com.projectgalen.lib.utils.PGProperties.DEFAULT_MAP_KV_PATTERN;
+
 public final class PGResourceBundle extends ResourceBundle {
 
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
@@ -43,6 +48,77 @@ public final class PGResourceBundle extends ResourceBundle {
     private PGResourceBundle(@NotNull ResourceBundle bundle) {
         super();
         this.bundle = bundle;
+    }
+
+    public @NotNull String format(String key, Object... args) {
+        return String.format(getString(key), args);
+    }
+
+    public @NotNull String format(boolean macroExpansion, @NotNull String key, Object... args) {
+        return String.format(getString(key, macroExpansion), args);
+    }
+
+    @Override
+    public @NotNull Enumeration<String> getKeys() {
+        return bundle.getKeys();
+    }
+
+    public @NotNull String getString(@NotNull String key, boolean macroExpansion) {
+        return (macroExpansion ? bundle.getString(key) : getString(key));
+    }
+
+    public @NotNull String getString(@NotNull String key, @NotNull String defaultValue) {
+        return getString(key, defaultValue, true);
+    }
+
+    public @NotNull String getString(@NotNull String key, @NotNull String defaultValue, boolean macroExpansion) {
+        try {
+            return getString(key);
+        }
+        catch(MissingResourceException e) {
+            return (macroExpansion ? Macro.replaceMacros(defaultValue, this::getStringQuietly) : defaultValue);
+        }
+    }
+
+    public @NotNull List<String> getStringList(@NotNull String key) {
+        return getStringList(key, DEFAULT_LIST_SEPARATOR_PATTERN);
+    }
+
+    public @NotNull List<String> getStringList(@NotNull String key, @NotNull @RegExp @Language("RegExp") String regexp) {
+        return new ArrayList<>(Arrays.asList(getString(key).trim().split(regexp)));
+    }
+
+    public @NotNull Map<String, String> getStringMap(@NotNull String key) {
+        return getStringMap(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_MAP_KV_PATTERN);
+    }
+
+    public @NotNull Map<String, String> getStringMap(@NotNull String key, @NotNull @RegExp @Language("RegExp") String listRegexp, @NotNull @RegExp @Language("RegExp") String kvRegexp) {
+        Map<String, String> map = new LinkedHashMap<>();
+        for(String s : getStringList(key, listRegexp)) {
+            String[] kv = s.split(kvRegexp, 2);
+            if(kv.length == 2) map.put(kv[0], kv[1]);
+        }
+        return map;
+    }
+
+    public @Nullable String getStringQuietly(@NotNull String key) {
+        try {
+            return bundle.getString(key);
+        }
+        catch(MissingResourceException e) {
+            return null;
+        }
+    }
+
+    @Override
+    @Unmodifiable
+    protected @Nullable Object handleGetObject(@NotNull String key) {
+        try {
+            return Macro.replaceMacros(bundle.getString(key), this::getStringQuietly);
+        }
+        catch(MissingResourceException ignore) {
+            return null;
+        }
     }
 
     @Contract("_ -> new")
@@ -98,56 +174,6 @@ public final class PGResourceBundle extends ResourceBundle {
     @Contract("_,_,_ -> new")
     public static @NotNull PGResourceBundle getXMLPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, loader, new XMLResourceBundleControl()));
-    }
-
-    public @NotNull String format(String key, Object... args) {
-        return String.format(getString(key), args);
-    }
-
-    public @NotNull String format(boolean macroExpansion, @NotNull String key, Object... args) {
-        return String.format(getString(key, macroExpansion), args);
-    }
-
-    @Override
-    public @NotNull Enumeration<String> getKeys() {
-        return bundle.getKeys();
-    }
-
-    public @NotNull String getString(@NotNull String key, boolean macroExpansion) {
-        return (macroExpansion ? bundle.getString(key) : getString(key));
-    }
-
-    public @NotNull String getString(@NotNull String key, @NotNull String defaultValue) {
-        return getString(key, defaultValue, true);
-    }
-
-    public @NotNull String getString(@NotNull String key, @NotNull String defaultValue, boolean macroExpansion) {
-        try {
-            return getString(key);
-        }
-        catch(MissingResourceException e) {
-            return (macroExpansion ? Macro.replaceMacros(defaultValue, this::getStringQuietly) : defaultValue);
-        }
-    }
-
-    @Override
-    @Unmodifiable
-    protected @Nullable Object handleGetObject(@NotNull String key) {
-        try {
-            return Macro.replaceMacros(bundle.getString(key), this::getStringQuietly);
-        }
-        catch(MissingResourceException ignore) {
-            return null;
-        }
-    }
-
-    private @Nullable String getStringQuietly(@NotNull String key) {
-        try {
-            return bundle.getString(key);
-        }
-        catch(MissingResourceException e) {
-            return null;
-        }
     }
 
     private static class XMLKeyEnumerator implements Enumeration<String> {

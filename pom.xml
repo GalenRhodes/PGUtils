@@ -101,7 +101,7 @@
     <packaging>jar</packaging>
 
     <build>
-        <defaultGoal>package</defaultGoal>
+        <defaultGoal>deploy</defaultGoal>
 
         <plugins>
             <plugin>
@@ -183,7 +183,8 @@
                         <goals>
                             <goal>site</goal>
                         </goals>
-                        <phase>deploy</phase>
+                        <phase>site</phase>
+                        <!--                        <phase>deploy</phase>-->
                     </execution>
                 </executions>
             </plugin>
