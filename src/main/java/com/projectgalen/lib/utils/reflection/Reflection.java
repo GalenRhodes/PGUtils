@@ -278,7 +278,7 @@ public final class Reflection {
     public static @NotNull Method getMethod(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
         Method method = getMethodOrNull(cls, name, parameterTypes);
         if(method != null) return method;
-        String msg = props.format("reflect.nosuchmethod.msg.format", cls.getName(), name, U.join(", ", U.translate(Object.class, Class::getName, parameterTypes)));
+        String msg = props.format("reflect.nosuchmethod.msg.format", cls.getName(), name, U.join(", ", U.map(Object.class, Class::getName, parameterTypes)));
         throw new NoSuchMethodException(msg);
     }
 

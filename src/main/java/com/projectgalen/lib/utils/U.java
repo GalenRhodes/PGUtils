@@ -31,20 +31,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 
-@SuppressWarnings({ "unused", "SameParameterValue" })
+@SuppressWarnings({ "unused", "SameParameterValue", "unchecked" })
 public final class U {
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
@@ -130,13 +123,8 @@ public final class U {
         return concat(new StringBuilder(), args).toString();
     }
 
-    public static <T extends Throwable> @Nullable T findNestedCause(@NotNull Throwable t, @NotNull Class<T> cls) {
-        return (cls.isInstance(t) ? cls.cast(t) : ((t.getCause() == null) ? null : findNestedCause(t.getCause(), cls)));
-    }
-
     public static @NotNull String getPart(@NotNull String str, @NotNull @NonNls @Language("RegExp") String separator, @NotNull Parts part) {
         Matcher m = Regex.getMatcher(separator, str);
-
         switch(part) {
             case NOT_FIRST:
                 if(m.find()) return str.substring(m.end());
@@ -180,13 +168,6 @@ public final class U {
         for(long i = start; (_flg ? (i < (long)end) : (i > (long)end)); i += stride) arr[_idx++] = (int)i;
         if(_idx < arr.length) throw new IllegalArgumentException(msgs.format("msg.err.get_range.guess_too_high", _idx, arr.length));
         return arr;
-    }
-
-    public static @NotNull <T extends Throwable> T getThrowable(@NotNull String msg, @NotNull Class<T> throwableClass) {
-        try { return throwableClass.getConstructor(String.class).newInstance(msg); }
-        catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
     public static @NotNull String ifNullOrEmpty(@Nullable String str, @NotNull String def) {
@@ -247,7 +228,7 @@ public final class U {
         return false;
     }
 
-    public static @NotNull String join(char separator, Object... args) {
+    public static @NotNull String join(char separator, Object @NotNull ... args) {
         return join(Character.toString(separator), args);
     }
 
@@ -263,11 +244,6 @@ public final class U {
         return ((str == null) ? null : str.toLowerCase());
     }
 
-    @Contract(value = "_ -> new", pure = true)
-    public static @NotNull RuntimeException makeRuntimeException(@NotNull Exception e) {
-        return ((e instanceof RuntimeException) ? ((RuntimeException)e) : new RuntimeException(e));
-    }
-
     @Contract(pure = true)
     public static @Nullable String nullIfEmpty(@Nullable String str) {
         return (U.z(str) ? null : str);
@@ -277,34 +253,8 @@ public final class U {
         return ((str != null) && (str.trim().length() > 0));
     }
 
-    public static <T> @Nullable T propagate(boolean propagateExceptions, @NotNull Callable<T> callable) {
-        try {
-            return callable.call();
-        }
-        catch(Exception e) {
-            if(propagateExceptions) throw makeRuntimeException(e);
-            return null;
-        }
-    }
-
     public static @NotNull String requireNonEmptyOrElse(@Nullable String str, @NotNull String defaultString) {
         return (U.z(str) ? defaultString : str.trim());
-    }
-
-    public static @NotNull String sha3_256Hash(@NotNull String text) {
-        return sha3_256Hash(text.toCharArray());
-    }
-
-    public static @NotNull String sha3_256Hash(char @NotNull [] chars) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA3-256");
-            ByteBuffer    bytes  = StandardCharsets.UTF_8.newEncoder().encode(CharBuffer.wrap(chars));
-            digest.update(bytes);
-            String str = Base64.getEncoder().encodeToString(digest.digest());
-            for(int i = 0; i < bytes.limit(); i++) bytes.put(i, (byte)0);
-            return str;
-        }
-        catch(NoSuchAlgorithmException | CharacterCodingException e) { throw new RuntimeException(e); }
     }
 
     public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
@@ -317,9 +267,8 @@ public final class U {
         return ((str == null) ? null : str.trim());
     }
 
-    @SuppressWarnings("unchecked")
     @SafeVarargs
-    public static @NotNull <P, R> R @NotNull [] translate(@NotNull Class<R> cls, @NotNull GetWithValueDelegate<P, R> delegate, @NotNull P @NotNull ... args) {
+    public static @NotNull <P, R> R @NotNull [] map(@NotNull Class<R> cls, @NotNull GetWithValueDelegate<P, R> delegate, @NotNull P @NotNull ... args) {
         R[] out = (R[])Array.newInstance(cls, args.length);
         for(int i = 0; i < args.length; i++) out[i] = delegate.action(args[i]);
         return out;
@@ -328,19 +277,6 @@ public final class U {
     @Contract("!null -> !null; null -> null")
     public static String uc(@Nullable String str) {
         return ((str == null) ? null : str.toUpperCase());
-    }
-
-    public static @NotNull <T extends Throwable> T wrapThrowable(@NotNull Throwable t, @NotNull Class<T> throwableClass) {
-        return wrapThrowable(null, t, throwableClass);
-    }
-
-    public static @NotNull <T extends Throwable> T wrapThrowable(@Nullable String msg, @NotNull Throwable t, @NotNull Class<T> throwableClass) {
-        try { return throwableClass.getConstructor(String.class, Throwable.class).newInstance(((msg == null) ? t.getMessage() : msg), t); }
-        catch(NoSuchMethodException | InstantiationException |
-              IllegalAccessException |
-              InvocationTargetException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
     public static boolean z(@Nullable String str) {
