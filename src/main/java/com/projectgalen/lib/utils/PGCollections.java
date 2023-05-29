@@ -40,9 +40,27 @@ public final class PGCollections {
 
     public static <T, C extends Collection<T>> BigDecimal bigDecimalSum(@NotNull C collection, MathContext mathContext, @NotNull GetBigDecFromDelegate<T> delegate) {
         BigDecimal sum = null;
-        for (T obj : collection)
+        for(T obj : collection)
             sum = ((sum == null) ? delegate.getBigDecimal(obj) : sum.add(delegate.getBigDecimal(obj), mathContext));
         return ((sum == null) ? BigDecimal.ZERO : sum);
+    }
+
+    public static <T, C extends Collection<T>> BigInteger bigIntegerSum(@NotNull C collection, @NotNull GetBigIntFromDelegate<T> delegate) {
+        BigInteger sum = BigInteger.ZERO;
+        for(T obj : collection) sum = sum.add(delegate.getBigInteger(obj));
+        return sum;
+    }
+
+    public static <T, C extends Collection<T>> double doubleSum(@NotNull C collection, @NotNull GetDoubleFromDelegate<T> delegate) {
+        double sum = 0;
+        for(T obj : collection) sum += delegate.getDouble(obj);
+        return sum;
+    }
+
+    public static <T, C extends Collection<T>> float floatSum(@NotNull C collection, @NotNull GetFloatFromDelegate<T> delegate) {
+        float sum = 0;
+        for(T obj : collection) sum += delegate.getFloat(obj);
+        return sum;
     }
 
     public static <T> T getFirst(@Nullable List<T> list) {
@@ -51,24 +69,6 @@ public final class PGCollections {
 
     public static <T> T getLast(@Nullable List<T> list) {
         return (((list == null) || list.isEmpty()) ? null : list.get(list.size() - 1));
-    }
-
-    public static <T, C extends Collection<T>> BigInteger bigIntegerSum(@NotNull C collection, @NotNull GetBigIntFromDelegate<T> delegate) {
-        BigInteger sum = BigInteger.ZERO;
-        for (T obj : collection) sum = sum.add(delegate.getBigInteger(obj));
-        return sum;
-    }
-
-    public static <T, C extends Collection<T>> double doubleSum(@NotNull C collection, @NotNull GetDoubleFromDelegate<T> delegate) {
-        double sum = 0;
-        for (T obj : collection) sum += delegate.getDouble(obj);
-        return sum;
-    }
-
-    public static <T, C extends Collection<T>> float floatSum(@NotNull C collection, @NotNull GetFloatFromDelegate<T> delegate) {
-        float sum = 0;
-        for(T obj : collection) sum += delegate.getFloat(obj);
-        return sum;
     }
 
     public static <T, C extends Collection<T>> int intSum(@NotNull C collection, @NotNull GetIntFromDelegate<T> delegate) {

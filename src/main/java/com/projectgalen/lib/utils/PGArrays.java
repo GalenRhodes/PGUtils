@@ -44,7 +44,9 @@ public final class PGArrays {
      * Quick way to wrap elements in an array.
      *
      * @param elements The elements to return as an array.
+     *
      * @return An array of the elements
+     *
      * @deprecated Use {@link #wrap(Object[])} instead.
      */
     @SafeVarargs
@@ -158,6 +160,7 @@ public final class PGArrays {
      * Quick way to wrap elements in an array.
      *
      * @param elements The elements to return as an array.
+     *
      * @return An array of the elements.
      */
     @SafeVarargs
@@ -167,6 +170,7 @@ public final class PGArrays {
      * Quick way to wrap characters in an array.
      *
      * @param characters The characters to return as an array.
+     *
      * @return An array of the characters.
      */
     public static char[] wrap(char... characters) { return characters; }
@@ -175,6 +179,7 @@ public final class PGArrays {
      * Quick way to wrap integer numbers in an array.
      *
      * @param numbers The integer numbers to return as an array.
+     *
      * @return An array of the integer numbers.
      */
     public static int[] wrap(int... numbers) { return numbers; }
@@ -183,6 +188,7 @@ public final class PGArrays {
      * Quick way to wrap bytes in an array.
      *
      * @param numbers The bytes to return as an array.
+     *
      * @return An array of the bytes.
      */
     public static byte[] wrap(byte... numbers) { return numbers; }
@@ -191,6 +197,7 @@ public final class PGArrays {
      * Quick way to wrap short integer numbers in an array.
      *
      * @param numbers The short integer numbers to return as an array.
+     *
      * @return An array of the short integer numbers.
      */
     public static short[] wrap(short... numbers) { return numbers; }
@@ -199,6 +206,7 @@ public final class PGArrays {
      * Quick way to wrap long integer numbers in an array.
      *
      * @param numbers The long integer numbers to return as an array.
+     *
      * @return An array of the long integer numbers.
      */
     public static long[] wrap(long... numbers) { return numbers; }
@@ -207,6 +215,7 @@ public final class PGArrays {
      * Quick way to wrap single precision floating point numbers in an array.
      *
      * @param numbers The single precision floating point numbers to return as an array.
+     *
      * @return An array of the single precision floating point numbers.
      */
     public static float[] wrap(float... numbers) { return numbers; }
@@ -215,6 +224,7 @@ public final class PGArrays {
      * Quick way to wrap double precision floating point numbers in an array.
      *
      * @param numbers The double precision floating point numbers to return as an array.
+     *
      * @return An array of the double precision floating point numbers.
      */
     public static double[] wrap(double... numbers) { return numbers; }
@@ -223,6 +233,7 @@ public final class PGArrays {
      * Quick way to wrap boolean values in an array.
      *
      * @param bools The boolean values to return as an array.
+     *
      * @return An array of the boolean values.
      */
     public static boolean[] wrap(boolean... bools) { return bools; }
@@ -237,15 +248,15 @@ public final class PGArrays {
             if(!Character.isWhitespace(cp[0])) return tr2(chars, i);
             i = cp[1];
         }
-        return new int[] { 0, 0 };
+        return new int[]{ 0, 0 };
     }
 
     private static int @NotNull [] tr2(char @NotNull [] chars, int i) {
         for(int j = chars.length; j > i; ) {
             int[] cp = U.codePointAt(chars, j, true);
-            if(!Character.isWhitespace(cp[0])) return new int[] { i, j };
+            if(!Character.isWhitespace(cp[0])) return new int[]{ i, j };
             j = cp[1];
         }
-        return new int[] { i, (i + 1) };
+        return new int[]{ i, (i + 1) };
     }
 }

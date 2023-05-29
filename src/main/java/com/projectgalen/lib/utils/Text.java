@@ -126,7 +126,7 @@ public final class Text {
     }
 
     public static String @NotNull [] padWithWrap(String str, Align align, int width, boolean stripEachLineLeading) {
-        if(str == null) return new String[] { String.valueOf(PGArrays.createAndFill(width, ' ')) };
+        if(str == null) return new String[]{ String.valueOf(PGArrays.createAndFill(width, ' ')) };
 
         String[]     lines = str.split("\\r\\n|\\n");
         List<String> out   = new ArrayList<>();

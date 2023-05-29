@@ -50,7 +50,7 @@ public final class PGProxy {
         public final Class<?> proxyType;
 
         public ProxyInfo(Object proxy, Class<?> proxyType) {
-            this.proxy = proxy;
+            this.proxy     = proxy;
             this.proxyType = proxyType;
         }
     }

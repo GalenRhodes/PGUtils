@@ -73,6 +73,16 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
         }
     }
 
+    @Override
+    public int compareTo(@NotNull TypeInfo o) {
+        return toString().compareTo(o.toString());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return ((this == o) || ((o instanceof TypeInfo) && _equals((TypeInfo)o)));
+    }
+
     public Class<?> getTypeClass() throws ClassNotFoundException {
         switch(typeName) { //@f:0
             case "boolean":
@@ -94,22 +104,6 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
             default:
                 return Class.forName(typeName);
         } //@f:1
-    }
-
-    @Override
-    public int compareTo(@NotNull TypeInfo o) {
-        return toString().compareTo(o.toString());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return ((this == o) || ((o instanceof TypeInfo) && _equals((TypeInfo)o)));
-    }
-
-    public static @NotNull TypeInfo[] getParameterTypeInfo(@NotNull Method method) {
-        List<TypeInfo> list = new ArrayList<>();
-        for(Type pType : method.getGenericParameterTypes()) list.add(new TypeInfo(pType));
-        return list.toArray(new TypeInfo[0]);
     }
 
     @Override
@@ -138,5 +132,11 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
 
     private boolean _equals(@NotNull TypeInfo other) {
         return ((isParameterizedType == other.isParameterizedType) && typeName.equals(other.typeName) && argTypes.equals(other.argTypes));
+    }
+
+    public static @NotNull TypeInfo[] getParameterTypeInfo(@NotNull Method method) {
+        List<TypeInfo> list = new ArrayList<>();
+        for(Type pType : method.getGenericParameterTypes()) list.add(new TypeInfo(pType));
+        return list.toArray(new TypeInfo[0]);
     }
 }

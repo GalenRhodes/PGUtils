@@ -42,11 +42,11 @@ public class PRef<T> {
         return value;
     }
 
-    public void setValue(T value) {
-        this.value = value;
-    }
-
     public @NotNull Class<T> getValueClass() {
         return clazz;
+    }
+
+    public void setValue(T value) {
+        this.value = value;
     }
 }

@@ -47,14 +47,11 @@ public final class PGMath {
      * @param v The value.
      * @param a The first value of the range.
      * @param b The second value of the range.
+     *
      * @return <code>true</code> if the value is in between values <code>a</code> and <code>b</code> inclusive.
      */
     public static boolean isInRangeInclusive(int v, int a, int b) {
         return (((a <= b) ? ((v >= a) && (v <= b)) : ((v >= b) && (v <= a))));
-    }
-
-    public static boolean mod(int a, int b) {
-        return ((a % b) == 0);
     }
 
     @Contract(pure = true)
@@ -99,6 +96,10 @@ public final class PGMath {
         return first;
     }
 
+    public static <T extends Comparable<T>> @NotNull T max(@NotNull T o1, @NotNull T o2) {
+        return ((o1.compareTo(o2) >= 0) ? o1 : o2);
+    }
+
     @Contract(pure = true)
     public static char min(char first, char @NotNull ... values) {
         for(char v : values) if(v < first) first = v;
@@ -141,11 +142,11 @@ public final class PGMath {
         return first;
     }
 
-    public static <T extends Comparable<T>> @NotNull T max(@NotNull T o1, @NotNull T o2) {
-        return ((o1.compareTo(o2) >= 0) ? o1 : o2);
-    }
-
     public static <T extends Comparable<T>> @NotNull T min(@NotNull T o1, @NotNull T o2) {
         return ((o1.compareTo(o2) <= 0) ? o1 : o2);
+    }
+
+    public static boolean mod(int a, int b) {
+        return ((a % b) == 0);
     }
 }

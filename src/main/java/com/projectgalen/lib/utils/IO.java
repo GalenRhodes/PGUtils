@@ -32,10 +32,6 @@ public final class IO {
 
     private IO() { }
 
-    public static File getCanonicalFileQuietly(@NotNull File file) {
-        try { return file.getCanonicalFile(); } catch(IOException ignore) { return file; }
-    }
-
     public static void closeQuietly(@NotNull Closeable closeable) {
         try { closeable.close(); } catch(Exception ignore) { }
     }
@@ -103,6 +99,10 @@ public final class IO {
 
     public static long copy(@NotNull Reader reader, @NotNull Writer writer) throws IOException {
         return copy(reader, writer, true);
+    }
+
+    public static File getCanonicalFileQuietly(@NotNull File file) {
+        try { return file.getCanonicalFile(); } catch(IOException ignore) { return file; }
     }
 
     public static byte @NotNull [] readFile(@NotNull File file) throws IOException {

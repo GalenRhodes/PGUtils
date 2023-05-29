@@ -38,10 +38,10 @@ public class Trigger {
     private       boolean                  triggered;
 
     public Trigger(int delay, @NotNull TimeUnit unit, @NotNull VoidDelegate delegate) {
-        this.delegate = delegate;
-        this.delay = delay;
-        this.unit = unit;
-        this.triggered = false;
+        this.delegate        = delegate;
+        this.delay           = delay;
+        this.unit            = unit;
+        this.triggered       = false;
         this.executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
