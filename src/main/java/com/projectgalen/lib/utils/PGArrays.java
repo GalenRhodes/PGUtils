@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.delegates.Equality;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +39,13 @@ public final class PGArrays {
         T[] copy = Arrays.copyOf(array, array.length + 1);
         copy[array.length] = obj;
         return copy;
+    }
+
+    public static <T> boolean areEqual(T[] leftArray, T[] rightArray, @NotNull Equality<T> equality) {
+        if(leftArray == rightArray) return true;
+        if(!((leftArray != null) && (rightArray != null) && (leftArray.length == rightArray.length))) return false;
+        for(int i = 0; i < leftArray.length; i++) if(!equality.areEqual(leftArray[i], rightArray[i])) return false;
+        return true;
     }
 
     /**

@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 @SuppressWarnings({ "SameParameterValue", "unchecked" })
 public final class Null implements Cloneable {
@@ -92,6 +93,12 @@ public final class Null implements Cloneable {
     @Deprecated(forRemoval = true)
     public static @NotNull <T> T ifNull(@Nullable T obj, @NotNull T defaultValue) {
         return Objects.requireNonNullElse(obj, defaultValue);
+    }
+
+    @Contract("null, _ -> fail; !null, _ -> param1")
+    public static <T, E extends Exception> @NotNull T requireOrThrow(T obj, Supplier<E> supplier) throws E {
+        if(obj == null) throw supplier.get();
+        return obj;
     }
 
     public static @NotNull Object set(@Nullable Object o) {
