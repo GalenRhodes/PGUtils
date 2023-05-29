@@ -69,9 +69,8 @@ public final class Null implements Cloneable {
         if(value != null) delegate.action(value);
     }
 
-    public static <T> @Nullable T get(@NotNull Object o) {
-        if(NULL().equals(o)) return null;
-        return (T)o;
+    public static <T> @Nullable T get(@Nullable Object o) {
+        return (((o == null) || (o instanceof Null)) ? null : (T)o);
     }
 
     public static <P, R> R getIfNotNull(@Nullable P value, @NotNull GetWithValueDelegate<P, R> delegate) {
