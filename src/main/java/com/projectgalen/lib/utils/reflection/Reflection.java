@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils.reflection;
 
 import com.projectgalen.lib.utils.*;
 import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
+import com.projectgalen.lib.utils.errors.Errors;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +31,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -38,6 +38,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
+
+import static com.projectgalen.lib.utils.PGArrays.areEqual;
 
 @SuppressWarnings({ "unused", "SpellCheckingInspection" })
 public final class Reflection {
@@ -49,13 +51,7 @@ public final class Reflection {
     private Reflection() { }
 
     public static @Nullable Object callMethod(@NotNull Object obj, @NotNull String methodName, Class<?> @NotNull [] parameterTypes, Object @NotNull ... parameters) {
-        try {
-            return callMethod(obj.getClass().getMethod(methodName, parameterTypes), obj, parameters);
-        }
-        catch(Exception e) {
-            if(e instanceof RuntimeException) throw (RuntimeException)e;
-            throw new RuntimeException(e);
-        }
+        try { return callMethod(obj.getClass().getMethod(methodName, parameterTypes), obj, parameters); } catch(Exception e) { throw Errors.makeRuntimeException(e); }
     }
 
     public static Object callMethod(@NotNull Method method, @Nullable Object obj, Object @NotNull [] parameters) {
@@ -66,20 +62,11 @@ public final class Reflection {
             if(!method.canAccess(obj)) method.setAccessible(true);
             return method.invoke(obj, parameters);
         }
-        catch(Exception e) {
-            if(e instanceof RuntimeException) throw (RuntimeException)e;
-            throw new RuntimeException(e);
-        }
+        catch(Exception e) { throw Errors.makeRuntimeException(e); }
     }
 
     public static @Nullable Object callStaticMethod(@NotNull String className, @NotNull String methodName, Class<?> @NotNull [] parameterTypes, Object @NotNull ... parameters) {
-        try {
-            return callMethod(Class.forName(className).getMethod(methodName, parameterTypes), null, parameters);
-        }
-        catch(Exception e) {
-            if(e instanceof RuntimeException) throw (RuntimeException)e;
-            throw new RuntimeException(e);
-        }
+        try { return callMethod(Class.forName(className).getMethod(methodName, parameterTypes), null, parameters); } catch(Exception e) { throw Errors.makeRuntimeException(e); }
     }
 
     public static @Nullable Object castIfNumeric(@Nullable Object value, @NotNull Class<?> targetClass) {
@@ -102,7 +89,7 @@ public final class Reflection {
     }
 
     public static boolean doTypesMatch(boolean exact, Class<?> @NotNull [] aTypes, Class<?> @NotNull [] bTypes) {
-        return PGArrays.areEqual(aTypes, bTypes, (o1, o2) -> isTypeMatch(exact, o1, o2));
+        return areEqual(aTypes, bTypes, (o1, o2) -> isTypeMatch(exact, o1, o2));
     }
 
     public static @NotNull List<Method> findGetters(@NotNull Class<?> cls) {
@@ -137,32 +124,23 @@ public final class Reflection {
     }
 
     public static @NotNull Field getAccessibleField(@NotNull Class<?> cls, @NotNull String name) throws NoSuchFieldException {
-        Field field = getField(cls, name);
-        field.setAccessible(true);
-        return field;
+        return makeAccessable(getField(cls, name));
     }
 
     public static @Nullable Field getAccessibleFieldOrNull(@NotNull Class<?> cls, @NotNull String name) {
-        Field field = getFieldOrNull(cls, name);
-        if(field != null) field.setAccessible(true);
-        return field;
+        return makeAccessable(getFieldOrNull(cls, name));
     }
 
     public static @NotNull Method getAccessibleMethod(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
-        Method method = getMethod(cls, name, parameterTypes);
-        method.setAccessible(true);
-        return method;
+        return makeAccessable(getMethod(cls, name, parameterTypes));
     }
 
     public static @Nullable Method getAccessibleMethodOrNull(@NotNull Class<?> cls, @NotNull String name, @NotNull Class<?>... parameterTypes) {
-        Method method = getMethodOrNull(cls, name, parameterTypes);
-        if(method != null) method.setAccessible(true);
-        return method;
+        return makeAccessable(getMethodOrNull(cls, name, parameterTypes));
     }
 
     public static @Nullable <T extends Annotation> T getAnnotation(@NotNull AnnotatedElement element, @NotNull Class<T> annotationClass) {
-        T[] a = element.getAnnotationsByType(annotationClass);
-        return ((a.length == 0) ? null : a[0]);
+        return Stream.of(element.getAnnotationsByType(annotationClass)).findFirst().orElse(null);
     }
 
     public static @NotNull Stream<Class<?>> getClassHierarchyStream(@NotNull Class<?> cls) {
@@ -202,34 +180,18 @@ public final class Reflection {
     }
 
     public static @Nullable Object getFieldValue(@NotNull Field field, @Nullable Object obj) {
-        try {
-            field.setAccessible(true);
-            return field.get(obj);
-        }
-        catch(Exception e) {
-            Class<?> cls = (obj == null) ? field.getDeclaringClass() : obj.getClass();
-            throw new RuntimeException(msgs.format("msg.err.reflect.get_fld_val_failed", field.getName(), cls.getName(), e), e);
-        }
+        try { return makeAccessable(field).get(obj); }
+        catch(Exception e) { throw getError(e, "msg.err.reflect.get_fld_val_failed", field.getName(), ((obj == null) ? field.getDeclaringClass() : obj.getClass()).getName(), e); }
     }
 
     @SafeVarargs
     public static @NotNull List<Field> getFieldsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
-        List<Field> fields = new ArrayList<>();
-        while(cls != null) {
-            for(Field f : cls.getDeclaredFields()) if(hasAllAnnotations(f, annotationClasses)) fields.add(f);
-            cls = cls.getSuperclass();
-        }
-        return fields;
+        return getDeclaredFieldStream(cls).filter(f -> hasAllAnnotations(f, annotationClasses)).collect(Collectors.toList());
     }
 
     @SafeVarargs
     public static @NotNull List<Field> getFieldsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
-        List<Field> fields = new ArrayList<>();
-        while(cls != null) {
-            for(Field f : cls.getDeclaredFields()) if(hasAnyAnnotation(f, annotationClasses)) fields.add(f);
-            cls = cls.getSuperclass();
-        }
-        return fields;
+        return getDeclaredFieldStream(cls).filter(f -> hasAnyAnnotation(f, annotationClasses)).collect(Collectors.toList());
     }
 
     /**
@@ -334,14 +296,12 @@ public final class Reflection {
 
     @SafeVarargs
     public static boolean hasAllAnnotations(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> @NotNull ... annotationClasses) {
-        for(Class<? extends Annotation> ac : annotationClasses) if(!isAnnotationPresent(element, ac)) return false;
-        return true;
+        return Stream.of(annotationClasses).allMatch(a -> isAnnotationPresent(element, a));
     }
 
     @SafeVarargs
     public static boolean hasAnyAnnotation(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> @NotNull ... annotationClasses) {
-        for(Class<? extends Annotation> ac : annotationClasses) if(isAnnotationPresent(element, ac)) return true;
-        return false;
+        return Stream.of(annotationClasses).anyMatch(a -> isAnnotationPresent(element, a));
     }
 
     public static boolean isAnnotationPresent(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> annotationClass) {
@@ -365,7 +325,7 @@ public final class Reflection {
     }
 
     public static boolean isNumericallyAssignable(@NotNull Class<?> leftHandClass, @NotNull Class<?> rightHandClass) {
-        return _isNumericallyAssignable(objectClassForPrimitive(leftHandClass), objectClassForPrimitive(rightHandClass));
+        return isNumAssign(objectClassForPrimitive(leftHandClass), objectClassForPrimitive(rightHandClass));
     }
 
     /**
@@ -409,26 +369,8 @@ public final class Reflection {
     }
 
     public static void setFieldValue(@NotNull Field field, @Nullable Object obj, @Nullable Object val) {
-        try {
-            field.set(obj, val);
-        }
-        catch(Exception e) {
-            Class<?> cls = ((obj == null) ? field.getDeclaringClass() : obj.getClass());
-            throw new RuntimeException(msgs.format("msg.err.reflect.set_fld_val_failed", field.getType(), cls.getName(), e), e);
-        }
-    }
-
-    private static boolean _isNumericallyAssignable(@NotNull Class<?> l, @NotNull Class<?> r) {
-        if(!(isNumericObject(l) && isNumericObject(r))) return false;
-        if((l == r) || (l == BigDecimal.class)) return true;
-        if(l == BigInteger.class) return isAnyType(r, BigDecimal.class, Double.class, Float.class);
-        if(l == Short.class) return (r == Byte.class);
-        if(l == Character.class) return isAnyType(r, Short.class, Byte.class);
-        if(l == Integer.class) return isAnyType(r, Character.class, Short.class, Byte.class);
-        if(l == Long.class) return isAnyType(r, Integer.class, Character.class, Short.class, Byte.class);
-        if(l == Float.class) return isAnyType(r, Long.class, Integer.class, Character.class, Short.class, Byte.class);
-        if(l == Double.class) return isAnyType(r, Float.class, Long.class, Integer.class, Character.class, Short.class, Byte.class);
-        return false;
+        try { makeAccessable(field).set(obj, val); }
+        catch(Exception e) { throw getError(e, "msg.err.reflect.set_fld_val_failed", field.getType(), ((obj == null) ? field.getDeclaringClass() : obj.getClass()).getName(), e); }
     }
 
     private static @NotNull Stream<Method> findSetterStream(@NotNull Class<?> cls) {
@@ -451,6 +393,10 @@ public final class Reflection {
         return getDeclaredMethodStream(cls).filter(m -> (m.getName().equals(name) && doTypesMatch(false, m.getParameterTypes(), parameterTypes)));
     }
 
+    private static @NotNull RuntimeException getError(@NotNull Exception e, @NotNull String key, Object @NotNull ... args) {
+        return new RuntimeException(msgs.format(key, args), e);
+    }
+
     @Contract(pure = true)
     private static boolean isAnyType(@NotNull Class<?> cls, @NotNull Class<?> @NotNull ... others) {
         return isAnyType(true, cls, others);
@@ -458,5 +404,23 @@ public final class Reflection {
 
     private static boolean isAnyType(boolean exact, @NotNull Class<?> cls, @NotNull Class<?> @NotNull ... others) {
         return Stream.of(others).anyMatch(r -> isTypeMatch(exact, cls, r));
+    }
+
+    private static boolean isNumAssign(@NotNull Class<?> l, @NotNull Class<?> r) {
+        if(!(isNumericObject(l) && isNumericObject(r))) return false;
+        if((l == r) || (l == BigDecimal.class)) return true;
+        if(l == BigInteger.class) return isAnyType(r, BigDecimal.class, Double.class, Float.class);
+        if(l == Short.class) return (r == Byte.class);
+        if(l == Character.class) return isAnyType(r, Short.class, Byte.class);
+        if(l == Integer.class) return isAnyType(r, Character.class, Short.class, Byte.class);
+        if(l == Long.class) return isAnyType(r, Integer.class, Character.class, Short.class, Byte.class);
+        if(l == Float.class) return isAnyType(r, Long.class, Integer.class, Character.class, Short.class, Byte.class);
+        if(l == Double.class) return isAnyType(r, Float.class, Long.class, Integer.class, Character.class, Short.class, Byte.class);
+        return false;
+    }
+
+    private static <T extends AccessibleObject> T makeAccessable(T accObj) {
+        if(accObj != null) accObj.setAccessible(true);
+        return accObj;
     }
 }
