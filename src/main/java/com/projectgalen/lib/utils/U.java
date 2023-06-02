@@ -244,6 +244,13 @@ public final class U {
         return ((str == null) ? null : str.toLowerCase());
     }
 
+    @SafeVarargs
+    public static @NotNull <P, R> R @NotNull [] map(@NotNull Class<R> cls, @NotNull GetWithValueDelegate<P, R> delegate, @NotNull P @NotNull ... args) {
+        R[] out = (R[])Array.newInstance(cls, args.length);
+        for(int i = 0; i < args.length; i++) out[i] = delegate.action(args[i]);
+        return out;
+    }
+
     @Contract(pure = true)
     public static @Nullable String nullIfEmpty(@Nullable String str) {
         return (U.z(str) ? null : str);
@@ -265,13 +272,6 @@ public final class U {
     @Contract("!null -> !null; null -> null")
     public static String tr(@Nullable String str) {
         return ((str == null) ? null : str.trim());
-    }
-
-    @SafeVarargs
-    public static @NotNull <P, R> R @NotNull [] map(@NotNull Class<R> cls, @NotNull GetWithValueDelegate<P, R> delegate, @NotNull P @NotNull ... args) {
-        R[] out = (R[])Array.newInstance(cls, args.length);
-        for(int i = 0; i < args.length; i++) out[i] = delegate.action(args[i]);
-        return out;
     }
 
     @Contract("!null -> !null; null -> null")

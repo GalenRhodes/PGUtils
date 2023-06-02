@@ -37,13 +37,6 @@ import java.util.stream.Stream.Builder;
 public final class PGCollections {
     public PGCollections() { }
 
-    public static <T> Stream<CollectionItem<T>> indexedStream(@NotNull Collection<T> c) {
-        List<T>                    list    = ((c instanceof List) ? ((List<T>)c) : new ArrayList<T>(c));
-        Builder<CollectionItem<T>> builder = Stream.builder();
-        for(int i = 0, j = list.size(); i < j; i++) builder.accept(new CollectionItem<>(i, list.get(i)));
-        return builder.build();
-    }
-
     public static <T, C extends Collection<T>> BigDecimal bigDecimalSum(@NotNull C collection, @NotNull GetBigDecFromDelegate<T> delegate) {
         return bigDecimalSum(collection, MathContext.UNLIMITED, delegate);
     }
@@ -79,6 +72,13 @@ public final class PGCollections {
 
     public static <T> T getLast(@Nullable List<T> list) {
         return (((list == null) || list.isEmpty()) ? null : list.get(list.size() - 1));
+    }
+
+    public static <T> Stream<CollectionItem<T>> indexedStream(@NotNull Collection<T> c) {
+        List<T>                    list    = ((c instanceof List) ? ((List<T>)c) : new ArrayList<T>(c));
+        Builder<CollectionItem<T>> builder = Stream.builder();
+        for(int i = 0, j = list.size(); i < j; i++) builder.accept(new CollectionItem<>(i, list.get(i)));
+        return builder.build();
     }
 
     public static <T, C extends Collection<T>> int intSum(@NotNull C collection, @NotNull GetIntFromDelegate<T> delegate) {

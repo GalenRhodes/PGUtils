@@ -38,12 +38,6 @@ import java.util.stream.Stream.Builder;
 public final class PGArrays {
     private PGArrays() { }
 
-    public static <T> Stream<CollectionItem<T>> arrayStream(T @NotNull ... array) {
-        Builder<CollectionItem<T>> builder = Stream.builder();
-        for(int i = 0; i < array.length; i++) builder.accept(new CollectionItem<>(i, array[i]));
-        return builder.build();
-    }
-
     public static <T> T @NotNull [] append(T[] array, T obj) {
         T[] copy = Arrays.copyOf(array, array.length + 1);
         copy[array.length] = obj;
@@ -55,6 +49,12 @@ public final class PGArrays {
         if(!((leftArray != null) && (rightArray != null) && (leftArray.length == rightArray.length))) return false;
         for(int i = 0; i < leftArray.length; i++) if(!equality.areEqual(leftArray[i], rightArray[i])) return false;
         return true;
+    }
+
+    public static <T> Stream<CollectionItem<T>> arrayStream(T @NotNull ... array) {
+        Builder<CollectionItem<T>> builder = Stream.builder();
+        for(int i = 0; i < array.length; i++) builder.accept(new CollectionItem<>(i, array[i]));
+        return builder.build();
     }
 
     /**

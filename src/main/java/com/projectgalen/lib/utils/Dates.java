@@ -248,18 +248,6 @@ public final class Dates {
         return (DAYS_OF_MONTH[month - 1] + (((month == 2) && isLeapYear(year)) ? 1 : 0));
     }
 
-    public static @NotNull java.sql.Date getCurrentSQLDate() {
-        return new java.sql.Date(System.currentTimeMillis());
-    }
-
-    public static @NotNull Time getCurrentSQLTime() {
-        return new Time(System.currentTimeMillis());
-    }
-
-    public static @NotNull Timestamp getCurrentSQLTimestamp() {
-        return new Timestamp(System.currentTimeMillis());
-    }
-
     public static @NotNull Calendar distantFuture() {
         Calendar c = Calendar.getInstance();
         c.setTimeInMillis(Long.MAX_VALUE);
@@ -349,6 +337,18 @@ public final class Dates {
         Calendar c = getCalendarInstance(tz, locale);
         c.setTimeInMillis(milliseconds);
         return c;
+    }
+
+    public static @NotNull java.sql.Date getCurrentSQLDate() {
+        return new java.sql.Date(System.currentTimeMillis());
+    }
+
+    public static @NotNull Time getCurrentSQLTime() {
+        return new Time(System.currentTimeMillis());
+    }
+
+    public static @NotNull Timestamp getCurrentSQLTimestamp() {
+        return new Timestamp(System.currentTimeMillis());
     }
 
     public static @Range(from = 1, to = 31) int getDate(@NotNull Calendar c) {
