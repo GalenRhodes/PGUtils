@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.collections.CollectionItem;
 import com.projectgalen.lib.utils.delegates.Equality;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -30,10 +31,18 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
 @SuppressWarnings({ "unchecked", "unused" })
 public final class PGArrays {
     private PGArrays() { }
+
+    public static <T> Stream<CollectionItem<T>> arrayStream(T @NotNull ... array) {
+        Builder<CollectionItem<T>> builder = Stream.builder();
+        for(int i = 0; i < array.length; i++) builder.accept(new CollectionItem<>(i, array[i]));
+        return builder.build();
+    }
 
     public static <T> T @NotNull [] append(T[] array, T obj) {
         T[] copy = Arrays.copyOf(array, array.length + 1);

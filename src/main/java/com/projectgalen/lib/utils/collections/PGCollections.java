@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.collections;
 
 // ===========================================================================
 //     PROJECT: PGUtils
@@ -28,11 +28,21 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
 public final class PGCollections {
     public PGCollections() { }
+
+    public static <T> Stream<CollectionItem<T>> indexedStream(@NotNull Collection<T> c) {
+        List<T>                    list    = ((c instanceof List) ? ((List<T>)c) : new ArrayList<T>(c));
+        Builder<CollectionItem<T>> builder = Stream.builder();
+        for(int i = 0, j = list.size(); i < j; i++) builder.accept(new CollectionItem<>(i, list.get(i)));
+        return builder.build();
+    }
 
     public static <T, C extends Collection<T>> BigDecimal bigDecimalSum(@NotNull C collection, @NotNull GetBigDecFromDelegate<T> delegate) {
         return bigDecimalSum(collection, MathContext.UNLIMITED, delegate);
