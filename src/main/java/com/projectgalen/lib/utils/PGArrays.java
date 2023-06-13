@@ -23,7 +23,7 @@ package com.projectgalen.lib.utils;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.collections.CollectionItem;
-import com.projectgalen.lib.utils.delegates.Equality;
+import com.projectgalen.lib.utils.delegates.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +31,10 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.DoublePredicate;
+import java.util.function.IntPredicate;
+import java.util.function.LongPredicate;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
 
@@ -133,6 +137,70 @@ public final class PGArrays {
         boolean[] array = new boolean[length];
         Arrays.fill(array, value);
         return array;
+    }
+
+    @Contract(pure = true)
+    public static int @NotNull [] filter(int @NotNull [] array, @NotNull IntPredicate predicate) {
+        int[] out = new int[array.length];
+        int   j   = 0;
+        for(int k : array) if(predicate.test(k)) out[j++] = k;
+        return Arrays.copyOf(out, j);
+    }
+
+    @Contract(pure = true)
+    public static long @NotNull [] filter(long @NotNull [] array, @NotNull LongPredicate predicate) {
+        long[] out = new long[array.length];
+        int    j   = 0;
+        for(long k : array) if(predicate.test(k)) out[j++] = k;
+        return Arrays.copyOf(out, j);
+    }
+
+    @Contract(pure = true)
+    public static byte @NotNull [] filter(byte @NotNull [] array, @NotNull BytePredicate predicate) {
+        byte[] out = new byte[array.length];
+        int    j   = 0;
+        for(byte k : array) if(predicate.test(k)) out[j++] = k;
+        return Arrays.copyOf(out, j);
+    }
+
+    @Contract(pure = true)
+    public static short @NotNull [] filter(short @NotNull [] array, @NotNull ShortPredicate predicate) {
+        short[] out = new short[array.length];
+        int     j   = 0;
+        for(short k : array) if(predicate.test(k)) out[j++] = k;
+        return Arrays.copyOf(out, j);
+    }
+
+    @Contract(pure = true)
+    public static char @NotNull [] filter(char @NotNull [] array, @NotNull CharPredicate predicate) {
+        char[] out = new char[array.length];
+        int    j   = 0;
+        for(char k : array) if(predicate.test(k)) out[j++] = k;
+        return Arrays.copyOf(out, j);
+    }
+
+    @Contract(pure = true)
+    public static double @NotNull [] filter(double @NotNull [] array, @NotNull DoublePredicate predicate) {
+        double[] out = new double[array.length];
+        int      j   = 0;
+        for(double k : array) if(predicate.test(k)) out[j++] = k;
+        return Arrays.copyOf(out, j);
+    }
+
+    @Contract(pure = true)
+    public static float @NotNull [] filter(float @NotNull [] array, @NotNull FloatPredicate predicate) {
+        float[] out = new float[array.length];
+        int     j   = 0;
+        for(float k : array) if(predicate.test(k)) out[j++] = k;
+        return Arrays.copyOf(out, j);
+    }
+
+    @Contract(pure = true)
+    public static <T> T @NotNull [] filter(T @NotNull [] array, @NotNull Predicate<T> predicate) {
+        T[] out = (T[])Array.newInstance(array.getClass().getComponentType(), array.length);
+        int j   = 0;
+        for(T k : array) if(predicate.test(k)) out[j++] = k;
+        return Arrays.copyOf(out, j);
     }
 
     public static <T> T getFromArray(T[] array, int index, T defaultValue) {

@@ -26,10 +26,28 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.IntStream.Builder;
 import java.util.stream.Stream;
 
 public class Streams {
     public Streams() { }
+
+    public static IntStream closedIntRange(int startInclusive, int endInclusive) {
+        if(startInclusive <= endInclusive) return IntStream.rangeClosed(startInclusive, endInclusive);
+        Builder b = IntStream.builder();
+        for(int i = startInclusive; i >= endInclusive; i--) b.accept(i);
+        return b.build();
+    }
+
+    public static IntStream intRange(int startInclusive, int endExclusive) {
+        if(startInclusive == endExclusive) return IntStream.empty();
+        if(startInclusive < endExclusive) return IntStream.range(startInclusive, endExclusive);
+
+        Builder b = IntStream.builder();
+        for(int i = startInclusive; i > endExclusive; i--) b.accept(i);
+        return b.build();
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> T @NotNull [] toArray(@NotNull Class<T> componentClass, @NotNull Stream<T> stream) {

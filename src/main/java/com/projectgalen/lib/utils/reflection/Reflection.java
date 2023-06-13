@@ -343,6 +343,11 @@ public final class Reflection {
         return ((right == left) || (!exactTypeMatch && (left.isAssignableFrom(right) || isNumericallyAssignable(left, right) || isBooleanMismatch(left, right))));
     }
 
+    public static <T extends AccessibleObject> T makeAccessable(T accObj) {
+        if(accObj != null) accObj.setAccessible(true);
+        return accObj;
+    }
+
     public static @NotNull Class<?> objectClassForPrimitive(@NotNull Class<?> cls) {
         if(!cls.isPrimitive()) return cls;
         if(cls == char.class) return Character.class;
@@ -417,10 +422,5 @@ public final class Reflection {
         if(l == Float.class) return isAnyType(r, Long.class, Integer.class, Character.class, Short.class, Byte.class);
         if(l == Double.class) return isAnyType(r, Float.class, Long.class, Integer.class, Character.class, Short.class, Byte.class);
         return false;
-    }
-
-    private static <T extends AccessibleObject> T makeAccessable(T accObj) {
-        if(accObj != null) accObj.setAccessible(true);
-        return accObj;
     }
 }

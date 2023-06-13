@@ -20,10 +20,7 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
-import com.projectgalen.lib.utils.delegates.GetWithValueThrowsDelegate;
-import com.projectgalen.lib.utils.delegates.WithValueDelegate;
-import com.projectgalen.lib.utils.delegates.WithValueThrowsDelegate;
+import com.projectgalen.lib.utils.delegates.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,12 +63,21 @@ public final class Null implements Cloneable {
         if(value != null) delegate.action(value);
     }
 
+    public static <P> void doIf(@Nullable P value, @NotNull Runnable whenNullDelegate, @NotNull WithValueDelegate<P> whenNotNullDelegate) {
+        if(value == null) whenNullDelegate.run();
+        else whenNotNullDelegate.action(value);
+    }
+
     public static <P> void doIfNotNullThrows(@Nullable P value, @NotNull WithValueThrowsDelegate<P> delegate) throws Exception {
         if(value != null) delegate.action(value);
     }
 
     public static <T> @Nullable T get(@Nullable Object o) {
         return (((o == null) || (o instanceof Null)) ? null : (T)o);
+    }
+
+    public static <P, R> R getIf(@Nullable P value, @NotNull GetDelegate<R> whenNullDelegate, @NotNull GetWithValueDelegate<P, R> whenNotNullDelegate) {
+        return ((value == null) ? whenNullDelegate.action() : whenNotNullDelegate.action(value));
     }
 
     public static <P, R> R getIfNotNull(@Nullable P value, @NotNull GetWithValueDelegate<P, R> delegate) {

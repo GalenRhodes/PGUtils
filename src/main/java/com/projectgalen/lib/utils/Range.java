@@ -22,6 +22,9 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.regex.Matcher;
 
 public final class Range {
@@ -40,7 +43,8 @@ public final class Range {
         this.end    = (start + length);
     }
 
-    public static Range valueOf(int start, int end) {
+    @Contract("_, _ -> new")
+    public static @NotNull Range valueOf(int start, int end) {
         if(start < 0) throw new IllegalArgumentException(msgs.getString("msg.err.range.start.lt.zero"));
         if(end < 0) throw new IllegalArgumentException(msgs.getString("msg.err.range.end.lt.zero"));
         if(end < start) throw new IllegalArgumentException(msgs.getString("msg.err.range.end.lt.start"));
@@ -48,11 +52,13 @@ public final class Range {
         return new Range(start, (end - start));
     }
 
-    public static Range valueOf(Matcher matcher) {
+    @Contract("_ -> new")
+    public static @NotNull Range valueOf(Matcher matcher) {
         return Range.valueOf(matcher, 0);
     }
 
-    public static Range valueOf(Matcher matcher, int group) {
+    @Contract("_, _ -> new")
+    public static @NotNull Range valueOf(@NotNull Matcher matcher, int group) {
         int s = matcher.start(group);
         int e = matcher.end(group);
         return new Range(s, (e - s));
