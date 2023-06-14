@@ -624,12 +624,12 @@ public final class Dates {
         return c;
     }
 
-    @Contract("!null,_ -> new; null,_ -> null")
+    @Contract("!null, _ -> new; null, _ -> null")
     public static Calendar toCalendar(@Nullable Date dt, @NotNull Locale locale) {
         return toCalendar(dt, null, locale);
     }
 
-    @Contract("!null,_ -> new; null,_ -> null")
+    @Contract("!null, _ -> new; null, _ -> null")
     public static Calendar toCalendar(@Nullable Date dt, @NotNull TimeZone tz) {
         return toCalendar(dt, tz, null);
     }
@@ -644,12 +644,12 @@ public final class Dates {
         return ((c == null) ? null : new Date(c.getTimeInMillis()));
     }
 
-    @Contract("!null->new;null->null")
+    @Contract("!null -> new; null -> null")
     public static java.sql.Date toSQLDate(Date dt) {
         return ((dt instanceof java.sql.Date) ? ((java.sql.Date)dt) : ((dt == null) ? null : new java.sql.Date(dt.getTime())));
     }
 
-    @Contract("!null->new;null->null")
+    @Contract("!null -> new; null -> null")
     public static java.sql.Date toSQLDate(Calendar c) {
         return ((c == null) ? null : new java.sql.Date(c.getTimeInMillis()));
     }
@@ -664,7 +664,7 @@ public final class Dates {
         return ((dt instanceof Timestamp) ? ((Timestamp)dt) : ((dt == null) ? null : new Timestamp(dt.getTime())));
     }
 
-    @Contract("_,_ -> new")
+    @Contract("_, _ -> new")
     private static @NotNull Calendar getCalendarInstance(@Nullable TimeZone tz, @Nullable Locale locale) {
         return Calendar.getInstance(((tz == null) ? TimeZone.getDefault() : tz), ((locale == null) ? Locale.getDefault() : locale));
     }
