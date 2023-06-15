@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils.collections;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,12 +31,24 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
 
 public final class PGCollections {
+
     public PGCollections() { }
+
+    public static <T extends Comparable<T>, L extends List<T>> @Contract("null -> null; !null -> param1") L sort(L list) {
+        if(list != null) list.sort(Comparable::compareTo);
+        return list;
+    }
+
+    public static <T, L extends List<T>> @Contract("null,_ -> null; !null,_ -> param1") L sort(L list, @NotNull Comparator<T> comparator) {
+        if(list != null) list.sort(comparator);
+        return list;
+    }
 
     public static <T, C extends Collection<T>> BigDecimal bigDecimalSum(@NotNull C collection, @NotNull GetBigDecFromDelegate<T> delegate) {
         return bigDecimalSum(collection, MathContext.UNLIMITED, delegate);
