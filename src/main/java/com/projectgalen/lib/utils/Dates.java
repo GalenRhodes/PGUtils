@@ -207,7 +207,7 @@ public final class Dates {
     }
 
     public static boolean datesOverlap(Date dateStart1, Date dateEnd1, Date dateStart2, Date dateEnd2) {
-        return datesOverlap(PGCalendar.getInstance(dateStart1), PGCalendar.getInstance(dateEnd1), PGCalendar.getInstance(dateStart2), PGCalendar.getInstance(dateEnd2));
+        return datesOverlap(PGCalendar.toCalendar(dateStart1), PGCalendar.toCalendar(dateEnd1), PGCalendar.toCalendar(dateStart2), PGCalendar.toCalendar(dateEnd2));
     }
 
     public static boolean datesOverlap(Calendar startDate1, Calendar endDate1, Calendar startDate2, Calendar endDate2) {

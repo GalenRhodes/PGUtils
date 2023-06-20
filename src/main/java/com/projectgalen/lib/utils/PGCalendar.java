@@ -403,7 +403,7 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
     }
 
     @Contract("null, _, _ -> null; !null, _, _ -> new")
-    public static PGCalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+    public static PGCalendar toCalendar(@Nullable Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
         return ((dt == null) ? null : new PGCalendar(dt, zone, aLocale));
     }
 
@@ -413,17 +413,17 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
     }
 
     @Contract("null -> null; !null -> new")
-    public static PGCalendar getInstance(@Nullable Date dt) {
-        return getInstance(dt, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT));
+    public static PGCalendar toCalendar(@Nullable Date dt) {
+        return toCalendar(dt, TimeZone.getDefault(), Locale.getDefault(Locale.Category.FORMAT));
     }
 
     @Contract("null, _ -> null; !null, _ -> new")
-    public static PGCalendar getInstance(@Nullable Date dt, @NotNull Locale aLocale) {
-        return getInstance(dt, TimeZone.getDefault(), aLocale);
+    public static PGCalendar toCalendar(@Nullable Date dt, @NotNull Locale aLocale) {
+        return toCalendar(dt, TimeZone.getDefault(), aLocale);
     }
 
     @Contract("null, _ -> null; !null, _ -> new")
-    public static PGCalendar getInstance(@Nullable Date dt, @NotNull TimeZone zone) {
-        return getInstance(dt, zone, Locale.getDefault(Category.FORMAT));
+    public static PGCalendar toCalendar(@Nullable Date dt, @NotNull TimeZone zone) {
+        return toCalendar(dt, zone, Locale.getDefault(Category.FORMAT));
     }
 }

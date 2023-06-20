@@ -43,6 +43,10 @@ public final class U {
 
     private U() { }
 
+    public static <T extends Comparable<T>> int myCompare(T obj1, T obj2) {
+        return ((obj1 == obj2) ? 0 : ((obj1 == null) ? -1 : ((obj2 == null) ? 1 : obj1.compareTo(obj2))));
+    }
+
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
         return sb.append(String.format(format, args));
     }
