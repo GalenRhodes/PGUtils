@@ -33,6 +33,7 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.Locale.Category;
 
+@SuppressWarnings("unused")
 public class PGCalendar extends GregorianCalendar implements Cloneable {
 
     public PGCalendar(long millis) {

@@ -31,7 +31,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@SuppressWarnings("DuplicatedCode")
+@SuppressWarnings({ "DuplicatedCode", "deprecation" })
 public final class Dates {
     private static final PGResourceBundle              msgs          = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
     private static final Map<String, SimpleDateFormat> formatters    = new TreeMap<>();
@@ -667,5 +667,37 @@ public final class Dates {
     @Contract("_, _ -> new")
     private static @NotNull Calendar getCalendarInstance(@Nullable TimeZone tz, @Nullable Locale locale) {
         return Calendar.getInstance(((tz == null) ? TimeZone.getDefault() : tz), ((locale == null) ? Locale.getDefault() : locale));
+    }
+
+    public static int getDate(@NotNull Date date) {
+        return date.getDate();
+    }
+
+    public static int getDayOfWeek(@NotNull Date date) {
+        return date.getDay();
+    }
+
+    public static int getHours(@NotNull Date date) {
+        return date.getHours();
+    }
+
+    public static int getMinutes(@NotNull Date date) {
+        return date.getMinutes();
+    }
+
+    public static int getMonth(@NotNull Date date) {
+        return date.getMonth();
+    }
+
+    public static int getRealMonth(@NotNull Date date) {
+        return (getMonth(date) + 1);
+    }
+
+    public static int getSeconds(@NotNull Date date) {
+        return date.getSeconds();
+    }
+
+    public static int getYear(@NotNull Date date) {
+        return date.getYear();
     }
 }
