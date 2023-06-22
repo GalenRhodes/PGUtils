@@ -58,6 +58,14 @@ public enum WeekDay {
         return (wd1.id - wd2.id);
     }
 
+    public int getDistance(@NotNull WeekDay wd) {
+        return getDistance(wd.id);
+    }
+
+    public int getDistance(@Range(from = 1, to = 7) int wd) {
+        return ((wd <= id) ? (id - wd) : (7 - (wd - id)));
+    }
+
     @Override
     public @NotNull String toString() {
         PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
