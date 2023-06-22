@@ -327,6 +327,14 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         return this;
     }
 
+    public @NotNull PGCalendar clearTime() {
+        set(HOUR_OF_DAY, 0);
+        set(MINUTE, 0);
+        set(SECOND, 0);
+        set(MILLISECOND, 0);
+        return this;
+    }
+
     @Override
     public PGCalendar clone() {
         return (PGCalendar)super.clone();
@@ -354,6 +362,10 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
 
     public int getDstOffset() {
         return get(Calendar.DST_OFFSET);
+    }
+
+    public @NotNull Month getEnumMonth() {
+        return Month.getMonth(getRealMonth());
     }
 
     public @Range(from = 0, to = 23) int getHour() {
@@ -408,6 +420,50 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         return isLeapYear(getYear());
     }
 
+    public @NotNull PGCalendar setAll(int year, int month, int date) {
+        set(YEAR, year);
+        set(MONTH, month);
+        set(DATE, date);
+        return this;
+    }
+
+    public @NotNull PGCalendar setAll(int year, int month, int date, int hourOfDay, int minute, int second) {
+        return setAll(year, month, date, hourOfDay, minute, second, 0);
+    }
+
+    public @NotNull PGCalendar setAll(int year, int month, int date, int hourOfDay, int minute, int second, int millisecond) {
+        set(YEAR, year);
+        set(MONTH, month);
+        set(DATE, date);
+        set(HOUR_OF_DAY, hourOfDay);
+        set(MINUTE, minute);
+        set(SECOND, second);
+        set(MILLISECOND, millisecond);
+        return this;
+    }
+
+    public @NotNull PGCalendar setAll(int year, @NotNull Month month, int date) {
+        set(YEAR, year);
+        set(MONTH, month.getCalendarMonth());
+        set(DATE, date);
+        return this;
+    }
+
+    public @NotNull PGCalendar setAll(int year, @NotNull Month month, int date, int hourOfDay, int minute, int second) {
+        return setAll(year, month, date, hourOfDay, minute, second, 0);
+    }
+
+    public @NotNull PGCalendar setAll(int year, @NotNull Month month, int date, int hourOfDay, int minute, int second, int millisecond) {
+        set(YEAR, year);
+        set(MONTH, month.getCalendarMonth());
+        set(DATE, date);
+        set(HOUR_OF_DAY, hourOfDay);
+        set(MINUTE, minute);
+        set(SECOND, second);
+        set(MILLISECOND, millisecond);
+        return this;
+    }
+
     public PGCalendar setAmPm(@MagicConstant(intValues = { Calendar.AM, Calendar.PM }) int value) {
         set(Calendar.AM_PM, value);
         return this;
@@ -433,6 +489,18 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         return this;
     }
 
+    public @NotNull PGCalendar setFrom(@NotNull Calendar c) {
+        setTimeZone(c.getTimeZone());
+        set(YEAR, c.get(YEAR));
+        set(MONTH, c.get(MONTH));
+        set(DATE, c.get(DATE));
+        set(HOUR_OF_DAY, c.get(HOUR_OF_DAY));
+        set(MINUTE, c.get(MINUTE));
+        set(SECOND, c.get(SECOND));
+        set(MILLISECOND, c.get(MILLISECOND));
+        return this;
+    }
+
     public PGCalendar setHour(@Range(from = 0, to = 23) int value) {
         set(Calendar.HOUR_OF_DAY, value);
         return this;
@@ -453,6 +521,10 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         return this;
     }
 
+    public @NotNull PGCalendar setMonth(@NotNull Month em) {
+        return setRealMonth(em.getId());
+    }
+
     public PGCalendar setRealMonth(@Range(from = 1, to = 12) int value) {
         set(Calendar.MONTH, value - 1);
         return this;
@@ -460,6 +532,18 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
 
     public PGCalendar setSecond(@Range(from = 0, to = 59) int value) {
         set(Calendar.SECOND, value);
+        return this;
+    }
+
+    public @NotNull PGCalendar setTime(int hourOfDay, int minute, int second) {
+        return setTime(hourOfDay, minute, second, 0);
+    }
+
+    public @NotNull PGCalendar setTime(int hourOfDay, int minute, int second, int millisecond) {
+        set(HOUR_OF_DAY, hourOfDay);
+        set(MINUTE, minute);
+        set(SECOND, second);
+        set(MILLISECOND, millisecond);
         return this;
     }
 
@@ -521,13 +605,5 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
     @Contract("null, _ -> null; !null, _ -> new")
     public static PGCalendar toCalendar(@Nullable Date dt, @NotNull TimeZone zone) {
         return toCalendar(dt, zone, Locale.getDefault(Category.FORMAT));
-    }
-
-    public @NotNull Month getEnumMonth() {
-        return Month.getMonth(getRealMonth());
-    }
-
-    public @NotNull PGCalendar setMonth(@NotNull Month em) {
-        return setRealMonth(em.getId());
     }
 }
