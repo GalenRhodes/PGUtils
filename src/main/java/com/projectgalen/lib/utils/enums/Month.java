@@ -40,6 +40,10 @@ public enum Month {
         return id;
     }
 
+    public static int compare(@NotNull Month m1, @NotNull Month m2) {
+        return (m1.id - m2.id);
+    }
+
     public static @NotNull Month max(@NotNull Month m1, @NotNull Month m2) {
         return ((m1.id >= m2.id) ? m1 : m2);
     }

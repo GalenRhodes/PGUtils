@@ -54,6 +54,10 @@ public enum WeekDay {
         return ((wd1.id <= wd2.id) ? wd1 : wd2);
     }
 
+    public static int compare(@NotNull WeekDay wd1, @NotNull WeekDay wd2) {
+        return (wd1.id - wd2.id);
+    }
+
     @Override
     public @NotNull String toString() {
         PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
