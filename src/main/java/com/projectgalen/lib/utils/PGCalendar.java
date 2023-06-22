@@ -289,6 +289,10 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         return get(Calendar.SECOND);
     }
 
+    public @NotNull java.sql.Date getSqlDate() {
+        return Dates.toSQLDate(getTime());
+    }
+
     public int getYear() {
         return get(Calendar.YEAR);
     }
@@ -403,14 +407,14 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         return new PGCalendar(Long.MIN_VALUE);
     }
 
-    @Contract("null, _, _ -> null; !null, _, _ -> new")
-    public static PGCalendar toCalendar(@Nullable Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
-        return ((dt == null) ? null : new PGCalendar(dt, zone, aLocale));
-    }
-
     @Contract(" -> new")
     public static @NotNull PGCalendar getInstance() {
         return new PGCalendar();
+    }
+
+    @Contract("null, _, _ -> null; !null, _, _ -> new")
+    public static PGCalendar toCalendar(@Nullable Date dt, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+        return ((dt == null) ? null : new PGCalendar(dt, zone, aLocale));
     }
 
     @Contract("null -> null; !null -> new")

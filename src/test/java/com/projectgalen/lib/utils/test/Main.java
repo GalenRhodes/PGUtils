@@ -27,30 +27,40 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            System.out.println();
-            Calendar c = Calendar.getInstance();
-            System.out.printf("Class: %s\n\n", c.getClass().getName());
+            for(int i = 0; i < 100; i++) {
+                int start = Math.round((float)(Math.random() * 300.0));
+                int end   = Math.round((float)(Math.random() * 300.0));
+                int step  = Math.round((float)(Math.random() * 50.0));
 
-            c.setTimeInMillis(Long.MAX_VALUE);
-            printCalendar("Distant Future", c);
-
-            c.setTimeInMillis(Long.MIN_VALUE);
-            printCalendar("Distant Past", c);
-
-            System.out.println();
+                if(step == 0) {
+                    continue;
+                }
+                if(start <= end) {
+                    double cf = Math.ceil((((double)end) - ((double)start)) / ((double)step));
+                    int    cc = (int)cf; //((end - start) / step);
+                    int    cx = 0;
+                    for(int j = start; j < end; j += step) {
+                        cx++;
+                        System.out.printf("%d ", j);
+                    }
+                    System.out.printf("\nstart = %3d; end = %3d; step = %2d; calculated = %3.3f; actual = %3d; result = %s\n\n", start, end, step, cf, cx, cc == cx ? "ok" : "MISMATCH");
+                }
+                else {
+                    double cf = Math.ceil((((double)start) - ((double)end)) / ((double)step));
+                    int    cc = (int)cf; //((start - end) / step);
+                    int    cx = 0;
+                    for(int j = start; j > end; j -= step) {
+                        cx++;
+                        System.out.printf("%d ", j);
+                    }
+                    System.out.printf("\nstart = %3d; end = %3d; step = %2d; calculated = %3.3f; actual = %3d; result = %s\n\n", start, end, step * -1, cf, cx, cc == cx ? "ok" : "MISMATCH");
+                }
+            }
         }
         catch(Exception e) {
             System.err.printf(String.format("\n\nERROR: %s\n", e));
             e.printStackTrace(System.err);
         }
-    }
-
-    private static void printCalendar(String desc, Calendar c) {
-        String era    = ((c.get(Calendar.ERA) == GregorianCalendar.BC) ? "BC" : "AD");
-        String millis = NumberFormat.getIntegerInstance().format(c.getTimeInMillis());
-        String date   = Dates.format("MM/dd/yyyy", c);
-
-        System.out.printf("%20s: %s %s (%s)\n", desc, date, era, millis);
     }
 
     private static void checkAssignability(Field @NotNull [] fields) {
@@ -83,6 +93,14 @@ public class Main {
         Field[]          fields = cls.getDeclaredFields();
 
         checkAssignability(fields);
+    }
+
+    private static void printCalendar(String desc, Calendar c) {
+        String era    = ((c.get(Calendar.ERA) == GregorianCalendar.BC) ? "BC" : "AD");
+        String millis = NumberFormat.getIntegerInstance().format(c.getTimeInMillis());
+        String date   = Dates.format("MM/dd/yyyy", c);
+
+        System.out.printf("%20s: %s %s (%s)\n", desc, date, era, millis);
     }
 
     private static void printLines(List<String> list) {
@@ -170,6 +188,20 @@ public class Main {
         System.out.print(msgs.format("form02", msgs.getString("long_field"), obj.getLongField()));
         f.set(obj, Long.valueOf((byte)4));
         System.out.print(msgs.format("form02", msgs.getString("long_field"), obj.getLongField()));
+    }
+
+    private static void testCalendar1() {
+        System.out.println();
+        Calendar c = Calendar.getInstance();
+        System.out.printf("Class: %s\n\n", c.getClass().getName());
+
+        c.setTimeInMillis(Long.MAX_VALUE);
+        printCalendar("Distant Future", c);
+
+        c.setTimeInMillis(Long.MIN_VALUE);
+        printCalendar("Distant Past", c);
+
+        System.out.println();
     }
 
     private static void testCharArrayTrim() {

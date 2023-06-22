@@ -36,7 +36,6 @@ import java.util.function.IntPredicate;
 import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.Stream.Builder;
 
 @SuppressWarnings({ "unchecked", "unused" })
 public final class PGArrays {
@@ -55,10 +54,19 @@ public final class PGArrays {
         return true;
     }
 
-    public static <T> Stream<CollectionItem<T>> arrayStream(T @NotNull ... array) {
-        Builder<CollectionItem<T>> builder = Stream.builder();
-        for(int i = 0; i < array.length; i++) builder.accept(new CollectionItem<>(i, array[i]));
-        return builder.build();
+    /**
+     * Create a stream of {@link CollectionItem} from the elements of an array.
+     *
+     * @param array The elements of the array.
+     *
+     * @return A stream of {@link CollectionItem}.
+     *
+     * @deprecated Use {@link Streams#arrayStream(Object[])} instead.
+     */
+    @SafeVarargs
+    @Deprecated(forRemoval = true)
+    public static <T> @NotNull Stream<CollectionItem<T>> arrayStream(T @NotNull ... array) {
+        return Streams.arrayStream(array);
     }
 
     /**

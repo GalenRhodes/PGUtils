@@ -49,6 +49,6 @@ public enum Month {
     public static Month getMonth(@Range(from = 1, to = 12) int id) {
         for(Month e : Month.values()) if(e.id == id) return e;
         PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
-        throw new IllegalArgumentException(msgs.format("msg.err.invalid_enum_id", msgs.getString("msg.month"), id));
+        throw new IllegalArgumentException(msgs.format("msg.err.invalid_enum_id", msgs.getString("text.month"), id));
     }
 }
