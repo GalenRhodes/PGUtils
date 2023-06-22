@@ -68,6 +68,16 @@ public class Streams {
         return StreamSupport.intStream(new ClosedRangeIterator(startInclusive, endInclusive, step), false);
     }
 
+    public static IntStream intRange(int startInclusive, int endExclusive) {
+        return intRange(startInclusive, endExclusive, ((startInclusive <= endExclusive) ? 1 : -1));
+    }
+
+    public static IntStream intRange(int startInclusive, int endExclusive, int step) {
+        if(startInclusive == endExclusive) return IntStream.empty();
+        if((startInclusive < endExclusive) && (step == 1)) return IntStream.range(startInclusive, endExclusive);
+        return StreamSupport.intStream(new RangeIterator(startInclusive, endExclusive, step), false);
+    }
+
     public static @NotNull Stream<String> splitStream(@Nullable String val) {
         return splitStream(val, PGProperties.DEFAULT_LIST_SEPARATOR_PATTERN);
     }
@@ -93,16 +103,6 @@ public class Streams {
             }
             return string;
         });
-    }
-
-    public static IntStream intRange(int startInclusive, int endExclusive) {
-        return intRange(startInclusive, endExclusive, ((startInclusive <= endExclusive) ? 1 : -1));
-    }
-
-    public static IntStream intRange(int startInclusive, int endExclusive, int step) {
-        if(startInclusive == endExclusive) return IntStream.empty();
-        if((startInclusive < endExclusive) && (step == 1)) return IntStream.range(startInclusive, endExclusive);
-        return StreamSupport.intStream(new RangeIterator(startInclusive, endExclusive, step), false);
     }
 
     public static <T> @NotNull Stream<T> streamOf(@NotNull Class<T> cls, Object @NotNull [] objs) {
