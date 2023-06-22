@@ -23,8 +23,11 @@ package com.projectgalen.lib.utils.enums;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.PGResourceBundle;
+import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
+
+import java.util.Calendar;
 
 public enum Month {
 
@@ -36,20 +39,24 @@ public enum Month {
         this.id = id;
     }
 
+    public @MagicConstant(intValues = { Calendar.JANUARY,
+                                        Calendar.FEBRUARY,
+                                        Calendar.MARCH,
+                                        Calendar.APRIL,
+                                        Calendar.MAY,
+                                        Calendar.JUNE,
+                                        Calendar.JULY,
+                                        Calendar.AUGUST,
+                                        Calendar.SEPTEMBER,
+                                        Calendar.OCTOBER,
+                                        Calendar.NOVEMBER,
+                                        Calendar.DECEMBER }) int getCalendarMonth() {
+        //noinspection MagicConstant
+        return (id - 1);
+    }
+
     public @Range(from = 1, to = 12) int getId() {
         return id;
-    }
-
-    public static int compare(@NotNull Month m1, @NotNull Month m2) {
-        return (m1.id - m2.id);
-    }
-
-    public static @NotNull Month max(@NotNull Month m1, @NotNull Month m2) {
-        return ((m1.id >= m2.id) ? m1 : m2);
-    }
-
-    public static @NotNull Month min(@NotNull Month m1, @NotNull Month m2) {
-        return ((m1.id <= m2.id) ? m1 : m2);
     }
 
     @Override
@@ -58,9 +65,21 @@ public enum Month {
         return msgs.getString(String.format("enum.month.name.%d", id), super.toString());
     }
 
-    public static Month getMonth(@Range(from = 1, to = 12) int id) {
+    public static int compare(@NotNull Month m1, @NotNull Month m2) {
+        return (m1.id - m2.id);
+    }
+
+    public static @NotNull Month getMonth(@Range(from = 1, to = 12) int id) {
         for(Month e : Month.values()) if(e.id == id) return e;
         PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
         throw new IllegalArgumentException(msgs.format("msg.err.invalid_enum_id", msgs.getString("text.month"), id));
+    }
+
+    public static @NotNull Month max(@NotNull Month m1, @NotNull Month m2) {
+        return ((m1.id >= m2.id) ? m1 : m2);
+    }
+
+    public static @NotNull Month min(@NotNull Month m1, @NotNull Month m2) {
+        return ((m1.id <= m2.id) ? m1 : m2);
     }
 }

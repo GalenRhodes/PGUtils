@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.enums.Month;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +34,7 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.Locale.Category;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({ "unused" })
 public class PGCalendar extends GregorianCalendar implements Cloneable {
 
     public PGCalendar(long millis) {
@@ -96,6 +97,18 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
 
     public PGCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second) {
         super(year, month, dayOfMonth, hourOfDay, minute, second);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth) {
+        super(year, month.getCalendarMonth(), dayOfMonth);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth, int hourOfDay, int minute) {
+        super(year, month.getCalendarMonth(), dayOfMonth, hourOfDay, minute);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth, int hourOfDay, int minute, int second) {
+        super(year, month.getCalendarMonth(), dayOfMonth, hourOfDay, minute, second);
     }
 
     public PGCalendar(int year, int month, int dayOfMonth, @NotNull TimeZone zone) {
@@ -170,6 +183,84 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         super(zone, aLocale);
         set(YEAR, year);
         set(MONTH, month);
+        set(DATE, dayOfMonth);
+        set(HOUR_OF_DAY, hourOfDay);
+        set(MINUTE, minute);
+        set(SECOND, second);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth, @NotNull TimeZone zone) {
+        super(zone);
+        set(YEAR, year);
+        set(MONTH, month.getCalendarMonth());
+        set(DATE, dayOfMonth);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth, int hourOfDay, int minute, @NotNull TimeZone zone) {
+        super(zone);
+        set(YEAR, year);
+        set(MONTH, month.getCalendarMonth());
+        set(DATE, dayOfMonth);
+        set(HOUR_OF_DAY, hourOfDay);
+        set(MINUTE, minute);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth, int hourOfDay, int minute, int second, @NotNull TimeZone zone) {
+        super(zone);
+        set(YEAR, year);
+        set(MONTH, month.getCalendarMonth());
+        set(DATE, dayOfMonth);
+        set(HOUR_OF_DAY, hourOfDay);
+        set(MINUTE, minute);
+        set(SECOND, second);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth, @NotNull Locale aLocale) {
+        super(aLocale);
+        set(YEAR, year);
+        set(MONTH, month.getCalendarMonth());
+        set(DATE, dayOfMonth);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth, int hourOfDay, int minute, @NotNull Locale aLocale) {
+        super(aLocale);
+        set(YEAR, year);
+        set(MONTH, month.getCalendarMonth());
+        set(DATE, dayOfMonth);
+        set(HOUR_OF_DAY, hourOfDay);
+        set(MINUTE, minute);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth, int hourOfDay, int minute, int second, @NotNull Locale aLocale) {
+        super(aLocale);
+        set(YEAR, year);
+        set(MONTH, month.getCalendarMonth());
+        set(DATE, dayOfMonth);
+        set(HOUR_OF_DAY, hourOfDay);
+        set(MINUTE, minute);
+        set(SECOND, second);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+        super(zone, aLocale);
+        set(YEAR, year);
+        set(MONTH, month.getCalendarMonth());
+        set(DATE, dayOfMonth);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth, int hourOfDay, int minute, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+        super(zone, aLocale);
+        set(YEAR, year);
+        set(MONTH, month.getCalendarMonth());
+        set(DATE, dayOfMonth);
+        set(HOUR_OF_DAY, hourOfDay);
+        set(MINUTE, minute);
+    }
+
+    public PGCalendar(int year, @NotNull Month month, int dayOfMonth, int hourOfDay, int minute, int second, @NotNull TimeZone zone, @NotNull Locale aLocale) {
+        super(zone, aLocale);
+        set(YEAR, year);
+        set(MONTH, month.getCalendarMonth());
         set(DATE, dayOfMonth);
         set(HOUR_OF_DAY, hourOfDay);
         set(MINUTE, minute);
@@ -430,5 +521,13 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
     @Contract("null, _ -> null; !null, _ -> new")
     public static PGCalendar toCalendar(@Nullable Date dt, @NotNull TimeZone zone) {
         return toCalendar(dt, zone, Locale.getDefault(Category.FORMAT));
+    }
+
+    public @NotNull Month getEnumMonth() {
+        return Month.getMonth(getRealMonth());
+    }
+
+    public @NotNull PGCalendar setMonth(@NotNull Month em) {
+        return setRealMonth(em.getId());
     }
 }
