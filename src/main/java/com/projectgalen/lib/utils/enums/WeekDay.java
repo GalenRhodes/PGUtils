@@ -46,6 +46,14 @@ public enum WeekDay {
         return id;
     }
 
+    public static @NotNull WeekDay max(@NotNull WeekDay wd1, @NotNull WeekDay wd2) {
+        return ((wd1.id >= wd2.id) ? wd1 : wd2);
+    }
+
+    public static @NotNull WeekDay min(@NotNull WeekDay wd1, @NotNull WeekDay wd2) {
+        return ((wd1.id <= wd2.id) ? wd1 : wd2);
+    }
+
     @Override
     public @NotNull String toString() {
         PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");

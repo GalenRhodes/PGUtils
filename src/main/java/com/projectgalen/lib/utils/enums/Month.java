@@ -40,6 +40,14 @@ public enum Month {
         return id;
     }
 
+    public static @NotNull Month max(@NotNull Month m1, @NotNull Month m2) {
+        return ((m1.id >= m2.id) ? m1 : m2);
+    }
+
+    public static @NotNull Month min(@NotNull Month m1, @NotNull Month m2) {
+        return ((m1.id <= m2.id) ? m1 : m2);
+    }
+
     @Override
     public @NotNull String toString() {
         PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
