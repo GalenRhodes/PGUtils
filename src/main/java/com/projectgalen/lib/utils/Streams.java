@@ -23,11 +23,19 @@ package com.projectgalen.lib.utils;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.collections.CollectionItem;
+import com.projectgalen.lib.utils.refs.BooleanRef;
+import com.projectgalen.lib.utils.refs.IntegerRef;
+import com.projectgalen.lib.utils.regex.Regex;
+import org.intellij.lang.annotations.Language;
+import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.IntConsumer;
+import java.util.regex.Matcher;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -60,6 +68,33 @@ public class Streams {
         return StreamSupport.intStream(new ClosedRangeIterator(startInclusive, endInclusive, step), false);
     }
 
+    public static @NotNull Stream<String> splitStream(@Nullable String val) {
+        return splitStream(val, PGProperties.DEFAULT_LIST_SEPARATOR_PATTERN);
+    }
+
+    public static @NotNull Stream<String> splitStream(@Nullable String val, @RegExp @Language("RegExp") @NotNull @NonNls String regexp) {
+        if(val == null) return Stream.empty();
+
+        Matcher    m  = Regex.getMatcher(regexp, val);
+        IntegerRef p1 = new IntegerRef(0);
+
+        return streamWith(done -> {
+            String string = null;
+            if(p1.value == -1) {
+                done.value = true;
+            }
+            else if(m.find()) {
+                string   = val.substring(p1.value, m.start());
+                p1.value = m.end();
+            }
+            else {
+                string   = val.substring(p1.value);
+                p1.value = -1;
+            }
+            return string;
+        });
+    }
+
     public static IntStream intRange(int startInclusive, int endExclusive) {
         return intRange(startInclusive, endExclusive, ((startInclusive <= endExclusive) ? 1 : -1));
     }
@@ -80,6 +115,17 @@ public class Streams {
 
     public static <T> @NotNull Stream<T> streamOf(@NotNull Class<T> cls, @NotNull Stream<?> stream) {
         return stream.filter(cls::isInstance).map(cls::cast);
+    }
+
+    public static @NotNull <T> Stream<T> streamWith(@NotNull LambdaIteratorProvider<T> provider) {
+        Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(new LambdaIterator<T>(provider), Spliterator.IMMUTABLE);
+        return StreamSupport.stream(spliterator, false);
+    }
+
+    private enum LambdaIteratorState {Yes, No, Unkown}
+
+    public interface LambdaIteratorProvider<T> {
+        T provide(@NotNull BooleanRef done);
     }
 
     private static final class ArrayIterator<T> implements Iterator<CollectionItem<T>> {
@@ -109,6 +155,35 @@ public class Streams {
 
         @Override protected boolean hasNext() {
             return (up ? (next <= end) : (next >= end));
+        }
+    }
+
+    private static final class LambdaIterator<T> implements Iterator<T> {
+        private final LambdaIteratorProvider<T> provider;
+        private       LambdaIteratorState       state = LambdaIteratorState.Unkown;
+        private       T                         last  = null;
+
+        public LambdaIterator(LambdaIteratorProvider<T> provider) {
+            this.provider = provider;
+        }
+
+        @Override public boolean hasNext() {
+            if(state == LambdaIteratorState.Unkown) {
+                BooleanRef done = new BooleanRef(false);
+                last  = provider.provide(done);
+                state = (done.value ? LambdaIteratorState.No : LambdaIteratorState.Yes);
+            }
+            return (state == LambdaIteratorState.Yes);
+        }
+
+        @Override public T next() {
+            if(hasNext()) {
+                T obj = last;
+                last  = null;
+                state = LambdaIteratorState.Unkown;
+                return obj;
+            }
+            throw new NoSuchElementException();
         }
     }
 

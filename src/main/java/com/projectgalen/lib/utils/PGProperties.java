@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
 public class PGProperties extends Properties {
@@ -52,6 +53,14 @@ public class PGProperties extends Properties {
 
     public PGProperties(@Nullable Properties defaults) {
         super(defaults);
+    }
+
+    public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key) {
+        return getStreamOf(key, DEFAULT_LIST_SEPARATOR_PATTERN);
+    }
+
+    public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key, @NotNull @RegExp @Language("RegExp") @NonNls String regexp) {
+        return Streams.splitStream(U.tr(getProperty(key)), regexp);
     }
 
     public String format(@NotNull @NonNls String key, Object... args) {

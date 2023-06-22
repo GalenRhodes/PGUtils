@@ -24,10 +24,7 @@ package com.projectgalen.lib.utils;
 import com.projectgalen.lib.utils.macro.Macro;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.RegExp;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.*;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -35,6 +32,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static com.projectgalen.lib.utils.PGProperties.DEFAULT_LIST_SEPARATOR_PATTERN;
 import static com.projectgalen.lib.utils.PGProperties.DEFAULT_MAP_KV_PATTERN;
@@ -61,6 +59,14 @@ public final class PGResourceBundle extends ResourceBundle {
     @Override
     public @NotNull Enumeration<String> getKeys() {
         return bundle.getKeys();
+    }
+
+    public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key) {
+        return getStreamOf(key, DEFAULT_LIST_SEPARATOR_PATTERN);
+    }
+
+    public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key, @NotNull @RegExp @Language("RegExp") @NonNls String regexp) {
+        return Streams.splitStream(U.tr(getStringQuietly(key)), regexp);
     }
 
     public @NotNull String getString(@NotNull String key, boolean macroExpansion) {
