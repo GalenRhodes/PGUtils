@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Range;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Locale.Category;
 
@@ -562,6 +563,10 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
 
     public Timestamp toSQLTimestamp() {
         return new Timestamp(getTimeInMillis());
+    }
+
+    @Override public String toString() {
+        return new SimpleDateFormat("yyyy-MM-dd@HH:mm:ss").format(getTime());
     }
 
     public static @Range(from = 28, to = 31) int daysInMonth(@Range(from = Calendar.JANUARY, to = Calendar.DECEMBER) int month, int year) {

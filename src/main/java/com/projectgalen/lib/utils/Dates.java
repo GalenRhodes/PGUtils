@@ -31,7 +31,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@SuppressWarnings({ "DuplicatedCode", "deprecation" })
+@SuppressWarnings({ "DuplicatedCode" })
 public final class Dates {
     private static final PGResourceBundle              msgs          = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
     private static final Map<String, SimpleDateFormat> formatters    = new TreeMap<>();
@@ -670,23 +670,23 @@ public final class Dates {
     }
 
     public static int getDate(@NotNull Date date) {
-        return date.getDate();
+        return PGCalendar.toCalendar(date).getDate();
     }
 
     public static int getDayOfWeek(@NotNull Date date) {
-        return date.getDay();
+        return PGCalendar.toCalendar(date).getDayOfWeek();
     }
 
     public static int getHours(@NotNull Date date) {
-        return date.getHours();
+        return PGCalendar.toCalendar(date).getHour();
     }
 
     public static int getMinutes(@NotNull Date date) {
-        return date.getMinutes();
+        return PGCalendar.toCalendar(date).getMinute();
     }
 
     public static int getMonth(@NotNull Date date) {
-        return date.getMonth();
+        return PGCalendar.toCalendar(date).getMonth();
     }
 
     public static int getRealMonth(@NotNull Date date) {
@@ -694,10 +694,10 @@ public final class Dates {
     }
 
     public static int getSeconds(@NotNull Date date) {
-        return date.getSeconds();
+        return PGCalendar.toCalendar(date).getSecond();
     }
 
     public static int getYear(@NotNull Date date) {
-        return date.getYear();
+        return PGCalendar.toCalendar(date).getYear();
     }
 }

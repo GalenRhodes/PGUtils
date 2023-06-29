@@ -29,16 +29,21 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
 
 public final class PGCollections {
 
     public PGCollections() { }
+
+    public static <K, V> @NotNull Map<K, V> asMap(K @NotNull [] keys, V @NotNull [] vals) {
+        if(keys.length != vals.length) throw new IllegalArgumentException(String.format("The number of keys and the number of values must match: %d != %d", keys.length, vals.length));
+        Map<K, V> map = new LinkedHashMap<>();
+        IntStream.range(0, keys.length).forEach(i -> map.put(keys[i], vals[i]));
+        return map;
+    }
 
     public static <T extends Comparable<T>, L extends List<T>> @Contract("null -> null; !null -> param1") L sort(L list) {
         if(list != null) list.sort(Comparable::compareTo);

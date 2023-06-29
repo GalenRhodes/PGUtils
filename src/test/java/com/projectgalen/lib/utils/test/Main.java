@@ -20,42 +20,17 @@ public class Main {
     private static final PGResourceBundle msgs     = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.test.test_messages");
     private static final String           DASH_STR = String.format("%c%c", (char)8211, (char)8211);
 
-    public final List<List<String>> array = List.of(Arrays.asList("Galen", "Rhodes", "Was", "Here"));
+    public final List<List<String>> array  = List.of(Arrays.asList("Galen", "Rhodes", "Was", "Here"));
+    public final List<String>       array2 = List.of("Galen", "Rhodes");
 
     public Main() {
     }
 
     public static void main(String[] args) {
         try {
-            for(int i = 0; i < 100; i++) {
-                int start = Math.round((float)(Math.random() * 300.0));
-                int end   = Math.round((float)(Math.random() * 300.0));
-                int step  = Math.round((float)(Math.random() * 50.0));
-
-                if(step == 0) {
-                    continue;
-                }
-                if(start <= end) {
-                    double cf = Math.ceil((((double)end) - ((double)start)) / ((double)step));
-                    int    cc = (int)cf; //((end - start) / step);
-                    int    cx = 0;
-                    for(int j = start; j < end; j += step) {
-                        cx++;
-                        System.out.printf("%d ", j);
-                    }
-                    System.out.printf("\nstart = %3d; end = %3d; step = %2d; calculated = %3.3f; actual = %3d; result = %s\n\n", start, end, step, cf, cx, cc == cx ? "ok" : "MISMATCH");
-                }
-                else {
-                    double cf = Math.ceil((((double)start) - ((double)end)) / ((double)step));
-                    int    cc = (int)cf; //((start - end) / step);
-                    int    cx = 0;
-                    for(int j = start; j > end; j -= step) {
-                        cx++;
-                        System.out.printf("%d ", j);
-                    }
-                    System.out.printf("\nstart = %3d; end = %3d; step = %2d; calculated = %3.3f; actual = %3d; result = %s\n\n", start, end, step * -1, cf, cx, cc == cx ? "ok" : "MISMATCH");
-                }
-            }
+            Field    f        = Main.class.getDeclaredField("array2");
+            TypeInfo typeInfo = new TypeInfo(f);
+            System.out.printf("isParameterizedType: %s\n", typeInfo.isParameterizedType);
         }
         catch(Exception e) {
             System.err.printf(String.format("\n\nERROR: %s\n", e));
@@ -95,7 +70,7 @@ public class Main {
         checkAssignability(fields);
     }
 
-    private static void printCalendar(String desc, Calendar c) {
+    private static void printCalendar(String desc, @NotNull Calendar c) {
         String era    = ((c.get(Calendar.ERA) == GregorianCalendar.BC) ? "BC" : "AD");
         String millis = NumberFormat.getIntegerInstance().format(c.getTimeInMillis());
         String date   = Dates.format("MM/dd/yyyy", c);
@@ -103,7 +78,7 @@ public class Main {
         System.out.printf("%20s: %s %s (%s)\n", desc, date, era, millis);
     }
 
-    private static void printLines(List<String> list) {
+    private static void printLines(@NotNull List<String> list) {
         for(String s : list) System.out.printf("\"%s\"\n", s);
         System.out.print("\n\n");
     }
@@ -274,6 +249,38 @@ public class Main {
     private static void testMethod(@NotNull Object o) {
         System.out.print(msgs.format("form08", o.getClass().getName()));
         System.out.print(msgs.format("form09", o.getClass().isPrimitive()));
+    }
+
+    private static void testRangeCounting() {
+        for(int i = 0; i < 100; i++) {
+            int start = Math.round((float)(Math.random() * 300.0));
+            int end   = Math.round((float)(Math.random() * 300.0));
+            int step  = Math.round((float)(Math.random() * 50.0));
+
+            if(step == 0) {
+                continue;
+            }
+            if(start <= end) {
+                double cf = Math.ceil((((double)end) - ((double)start)) / ((double)step));
+                int    cc = (int)cf; //((end - start) / step);
+                int    cx = 0;
+                for(int j = start; j < end; j += step) {
+                    cx++;
+                    System.out.printf("%d ", j);
+                }
+                System.out.printf("\nstart = %3d; end = %3d; step = %2d; calculated = %3.3f; actual = %3d; result = %s\n\n", start, end, step, cf, cx, cc == cx ? "ok" : "MISMATCH");
+            }
+            else {
+                double cf = Math.ceil((((double)start) - ((double)end)) / ((double)step));
+                int    cc = (int)cf; //((start - end) / step);
+                int    cx = 0;
+                for(int j = start; j > end; j -= step) {
+                    cx++;
+                    System.out.printf("%d ", j);
+                }
+                System.out.printf("\nstart = %3d; end = %3d; step = %2d; calculated = %3.3f; actual = %3d; result = %s\n\n", start, end, step * -1, cf, cx, cc == cx ? "ok" : "MISMATCH");
+            }
+        }
     }
 
     private static void testTypeInfo() {

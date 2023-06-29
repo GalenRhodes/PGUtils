@@ -180,8 +180,12 @@ public final class Reflection {
     }
 
     public static @Nullable Object getFieldValue(@NotNull Field field, @Nullable Object obj) {
-        try { return makeAccessable(field).get(obj); }
-        catch(Exception e) { throw getError(e, "msg.err.reflect.get_fld_val_failed", field.getName(), ((obj == null) ? field.getDeclaringClass() : obj.getClass()).getName(), e); }
+        try {
+            return makeAccessable(field).get(obj);
+        }
+        catch(Exception e) {
+            throw getError(e, "msg.err.reflect.get_fld_val_failed", field.getName(), ((obj == null) ? field.getDeclaringClass() : obj.getClass()).getName(), e);
+        }
     }
 
     @SafeVarargs
