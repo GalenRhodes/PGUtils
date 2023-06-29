@@ -59,7 +59,7 @@ public class EventListeners {
         synchronized(listeners) { listeners.removeIf(p -> (p.isEmpty() || ((p.cls == cls) && (p.listener.get() == listener)))); }
     }
 
-    protected <T extends EventListener> @NotNull Stream<T> stream(@NotNull Class<T> cls) {
+    private <T extends EventListener> @NotNull Stream<T> stream(@NotNull Class<T> cls) {
         return listeners.stream().filter(p -> (p.cls == cls)).map(p -> (T)p.listener.get()).filter(Objects::nonNull);
     }
 
