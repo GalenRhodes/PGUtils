@@ -49,7 +49,7 @@ public final class PGArrays {
 
     public static <T> boolean areEqual(T[] leftArray, T[] rightArray, @NotNull Equality<T> equality) {
         if(leftArray == rightArray) return true;
-        if(!((leftArray != null) && (rightArray != null) && (leftArray.length == rightArray.length))) return false;
+        if((leftArray == null) || (rightArray == null) || (leftArray.length != rightArray.length)) return false;
         for(int i = 0; i < leftArray.length; i++) if(!equality.areEqual(leftArray[i], rightArray[i])) return false;
         return true;
     }

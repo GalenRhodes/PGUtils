@@ -37,7 +37,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.Stream.Builder;
 
 import static com.projectgalen.lib.utils.PGArrays.areEqual;
 
@@ -93,7 +92,7 @@ public final class Reflection {
     }
 
     public static @NotNull List<Method> findGetters(@NotNull Class<?> cls) {
-        return getDeclaredMethodStream(cls).filter(m -> ((m.getReturnType() != Void.class) && (m.getParameterCount() == 0))).collect(Collectors.toList());
+        return Reflection2.getMethods(cls).filter(m -> ((m.getReturnType() != Void.class) && (m.getParameterCount() == 0))).collect(Collectors.toList());
     }
 
     public static @NotNull List<Method> findSetters(@NotNull Class<?> cls) {
@@ -110,17 +109,17 @@ public final class Reflection {
 
     public static void forEachField(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Field, Boolean> delegate) {
         AtomicBoolean stop = new AtomicBoolean(false);
-        getDeclaredFieldStream(cls, true).forEach(f -> { if(!stop.get()) stop.set(delegate.action(f)); });
+        Reflection2.getFields(cls, true).forEach(f -> { if(!stop.get()) stop.set(delegate.action(f)); });
     }
 
     public static void forEachMethod(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Method, Boolean> delegate) {
         AtomicBoolean stop = new AtomicBoolean(false);
-        getDeclaredMethodStream(cls, true).forEach(m -> { if(!stop.get()) stop.set(delegate.action(m)); });
+        Reflection2.getMethods(cls, true).forEach(m -> { if(!stop.get()) stop.set(delegate.action(m)); });
     }
 
     public static void forEachSuperclass(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Class<?>, Boolean> delegate) {
         AtomicBoolean stop = new AtomicBoolean();
-        getClassHierarchyStream(cls).forEachOrdered(c -> { if(!stop.get()) stop.set(delegate.action(c)); });
+        Reflection2.getClassHierarchy(cls).forEachOrdered(c -> { if(!stop.get()) stop.set(delegate.action(c)); });
     }
 
     public static @NotNull Field getAccessibleField(@NotNull Class<?> cls, @NotNull String name) throws NoSuchFieldException {
@@ -143,36 +142,12 @@ public final class Reflection {
         return Stream.of(element.getAnnotationsByType(annotationClass)).findFirst().orElse(null);
     }
 
-    public static @NotNull Stream<Class<?>> getClassHierarchyStream(@NotNull Class<?> cls) {
-        return getClassHierarchyStream(Stream.builder(), cls).build();
-    }
-
-    public static @NotNull Stream<Field> getDeclaredFieldStream(@NotNull Class<?> cls) {
-        return getDeclaredFieldStream(cls, true);
-    }
-
-    public static @NotNull Stream<Field> getDeclaredFieldStream(@NotNull Class<?> cls, boolean goIntoSuperClasses) {
-        PGBuilder<Field> builder = new PGBuilder<Field>().addAll(cls.getDeclaredFields());
-        if(goIntoSuperClasses) getClassHierarchyStream(cls.getSuperclass()).forEachOrdered(c -> builder.addAll(c.getDeclaredFields()));
-        return builder.build();
-    }
-
-    public static @NotNull Stream<Method> getDeclaredMethodStream(@NotNull Class<?> cls) {
-        return getDeclaredMethodStream(cls, true);
-    }
-
-    public static @NotNull Stream<Method> getDeclaredMethodStream(@NotNull Class<?> cls, boolean goIntoSuperClasses) {
-        PGBuilder<Method> builder = new PGBuilder<Method>().addAll(cls.getDeclaredMethods());
-        if(goIntoSuperClasses) getClassHierarchyStream(cls.getSuperclass()).forEachOrdered(c -> builder.addAll(c.getDeclaredMethods()));
-        return builder.build();
-    }
-
-    public static @NotNull Field getField(@NotNull Class<?> cls, @NotNull String name) throws NoSuchFieldException {
-        return getDeclaredFieldStream(cls, true).filter(f -> f.getName().equals(name)).findFirst().orElseThrow(NoSuchElementException::new);
+    public static @NotNull Field getField(@NotNull Class<?> cls, @NotNull String name) {
+        return Reflection2.getFields(cls, true).filter(f -> f.getName().equals(name)).findFirst().orElseThrow(NoSuchElementException::new);
     }
 
     public static @Nullable Field getFieldOrNull(@NotNull Class<?> cls, @NotNull String name) {
-        return getDeclaredFieldStream(cls, true).filter(f -> f.getName().equals(name)).findFirst().orElse(null);
+        return Reflection2.getFields(cls, true).filter(f -> f.getName().equals(name)).findFirst().orElse(null);
     }
 
     public static @NotNull TypeInfo getFieldTypeInfo(@NotNull Field field) {
@@ -190,12 +165,12 @@ public final class Reflection {
 
     @SafeVarargs
     public static @NotNull List<Field> getFieldsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
-        return getDeclaredFieldStream(cls).filter(f -> hasAllAnnotations(f, annotationClasses)).collect(Collectors.toList());
+        return Reflection2.getFields(cls).filter(f -> hasAllAnnotations(f, annotationClasses)).collect(Collectors.toList());
     }
 
     @SafeVarargs
     public static @NotNull List<Field> getFieldsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
-        return getDeclaredFieldStream(cls).filter(f -> hasAnyAnnotation(f, annotationClasses)).collect(Collectors.toList());
+        return Reflection2.getFields(cls).filter(f -> hasAnyAnnotation(f, annotationClasses)).collect(Collectors.toList());
     }
 
     /**
@@ -229,7 +204,8 @@ public final class Reflection {
      * @throws NoSuchMethodException If the method cannot be found.
      */
     public static @NotNull Method getMethod(@NotNull Class<?> cls, @NotNull String name, boolean exactTypeMatch, @NotNull Class<?>... parameterTypes) throws NoSuchMethodException {
-        return Null.requireOrThrow(getMethodOrNull(cls, name, exactTypeMatch, parameterTypes), () -> new NoSuchMethodException(props.format("reflect.nosuchmethod.msg.format", cls.getName(), name, getClassNames(parameterTypes))));
+        return Null.requireOrThrow(getMethodOrNull(cls, name, exactTypeMatch, parameterTypes),
+                                   () -> new NoSuchMethodException(props.format("reflect.nosuchmethod.msg.format", cls.getName(), name, getClassNames(parameterTypes))));
     }
 
     /**
@@ -259,19 +235,19 @@ public final class Reflection {
      * @return The method.
      */
     public static @Nullable Method getMethodOrNull(@NotNull Class<?> cls, @NotNull String name, boolean exactTypeMatch, @NotNull Class<?>... parameterTypes) {
-        return getDeclaredMethodStream(cls, name, exactTypeMatch, parameterTypes).findFirst().orElse(null);
+        return Reflection2.getMethods(cls).filter(m -> (m.getName().equals(name) && doTypesMatch(exactTypeMatch, m.getParameterTypes(), parameterTypes))).findFirst().orElse(null);
     }
 
     @NotNull
     @SafeVarargs
     public static List<Method> getMethodsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
-        return getDeclaredMethodStream(cls).filter(m -> hasAllAnnotations(m, annotationClasses)).collect(Collectors.toList());
+        return Reflection2.getMethods(cls).filter(m -> hasAllAnnotations(m, annotationClasses)).collect(Collectors.toList());
     }
 
     @NotNull
     @SafeVarargs
     public static List<Method> getMethodsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
-        return getDeclaredMethodStream(cls).filter(m -> hasAnyAnnotation(m, annotationClasses)).collect(Collectors.toList());
+        return Reflection2.getMethods(cls).filter(m -> hasAnyAnnotation(m, annotationClasses)).collect(Collectors.toList());
     }
 
     public static @NotNull Stream<Method> getNestedDeclaredMethodStream(@NotNull Class<?> cls) {
@@ -300,16 +276,12 @@ public final class Reflection {
 
     @SafeVarargs
     public static boolean hasAllAnnotations(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> @NotNull ... annotationClasses) {
-        return Stream.of(annotationClasses).allMatch(a -> isAnnotationPresent(element, a));
+        return Stream.of(annotationClasses).allMatch(element::isAnnotationPresent);
     }
 
     @SafeVarargs
     public static boolean hasAnyAnnotation(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> @NotNull ... annotationClasses) {
-        return Stream.of(annotationClasses).anyMatch(a -> isAnnotationPresent(element, a));
-    }
-
-    public static boolean isAnnotationPresent(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> annotationClass) {
-        return (element.getAnnotationsByType(annotationClass).length > 0);
+        return Stream.of(annotationClasses).anyMatch(element::isAnnotationPresent);
     }
 
     public static boolean isBooleanMismatch(@NotNull Class<?> aClass, @NotNull Class<?> bClass) {
@@ -383,23 +355,15 @@ public final class Reflection {
     }
 
     private static @NotNull Stream<Method> findSetterStream(@NotNull Class<?> cls) {
-        return getDeclaredMethodStream(cls).filter(m -> ((m.getReturnType() == Void.TYPE) && (m.getParameterCount() == 1) && m.getName().startsWith("set")));
+        return Reflection2.getMethods(cls).filter(m -> ((m.getReturnType() == Void.TYPE) && (m.getParameterCount() == 1) && m.getName().startsWith("set")));
     }
 
     private static @NotNull List<Type> getActualTypeArguments(@NotNull Type type) {
         return ((type instanceof ParameterizedType) ? Stream.of(((ParameterizedType)type).getActualTypeArguments()).collect(Collectors.toList()) : Collections.emptyList());
     }
 
-    private static Builder<Class<?>> getClassHierarchyStream(@NotNull Builder<Class<?>> builder, Class<?> cls) {
-        return ((cls != null) ? getClassHierarchyStream(builder.add(cls), cls.getSuperclass()) : builder);
-    }
-
     private static @NotNull String getClassNames(Class<?> @NotNull [] classes) {
         return U.join(", ", Stream.of(classes).map(Class::getName).toArray());
-    }
-
-    private static @NotNull Stream<Method> getDeclaredMethodStream(@NotNull Class<?> cls, @NotNull String name, boolean exactTypeMatch, @NotNull Class<?>[] parameterTypes) {
-        return getDeclaredMethodStream(cls).filter(m -> (m.getName().equals(name) && doTypesMatch(false, m.getParameterTypes(), parameterTypes)));
     }
 
     private static @NotNull RuntimeException getError(@NotNull Exception e, @NotNull String key, Object @NotNull ... args) {
