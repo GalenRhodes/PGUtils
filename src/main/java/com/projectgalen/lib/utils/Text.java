@@ -126,7 +126,7 @@ public final class Text {
     }
 
     public static String @NotNull [] padWithWrap(String str, Align align, int width, boolean stripEachLineLeading) {
-        if(str == null) return new String[]{ String.valueOf(PGArrays.createAndFill(width, ' ')) };
+        if(str == null) return new String[] { String.valueOf(PGArrays.createAndFill(width, ' ')) };
 
         String[]     lines = str.split("\\r\\n|\\n");
         List<String> out   = new ArrayList<>();
@@ -146,6 +146,13 @@ public final class Text {
         }
 
         return out.toArray(new String[0]);
+    }
+
+    public static boolean startsWithIgnoreCase(@NotNull String string, @NotNull String subString) {
+        int l = subString.length();
+        if(l > string.length()) return false;
+        for(int i = 0; i < l; i++) if(Character.toLowerCase(subString.charAt(i)) != Character.toLowerCase(string.charAt(i))) return false;
+        return true;
     }
 
     public static @NotNull List<String> wrap(@NotNull String str, int width, boolean stripLeading) {
