@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
@@ -43,6 +44,13 @@ public final class PGCollections {
         Map<K, V> map = new LinkedHashMap<>();
         IntStream.range(0, keys.length).forEach(i -> map.put(keys[i], vals[i]));
         return map;
+    }
+
+    public static <T> @NotNull List<T> copyAndClear(@NotNull List<T> list, @NotNull Supplier<List<T>> listSupplier) {
+        List<T> clone = listSupplier.get();
+        clone.addAll(list);
+        list.clear();
+        return clone;
     }
 
     public static <T extends Comparable<T>, L extends List<T>> @Contract("null -> null; !null -> param1") L sort(L list) {

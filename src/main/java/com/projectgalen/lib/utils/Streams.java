@@ -158,6 +158,29 @@ public class Streams {
         }
     }
 
+    public static <T> @NotNull Stream<CollectionItem<T>> listStream(@NotNull List<T> list) {
+        return streamWith(new IndexedListIterator<>(list));
+    }
+
+    private static final class IndexedListIterator<T> implements LambdaIteratorProvider<CollectionItem<T>> {
+        private final List<T> list;
+        private       int     index = 0;
+
+        public IndexedListIterator(List<T> list) {
+            this.list = list;
+        }
+
+        @Override public @Nullable CollectionItem<T> provide(@NotNull BooleanRef done) {
+            if(index < list.size()) {
+                CollectionItem<T> i = new CollectionItem<>(index, list.get(index));
+                index++;
+                return i;
+            }
+            done.value = true;
+            return null;
+        }
+    }
+
     private static final class LambdaIterator<T> implements Iterator<T> {
         private final LambdaIteratorProvider<T> provider;
         private       LambdaIteratorState       state = LambdaIteratorState.Unkown;
