@@ -35,6 +35,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.Stream.Builder;
 
+@SuppressWarnings("unused")
 public final class PGCollections {
 
     public PGCollections() { }
