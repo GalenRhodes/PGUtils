@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.concurrency.Locks;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
@@ -29,34 +30,37 @@ import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "unused" })
 public class EventListeners {
 
+    private final Lock       lock      = new ReentrantLock(true);
     private final List<Pair> listeners = new ArrayList<>();
 
     public EventListeners() { }
 
     public <T extends EventListener> void add(@NotNull Class<T> cls, @NotNull T listener) {
-        synchronized(listeners) {
+        Locks.doWithLock(lock, () -> {
             listeners.removeIf(Pair::isEmpty);
             if(stream(cls).noneMatch(l -> (l == listener))) listeners.add(new Pair(cls, listener));
-        }
+        });
     }
 
     public <T extends EventListener> void forEach(@NotNull Class<T> cls, @NotNull Consumer<T> consumer) {
-        synchronized(listeners) { stream(cls).forEach(consumer); }
+        Locks.doWithLock(lock, () -> stream(cls).forEach(consumer));
     }
 
     public <T extends EventListener> @NotNull List<T> getListeners(@NotNull Class<T> cls) {
-        synchronized(listeners) { return stream(cls).collect(Collectors.toList()); }
+        return Locks.getWithLock(lock, () -> stream(cls).collect(Collectors.toList()));
     }
 
     public <T extends EventListener> void remove(@NotNull Class<T> cls, @NotNull T listener) {
-        synchronized(listeners) { listeners.removeIf(p -> (p.isEmpty() || ((p.cls == cls) && (p.listener.get() == listener)))); }
+        Locks.doWithLock(lock, () -> listeners.removeIf(p -> (p.isEmpty() || ((p.cls == cls) && (p.listener.get() == listener)))));
     }
 
     private <T extends EventListener> @NotNull Stream<T> stream(@NotNull Class<T> cls) {
