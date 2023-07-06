@@ -21,12 +21,13 @@ package com.projectgalen.lib.utils.concurrency;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.delegates.ThrowingRunnable;
-import com.projectgalen.lib.utils.delegates.ThrowingSupplier;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public final class Locks {
     private Locks() { }
 
@@ -35,7 +36,7 @@ public final class Locks {
         try { delegate.run(); } finally { lock.unlock(); }
     }
 
-    public static <E extends Throwable> void doWithLockThrows(@NotNull Lock lock, @NotNull ThrowingRunnable<E> delegate) throws E {
+    public static void doWithLockThrows(@NotNull Lock lock, @NotNull ThrowingRunnable delegate) throws Exception {
         lock.lock();
         try { delegate.run(); } finally { lock.unlock(); }
     }
@@ -45,8 +46,8 @@ public final class Locks {
         try { return delegate.get(); } finally { lock.unlock(); }
     }
 
-    public static <T, E extends Throwable> T getWithLockThrows(@NotNull Lock lock, @NotNull ThrowingSupplier<T, E> delegate) throws E {
+    public static <T> T getWithLockThrows(@NotNull Lock lock, @NotNull Callable<T> callable) throws Exception {
         lock.lock();
-        try { return delegate.get(); } finally { lock.unlock(); }
+        try { return callable.call(); } finally { lock.unlock(); }
     }
 }

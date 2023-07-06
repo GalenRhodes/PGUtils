@@ -20,6 +20,16 @@ package com.projectgalen.lib.utils.delegates;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-public interface ThrowingRunnable<E extends Throwable> {
-    void run() throws E;
+public interface ThrowingRunnable extends Runnable {
+    @Override default void run() {
+        try {
+            runner();
+        }
+        catch(Exception e) {
+            if(e instanceof RuntimeException) throw (RuntimeException)e;
+            throw new RuntimeException(e);
+        }
+    }
+
+    void runner() throws Exception;
 }
