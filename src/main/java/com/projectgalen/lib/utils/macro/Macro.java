@@ -22,7 +22,6 @@ package com.projectgalen.lib.utils.macro;
 
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
-import com.projectgalen.lib.utils.delegates.MacroDelegate;
 import com.projectgalen.lib.utils.errors.InvalidPropertyMacro;
 import com.projectgalen.lib.utils.regex.Regex;
 import org.intellij.lang.annotations.Language;
@@ -30,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 
 public final class Macro {
@@ -43,24 +43,24 @@ public final class Macro {
 
     private Macro() { }
 
-    public static String replaceMacros(String input, @NotNull MacroDelegate delegate) {
-        return ((input == null) ? null : replaceMacros(input, new TreeSet<>(), delegate));
+    public static String replaceMacros(String input, @NotNull Function<String, String> stringFunction) {
+        return ((input == null) ? null : replaceMacros(input, new TreeSet<>(), stringFunction));
     }
 
-    private static String getMacroReplacement(@NotNull String macroName, @NotNull Set<String> deadManSet, @NotNull MacroDelegate delegate) {
+    private static String getMacroReplacement(@NotNull String macroName, @NotNull Set<String> deadManSet, @NotNull Function<String, String> stringFunction) {
         if(deadManSet.contains(macroName)) throw new InvalidPropertyMacro(msgs.format("msg.err.macro.key_circular_ref", macroName));
         try {
             deadManSet.add(macroName);
-            String input = delegate.getMacroValue(macroName);
-            return ((input == null) ? null : replaceMacros(input, deadManSet, delegate));
+            String input = stringFunction.apply(macroName);
+            return ((input == null) ? null : replaceMacros(input, deadManSet, stringFunction));
         }
         finally {
             deadManSet.remove(macroName);
         }
     }
 
-    private static @NotNull String replaceMacros(String input, @NotNull Set<String> deadManSet, @NotNull MacroDelegate delegate) {
-        String        str = Regex.replaceUsingDelegate(rx1, input.replace(rx2, rx3), m -> getMacroReplacement(m.group(1), deadManSet, delegate));
+    private static @NotNull String replaceMacros(String input, @NotNull Set<String> deadManSet, @NotNull Function<String, String> stringFunction) {
+        String        str = Regex.replaceUsingDelegate(rx1, input.replace(rx2, rx3), m -> getMacroReplacement(m.group(1), deadManSet, stringFunction));
         StringBuilder sb  = new StringBuilder();
         Matcher       m   = Regex.getMatcher(rx5, str);
         while(m.find()) m.appendReplacement(sb, Matcher.quoteReplacement(m.group(1)));
