@@ -21,7 +21,6 @@ package com.projectgalen.lib.utils.reflection;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.*;
-import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
 import com.projectgalen.lib.utils.errors.Errors;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -107,22 +107,22 @@ public final class Reflection {
         return ((parameterTypes.length == 0) ? findSetters(cls) : findSetterStream(cls).filter(m -> isAnyType(exact, m.getParameterTypes()[0], parameterTypes)).collect(Collectors.toList()));
     }
 
-    public static void forEachField(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Field, Boolean> delegate) {
+    public static void forEachField(@NotNull Class<?> cls, @NotNull Function<Field, Boolean> delegate) {
         AtomicBoolean stop = new AtomicBoolean(false);
-        Reflection2.getFields(cls, true).forEach(f -> { if(!stop.get()) stop.set(delegate.action(f)); });
+        Reflection2.getFields(cls, true).forEach(f -> { if(!stop.get()) stop.set(delegate.apply(f)); });
     }
 
-    public static void forEachMethod(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Method, Boolean> delegate) {
+    public static void forEachMethod(@NotNull Class<?> cls, @NotNull Function<Method, Boolean> delegate) {
         AtomicBoolean stop = new AtomicBoolean(false);
-        Reflection2.getMethods(cls, true).forEach(m -> { if(!stop.get()) stop.set(delegate.action(m)); });
+        Reflection2.getMethods(cls, true).forEach(m -> { if(!stop.get()) stop.set(delegate.apply(m)); });
     }
 
-    public static void forEachSuperclass(@NotNull Class<?> cls, @NotNull GetWithValueDelegate<Class<?>, Boolean> delegate) {
+    public static void forEachSuperclass(@NotNull Class<?> cls, @NotNull Function<Class<?>, Boolean> delegate) {
         AtomicBoolean stop = new AtomicBoolean();
-        Reflection2.getClassHierarchy(cls).forEachOrdered(c -> { if(!stop.get()) stop.set(delegate.action(c)); });
+        Reflection2.getClassHierarchy(cls).forEachOrdered(c -> { if(!stop.get()) stop.set(delegate.apply(c)); });
     }
 
-    public static @NotNull Field getAccessibleField(@NotNull Class<?> cls, @NotNull String name) throws NoSuchFieldException {
+    public static @NotNull Field getAccessibleField(@NotNull Class<?> cls, @NotNull String name) {
         return makeAccessable(getField(cls, name));
     }
 

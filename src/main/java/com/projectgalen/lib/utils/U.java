@@ -21,7 +21,6 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.delegates.GetWithValueDelegate;
 import com.projectgalen.lib.utils.regex.Regex;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Contract;
@@ -35,6 +34,7 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 
 @SuppressWarnings({ "unused", "SameParameterValue", "unchecked" })
@@ -42,10 +42,6 @@ public final class U {
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
     private U() { }
-
-    public static <T extends Comparable<T>> int myCompare(T obj1, T obj2) {
-        return ((obj1 == obj2) ? 0 : ((obj1 == null) ? -1 : ((obj2 == null) ? 1 : obj1.compareTo(obj2))));
-    }
 
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
         return sb.append(String.format(format, args));
@@ -91,24 +87,24 @@ public final class U {
     @Contract(value = "_, _, _ -> new", pure = true)
     public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx, boolean backwards) {
         if(!backwards) return codePointAt(chars, idx);
-        if(idx < 1 || idx > chars.length) return new int[]{ -1, idx };
+        if(idx < 1 || idx > chars.length) return new int[] { -1, idx };
         char c2 = chars[--idx];
         if(Character.isLowSurrogate(c2) && (idx > 0)) {
             char c1 = chars[idx - 1];
-            if(Character.isHighSurrogate(c1)) return new int[]{ Character.toCodePoint(c1, c2), (idx - 1) };
+            if(Character.isHighSurrogate(c1)) return new int[] { Character.toCodePoint(c1, c2), (idx - 1) };
         }
-        return new int[]{ c2, idx };
+        return new int[] { c2, idx };
     }
 
     @Contract(value = "_, _ -> new", pure = true)
     public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx) {
-        if(idx < 0 || idx >= chars.length) return new int[]{ -1, idx };
+        if(idx < 0 || idx >= chars.length) return new int[] { -1, idx };
         char c1 = chars[idx++];
         if(Character.isHighSurrogate(c1) && (idx < chars.length)) {
             char c2 = chars[idx];
-            if(Character.isLowSurrogate(c2)) return new int[]{ Character.toCodePoint(c1, c2), (idx + 1) };
+            if(Character.isLowSurrogate(c2)) return new int[] { Character.toCodePoint(c1, c2), (idx + 1) };
         }
-        return new int[]{ c1, idx };
+        return new int[] { c1, idx };
     }
 
     @Contract("_, _ -> param1")
@@ -249,10 +245,14 @@ public final class U {
     }
 
     @SafeVarargs
-    public static @NotNull <P, R> R @NotNull [] map(@NotNull Class<R> cls, @NotNull GetWithValueDelegate<P, R> delegate, @NotNull P @NotNull ... args) {
+    public static @NotNull <P, R> R @NotNull [] map(@NotNull Class<R> cls, @NotNull Function<P, R> delegate, @NotNull P @NotNull ... args) {
         R[] out = (R[])Array.newInstance(cls, args.length);
-        for(int i = 0; i < args.length; i++) out[i] = delegate.action(args[i]);
+        for(int i = 0; i < args.length; i++) out[i] = delegate.apply(args[i]);
         return out;
+    }
+
+    public static <T extends Comparable<T>> int myCompare(T obj1, T obj2) {
+        return ((obj1 == obj2) ? 0 : ((obj1 == null) ? -1 : ((obj2 == null) ? 1 : obj1.compareTo(obj2))));
     }
 
     @Contract(pure = true)
@@ -270,7 +270,7 @@ public final class U {
 
     public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
         int i = path.lastIndexOf('.');
-        return ((i >= 0) ? new String[]{ path.substring(0, i), path.substring(i + 1) } : new String[]{ path });
+        return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
     }
 
     @Contract("!null -> !null; null -> null")

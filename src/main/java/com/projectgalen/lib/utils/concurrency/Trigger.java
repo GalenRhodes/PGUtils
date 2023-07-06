@@ -22,7 +22,6 @@ package com.projectgalen.lib.utils.concurrency;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.delegates.VoidDelegate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,14 +29,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("unused")
 public class Trigger {
     private final ScheduledExecutorService executorService;
-    private final VoidDelegate             delegate;
+    private final Runnable                 delegate;
     private final int                      delay;
     private final TimeUnit                 unit;
     private       boolean                  triggered;
 
-    public Trigger(int delay, @NotNull TimeUnit unit, @NotNull VoidDelegate delegate) {
+    public Trigger(int delay, @NotNull TimeUnit unit, @NotNull Runnable delegate) {
         this.delegate        = delegate;
         this.delay           = delay;
         this.unit            = unit;
@@ -49,7 +49,7 @@ public class Trigger {
         cancel(null);
     }
 
-    public void cancel(@Nullable VoidDelegate delegateOverride) {
+    public void cancel(@Nullable Runnable delegateOverride) {
         synchronized(unit) { runDelegate(delegateOverride); }
     }
 
@@ -65,8 +65,8 @@ public class Trigger {
         synchronized(unit) { if(triggered) runDelegate(delegate); }
     }
 
-    private void runDelegate(@Nullable VoidDelegate _delegate) {
-        try { if(_delegate != null) _delegate.action(); }
+    private void runDelegate(@Nullable Runnable _delegate) {
+        try { if(_delegate != null) _delegate.run(); }
         finally { triggered = false; }
     }
 

@@ -20,13 +20,16 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.delegates.*;
+import com.projectgalen.lib.utils.delegates.ThrowingConsumer;
+import com.projectgalen.lib.utils.delegates.ThrowingFunction;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @SuppressWarnings({ "SameParameterValue", "unchecked" })
@@ -59,41 +62,41 @@ public final class Null implements Cloneable {
         return NullHolder.INSTANCE;
     }
 
-    public static <P> void doIfNotNull(@Nullable P value, @NotNull WithValueDelegate<P> delegate) {
-        if(value != null) delegate.action(value);
-    }
-
-    public static <P> void doIf(@Nullable P value, @NotNull Runnable whenNullDelegate, @NotNull WithValueDelegate<P> whenNotNullDelegate) {
+    public static <P> void doIf(@Nullable P value, @NotNull Runnable whenNullDelegate, @NotNull Consumer<P> whenNotNullDelegate) {
         if(value == null) whenNullDelegate.run();
-        else whenNotNullDelegate.action(value);
+        else whenNotNullDelegate.accept(value);
     }
 
-    public static <P> void doIfNotNullThrows(@Nullable P value, @NotNull WithValueThrowsDelegate<P> delegate) throws Exception {
-        if(value != null) delegate.action(value);
+    public static <P> void doIfNotNull(@Nullable P value, @NotNull Consumer<P> delegate) {
+        if(value != null) delegate.accept(value);
+    }
+
+    public static <P> void doIfNotNullThrows(@Nullable P value, @NotNull ThrowingConsumer<P> delegate) throws Exception {
+        if(value != null) delegate.accept(value);
     }
 
     public static <T> @Nullable T get(@Nullable Object o) {
         return (((o == null) || (o instanceof Null)) ? null : (T)o);
     }
 
-    public static <P, R> R getIf(@Nullable P value, @NotNull GetDelegate<R> whenNullDelegate, @NotNull GetWithValueDelegate<P, R> whenNotNullDelegate) {
-        return ((value == null) ? whenNullDelegate.action() : whenNotNullDelegate.action(value));
+    public static <P, R> R getIf(@Nullable P value, @NotNull Supplier<R> whenNullDelegate, @NotNull Function<P, R> whenNotNullDelegate) {
+        return ((value == null) ? whenNullDelegate.get() : whenNotNullDelegate.apply(value));
     }
 
-    public static <P, R> R getIfNotNull(@Nullable P value, @NotNull GetWithValueDelegate<P, R> delegate) {
+    public static <P, R> R getIfNotNull(@Nullable P value, @NotNull Function<P, R> delegate) {
         return getIfNotNull(value, null, delegate);
     }
 
-    public static <P, R> R getIfNotNull(@Nullable P value, @Nullable R defaultValue, @NotNull GetWithValueDelegate<P, R> delegate) {
-        return ((value == null) ? defaultValue : delegate.action(value));
+    public static <P, R> R getIfNotNull(@Nullable P value, @Nullable R defaultValue, @NotNull Function<P, R> delegate) {
+        return ((value == null) ? defaultValue : delegate.apply(value));
     }
 
-    public static <P, R> R getIfNotNullThrows(@Nullable P value, @NotNull GetWithValueThrowsDelegate<P, R> delegate) throws Exception {
+    public static <P, R> R getIfNotNullThrows(@Nullable P value, @NotNull ThrowingFunction<P, R> delegate) throws Exception {
         return getIfNotNullThrows(value, null, delegate);
     }
 
-    public static <P, R> R getIfNotNullThrows(@Nullable P value, @Nullable R defaultValue, @NotNull GetWithValueThrowsDelegate<P, R> delegate) throws Exception {
-        return ((value == null) ? defaultValue : delegate.action(value));
+    public static <P, R> R getIfNotNullThrows(@Nullable P value, @Nullable R defaultValue, @NotNull ThrowingFunction<P, R> delegate) throws Exception {
+        return ((value == null) ? defaultValue : delegate.apply(value));
     }
 
     @Deprecated(forRemoval = true)

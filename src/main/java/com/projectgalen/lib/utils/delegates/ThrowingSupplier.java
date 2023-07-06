@@ -1,7 +1,7 @@
 package com.projectgalen.lib.utils.delegates;
 // ===========================================================================
 //     PROJECT: PGUtils
-//    FILENAME: WithValueDelegate.java
+//    FILENAME: ReturningThrowingDelegate.java
 //         IDE: IntelliJ
 //      AUTHOR: Galen Rhodes
 //        DATE: January 05, 2023
@@ -20,8 +20,18 @@ package com.projectgalen.lib.utils.delegates;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import org.jetbrains.annotations.NotNull;
+import java.util.concurrent.Callable;
 
-public interface WithValueDelegate<P> {
-    void action(@NotNull P value);
+public interface ThrowingSupplier<T, E extends Throwable> extends Callable<T> {
+    @Override default T call() throws Exception {
+        try {
+            return get();
+        }
+        catch(Throwable e) {
+            if(e instanceof Exception) throw (Exception)e;
+            throw new RuntimeException(e);
+        }
+    }
+
+    T get() throws E;
 }

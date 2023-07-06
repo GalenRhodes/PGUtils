@@ -1,11 +1,12 @@
 package com.projectgalen.lib.utils.delegates;
 // ===========================================================================
 //     PROJECT: PGUtils
-//    FILENAME: ReturningDelegate.java
-//         IDE: IntelliJ
+//    FILENAME: WithValueThrowsDelegate.java
+//         IDE: IntelliJ IDEA
 //      AUTHOR: Galen Rhodes
-//        DATE: January 05, 2023
+//        DATE: January 26, 2023
 //
+// Copyright © 2023 Project Galen. All rights reserved.
 //
 // Permission to use, copy, modify, and distribute this software for any
 // purpose with or without fee is hereby granted, provided that the above
@@ -20,6 +21,8 @@ package com.projectgalen.lib.utils.delegates;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-public interface GetDelegate<T> {
-    T action();
+import org.jetbrains.annotations.NotNull;
+
+public interface ThrowingConsumer<P> {
+    void accept(@NotNull P value) throws Exception;
 }

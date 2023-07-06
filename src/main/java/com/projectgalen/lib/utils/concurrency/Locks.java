@@ -20,12 +20,12 @@ package com.projectgalen.lib.utils.concurrency;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.delegates.GetDelegate;
-import com.projectgalen.lib.utils.delegates.GetThrowsDelegate;
-import com.projectgalen.lib.utils.delegates.VoidThrowsDelegate;
+import com.projectgalen.lib.utils.delegates.ThrowingRunnable;
+import com.projectgalen.lib.utils.delegates.ThrowingSupplier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.locks.Lock;
+import java.util.function.Supplier;
 
 public final class Locks {
     private Locks() { }
@@ -35,18 +35,18 @@ public final class Locks {
         try { delegate.run(); } finally { lock.unlock(); }
     }
 
-    public static <E extends Throwable> void doWithLockThrows(@NotNull Lock lock, @NotNull VoidThrowsDelegate<E> delegate) throws E {
+    public static <E extends Throwable> void doWithLockThrows(@NotNull Lock lock, @NotNull ThrowingRunnable<E> delegate) throws E {
         lock.lock();
-        try { delegate.action(); } finally { lock.unlock(); }
+        try { delegate.run(); } finally { lock.unlock(); }
     }
 
-    public static <T> T getWithLock(@NotNull Lock lock, @NotNull GetDelegate<T> delegate) {
+    public static <T> T getWithLock(@NotNull Lock lock, @NotNull Supplier<T> delegate) {
         lock.lock();
-        try { return delegate.action(); } finally { lock.unlock(); }
+        try { return delegate.get(); } finally { lock.unlock(); }
     }
 
-    public static <T, E extends Throwable> T getWithLockThrows(@NotNull Lock lock, @NotNull GetThrowsDelegate<T, E> delegate) throws E {
+    public static <T, E extends Throwable> T getWithLockThrows(@NotNull Lock lock, @NotNull ThrowingSupplier<T, E> delegate) throws E {
         lock.lock();
-        try { return delegate.action(); } finally { lock.unlock(); }
+        try { return delegate.get(); } finally { lock.unlock(); }
     }
 }
