@@ -20,6 +20,8 @@ package com.projectgalen.lib.utils.delegates;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-public interface VoidDelegate {
+public interface VoidDelegate extends Runnable {
     void action();
+
+    default void run() { action(); }
 }
