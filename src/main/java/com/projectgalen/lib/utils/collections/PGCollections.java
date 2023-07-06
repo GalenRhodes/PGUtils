@@ -46,6 +46,10 @@ public final class PGCollections {
         return map;
     }
 
+    public static <T> @NotNull List<T> copyAndClear(@NotNull List<T> list) {
+        return copyAndClear(list, ArrayList::new);
+    }
+
     public static <T> @NotNull List<T> copyAndClear(@NotNull List<T> list, @NotNull Supplier<List<T>> listSupplier) {
         List<T> clone = listSupplier.get();
         clone.addAll(list);
