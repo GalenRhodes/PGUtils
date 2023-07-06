@@ -22,7 +22,6 @@ package com.projectgalen.lib.utils.concurrency;
 
 import com.projectgalen.lib.utils.delegates.GetDelegate;
 import com.projectgalen.lib.utils.delegates.GetThrowsDelegate;
-import com.projectgalen.lib.utils.delegates.VoidDelegate;
 import com.projectgalen.lib.utils.delegates.VoidThrowsDelegate;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,9 +30,9 @@ import java.util.concurrent.locks.Lock;
 public final class Locks {
     private Locks() { }
 
-    public static void doWithLock(@NotNull Lock lock, @NotNull VoidDelegate delegate) {
+    public static void doWithLock(@NotNull Lock lock, @NotNull Runnable delegate) {
         lock.lock();
-        try { delegate.action(); } finally { lock.unlock(); }
+        try { delegate.run(); } finally { lock.unlock(); }
     }
 
     public static <E extends Throwable> void doWithLockThrows(@NotNull Lock lock, @NotNull VoidThrowsDelegate<E> delegate) throws E {
