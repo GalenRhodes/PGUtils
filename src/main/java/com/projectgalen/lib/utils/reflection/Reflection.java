@@ -53,7 +53,7 @@ public final class Reflection {
         try { return callMethod(obj.getClass().getMethod(methodName, parameterTypes), obj, parameters); } catch(Exception e) { throw Errors.makeRuntimeException(e); }
     }
 
-    public static Object callMethod(@NotNull Method method, @Nullable Object obj, Object @NotNull [] parameters) {
+    public static Object callMethod(@NotNull Method method, @Nullable Object obj, Object @NotNull ... parameters) {
         try {
             boolean isStatic = Modifier.isStatic(method.getModifiers());
             if((obj == null) && !isStatic) throw new NullPointerException();
