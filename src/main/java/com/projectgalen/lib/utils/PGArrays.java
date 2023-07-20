@@ -229,6 +229,10 @@ public final class PGArrays {
         return copy;
     }
 
+    public static <U, T> T @NotNull [] copyAs(@NotNull Class<? extends T[]> cls, U @NotNull ... array) {
+        return Arrays.copyOf(array, array.length, cls);
+    }
+
     public static <T> T[] newArray(Class<? extends Object[]> arrayType, int length) {
         //noinspection unchecked
         return ((arrayType == Object[].class) ? (T[])new Object[length] : (T[])Array.newInstance(arrayType.getComponentType(), length));
