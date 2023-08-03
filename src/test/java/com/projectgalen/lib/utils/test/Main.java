@@ -28,9 +28,49 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            Field    f        = Main.class.getDeclaredField("array2");
-            TypeInfo typeInfo = new TypeInfo(f);
-            System.out.printf("isParameterizedType: %s\n", typeInfo.isParameterizedType);
+            for(int i = 0; i < 100; i++) {
+                int start = (int)(Math.random() * 1000);
+                int end   = (int)(Math.random() * 1000);
+                int step  = (int)(Math.random() * 20);
+
+                if(start != end && step > 0) {
+                    if(start < end) {
+                        int count1 = (int)Math.ceil(((double)end - (double)start) / (double)step);
+                        int count2 = 0;
+                        int z1     = start;
+
+                        while(z1 <= end) {
+                            count2++;
+                            z1 += step;
+                        }
+
+                        if(count1 != count2) {
+                            System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d ***\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                        }
+                        else {
+                            System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                        }
+                    }
+                    else {
+                        step = (-step);
+                        int count1 = (int)Math.ceil(((double)start - (double)end) / (double)Math.abs(step));
+                        int count2 = 0;
+                        int z1     = start;
+
+                        while(z1 >= end) {
+                            count2++;
+                            z1 += step;
+                        }
+
+                        if(count1 != count2) {
+                            System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d ***\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                        }
+                        else {
+                            System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                        }
+                    }
+                }
+            }
         }
         catch(Exception e) {
             System.err.printf(String.format("\n\nERROR: %s\n", e));

@@ -44,6 +44,12 @@ public final class Range {
         this.end    = (start + length);
     }
 
+    public static int closedRangeCount(int start, int end, int step) {
+        int count = rangeCount(start, end, step);
+        int xxx   = (start + (count * step));
+        return ((end == xxx) ? (count + 1) : count);
+    }
+
     public static int rangeCount(int start, int end, int step) {
         if(start <= end) {
             if(step <= 0) throw new IllegalArgumentException(msgs.format("msg.err.range.count.bad_step", msgs.getString("text.greater"), step, "<="));

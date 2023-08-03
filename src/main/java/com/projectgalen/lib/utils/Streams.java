@@ -78,28 +78,30 @@ public class Streams {
         return StreamSupport.intStream(new RangeIterator(startInclusive, endExclusive, step), false);
     }
 
+    public static <T> @NotNull Stream<CollectionItem<T>> listStream(@NotNull List<T> list) {
+        return streamWith(new IndexedListIterator<>(list));
+    }
+
     public static @NotNull Stream<String> splitStream(@Nullable String val) {
         return splitStream(val, PGProperties.DEFAULT_LIST_SEPARATOR_PATTERN);
     }
 
     public static @NotNull Stream<String> splitStream(@Nullable String val, @RegExp @Language("RegExp") @NotNull @NonNls String regexp) {
         if(val == null) return Stream.empty();
-
-        Matcher    m  = Regex.getMatcher(regexp, val);
-        IntegerRef p1 = new IntegerRef(0);
-
+        Matcher    m = Regex.getMatcher(regexp, val);
+        IntegerRef p = new IntegerRef(0);
         return streamWith(done -> {
             String string = null;
-            if(p1.value == -1) {
+            if(p.value == -1) {
                 done.value = true;
             }
             else if(m.find()) {
-                string   = val.substring(p1.value, m.start());
-                p1.value = m.end();
+                string  = val.substring(p.value, m.start());
+                p.value = m.end();
             }
             else {
-                string   = val.substring(p1.value);
-                p1.value = -1;
+                string  = val.substring(p.value);
+                p.value = -1;
             }
             return string;
         });
@@ -117,14 +119,13 @@ public class Streams {
         return stream.filter(cls::isInstance).map(cls::cast);
     }
 
-    public static @NotNull <T> Stream<T> streamWith(@NotNull LambdaIteratorProvider<T> provider) {
-        Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(new LambdaIterator<T>(provider), Spliterator.IMMUTABLE);
-        return StreamSupport.stream(spliterator, false);
+    public static @NotNull <T> Stream<T> streamWith(@NotNull Streams.StreamItemProvider<T> provider) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new LambdaIterator<T>(provider), Spliterator.IMMUTABLE), false);
     }
 
     private enum LambdaIteratorState {Yes, No, Unkown}
 
-    public interface LambdaIteratorProvider<T> {
+    public interface StreamItemProvider<T> {
         T provide(@NotNull BooleanRef done);
     }
 
@@ -147,22 +148,36 @@ public class Streams {
         }
     }
 
-    private static class ClosedRangeIterator extends RangeIterator {
+    private static class ClosedRangeIterator extends Spliterators.AbstractIntSpliterator {
+
+        protected final int     start;
+        protected final int     end;
+        protected final int     step;
+        protected final boolean up;
+        protected       int     next;
 
         public ClosedRangeIterator(int start, int end, int step) {
-            super(start, end, step);
+            super(Range.closedRangeCount(start, end, step), SIZED | NONNULL | ORDERED | IMMUTABLE | DISTINCT);
+            this.start = start;
+            this.end   = end;
+            this.step  = step;
+            this.next  = start;
+            this.up    = (start <= end);
         }
 
-        @Override protected boolean hasNext() {
+        @Override public boolean tryAdvance(IntConsumer action) {
+            if(!hasNext()) return false;
+            action.accept(next);
+            next += step;
+            return true;
+        }
+
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted") protected boolean hasNext() {
             return (up ? (next <= end) : (next >= end));
         }
     }
 
-    public static <T> @NotNull Stream<CollectionItem<T>> listStream(@NotNull List<T> list) {
-        return streamWith(new IndexedListIterator<>(list));
-    }
-
-    private static final class IndexedListIterator<T> implements LambdaIteratorProvider<CollectionItem<T>> {
+    private static final class IndexedListIterator<T> implements StreamItemProvider<CollectionItem<T>> {
         private final List<T> list;
         private       int     index = 0;
 
@@ -170,7 +185,7 @@ public class Streams {
             this.list = list;
         }
 
-        @Override public @Nullable CollectionItem<T> provide(@NotNull BooleanRef done) {
+        public @Override @Nullable CollectionItem<T> provide(@NotNull BooleanRef done) {
             if(index < list.size()) {
                 CollectionItem<T> i = new CollectionItem<>(index, list.get(index));
                 index++;
@@ -182,11 +197,11 @@ public class Streams {
     }
 
     private static final class LambdaIterator<T> implements Iterator<T> {
-        private final LambdaIteratorProvider<T> provider;
-        private       LambdaIteratorState       state = LambdaIteratorState.Unkown;
-        private       T                         last  = null;
+        private final StreamItemProvider<T> provider;
+        private       LambdaIteratorState   state = LambdaIteratorState.Unkown;
+        private       T                     last  = null;
 
-        public LambdaIterator(LambdaIteratorProvider<T> provider) {
+        public LambdaIterator(StreamItemProvider<T> provider) {
             this.provider = provider;
         }
 

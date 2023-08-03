@@ -41,13 +41,13 @@ import java.util.stream.Stream;
 import static com.projectgalen.lib.utils.PGArrays.areEqual;
 
 @SuppressWarnings({ "unused", "SpellCheckingInspection" })
-public final class Reflection {
+public class Reflection {
     private static final PGResourceBundle msgs  = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
     private static final PGProperties     props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
 
     public static final Class<?>[] NO_TYPES = {};
 
-    private Reflection() { }
+    Reflection() { }
 
     public static @Nullable Object callMethod(@NotNull Object obj, @NotNull String methodName, Class<?> @NotNull [] parameterTypes, Object @NotNull ... parameters) {
         try { return callMethod(obj.getClass().getMethod(methodName, parameterTypes), obj, parameters); } catch(Exception e) { throw Errors.makeRuntimeException(e); }
@@ -274,13 +274,11 @@ public final class Reflection {
         return new TypeInfo(method.getGenericReturnType());
     }
 
-    @SafeVarargs
-    public static boolean hasAllAnnotations(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> @NotNull ... annotationClasses) {
+    public static @SafeVarargs boolean hasAllAnnotations(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> @NotNull ... annotationClasses) {
         return Stream.of(annotationClasses).allMatch(element::isAnnotationPresent);
     }
 
-    @SafeVarargs
-    public static boolean hasAnyAnnotation(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> @NotNull ... annotationClasses) {
+    public static @SafeVarargs boolean hasAnyAnnotation(@NotNull AnnotatedElement element, @NotNull Class<? extends Annotation> @NotNull ... annotationClasses) {
         return Stream.of(annotationClasses).anyMatch(element::isAnnotationPresent);
     }
 

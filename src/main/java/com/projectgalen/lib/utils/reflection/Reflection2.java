@@ -23,11 +23,9 @@ package com.projectgalen.lib.utils.reflection;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.refs.ObjectRef;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -38,8 +36,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @SuppressWarnings("unused")
-public final class Reflection2 {
-    private Reflection2() { }
+public final class Reflection2 extends Reflection {
+
+    Reflection2() { }
 
     @SafeVarargs public static @NotNull Stream<Field> getAnnotatedFields(@NotNull Class<?> clazz, Class<? extends Annotation>... annotationClasses) {
         return getAnnotatedFields(clazz, true, annotationClasses);
@@ -120,16 +119,6 @@ public final class Reflection2 {
 
     public static <A extends Annotation> @NotNull Stream<AnnotatedReference<A, Method>> getMethodsWithAnnotation(@NotNull Class<?> clazz, Class<A> annotationClass, boolean lookInSuper) {
         return getMethods(clazz, lookInSuper).filter(m -> m.isAnnotationPresent(annotationClass)).map(m -> new AnnotatedReference<>(m.getAnnotation(annotationClass), m));
-    }
-
-    @SafeVarargs @Contract(pure = true) private static boolean hasAllAnnotations(@NotNull AnnotatedElement element, Class<? extends Annotation> @NotNull ... annotationClasses) {
-        for(Class<? extends Annotation> cls : annotationClasses) if(!element.isAnnotationPresent(cls)) return false;
-        return true;
-    }
-
-    @SafeVarargs @Contract(pure = true) private static boolean hasAnyAnnotation(@NotNull AnnotatedElement element, Class<? extends Annotation> @NotNull ... annotationClasses) {
-        for(Class<? extends Annotation> cls : annotationClasses) if(element.isAnnotationPresent(cls)) return true;
-        return false;
     }
 
     private static final class FieldIterator implements Iterator<Field> {
