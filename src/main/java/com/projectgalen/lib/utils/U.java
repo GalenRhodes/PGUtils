@@ -35,6 +35,7 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 
@@ -43,6 +44,10 @@ public final class U {
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
     private U() { }
+
+    public static <T> void doIfChanged(T object1, T object2, @NotNull BiConsumer<T, T> biConsumer) {
+        if(!Objects.equals(object1, object2)) biConsumer.accept(object1, object2);
+    }
 
     public static @NotNull String capitalize(@NotNull String str) {
         return ((str.isEmpty()) ? str : ((str.length() == 1) ? str.toUpperCase() : (str.substring(0, 1).toUpperCase() + str.substring(1))));

@@ -79,4 +79,12 @@ public final class Range {
 
         return new Range(start, (end - start));
     }
+
+    public boolean isInClosedRange(int v, int a, int b) {
+        return ((v >= Math.min(a, b)) && (v <= Math.max(a, b)));
+    }
+
+    public boolean isInRange(int v, int a, int b) {
+        return ((v >= Math.min(a, b)) && (v < Math.max(a, b)));
+    }
 }
