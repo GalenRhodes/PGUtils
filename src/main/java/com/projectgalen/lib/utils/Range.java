@@ -44,6 +44,10 @@ public final class Range {
         this.end    = (start + length);
     }
 
+    public boolean isInRange(int value) {
+        return ((value >= start) && (value < end));
+    }
+
     public static int closedRangeCount(int start, int end, int step) {
         int count = rangeCount(start, end, step);
         int xxx   = (start + (count * step));
