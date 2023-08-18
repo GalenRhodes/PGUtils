@@ -28,6 +28,7 @@ import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,23 +87,23 @@ public final class Regex {
         return r;
     }
 
-    public static String replaceUsingDelegate(@NotNull @Language("RegExp") @NonNls String pattern, CharSequence input, @NotNull ReplacementDelegate delegate) {
+    public static String replaceUsingDelegate(@NotNull @Language("RegExp") @NonNls String pattern, CharSequence input, @NotNull Function<Matcher, String> delegate) {
         return ((input == null) ? null : replaceUsingDelegate(pattern, 0, input, delegate));
     }
 
-    public static String replaceUsingDelegate(@Language("RegExp") @NonNls @NotNull String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, CharSequence input, @NotNull ReplacementDelegate delegate) {
+    public static String replaceUsingDelegate(@Language("RegExp") @NonNls @NotNull String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, CharSequence input, @NotNull Function<Matcher, String> delegate) {
         return ((input == null) ? null : replaceUsingDelegate(getMatcher(pattern, flags, input), delegate));
     }
 
-    public static String replaceUsingDelegate(@NotNull Pattern regex, CharSequence input, @NotNull ReplacementDelegate delegate) {
+    public static String replaceUsingDelegate(@NotNull Pattern regex, CharSequence input, @NotNull Function<Matcher, String> delegate) {
         return ((input == null) ? null : replaceUsingDelegate(regex.matcher(input), delegate));
     }
 
-    public static @NotNull String replaceUsingDelegate(@NotNull Matcher matcher, @NotNull ReplacementDelegate delegate) {
+    public static @NotNull String replaceUsingDelegate(@NotNull Matcher matcher, @NotNull Function<Matcher, String> delegate) {
         StringBuilder sb = new StringBuilder();
 
         while(matcher.find()) {
-            String repl = delegate.getReplacement(matcher);
+            String repl = delegate.apply(matcher);
             matcher.appendReplacement(sb, Matcher.quoteReplacement((repl == null) ? matcher.group() : repl));
         }
 

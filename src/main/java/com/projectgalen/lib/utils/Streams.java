@@ -59,11 +59,11 @@ public class Streams {
         return StreamSupport.stream(spliterator, false);
     }
 
-    @Contract(pure = true) public static @NotNull IntStream closedIntRange(int startInclusive, int endInclusive) {
+    public static @Contract(pure = true) @NotNull IntStream closedIntRange(int startInclusive, int endInclusive) {
         return closedIntRange(startInclusive, endInclusive, ((startInclusive <= endInclusive) ? 1 : -1));
     }
 
-    @Contract(pure = true) public static @NotNull IntStream closedIntRange(int startInclusive, int endInclusive, int step) {
+    public static @Contract(pure = true) @NotNull IntStream closedIntRange(int startInclusive, int endInclusive, int step) {
         if((startInclusive <= endInclusive) && (step == 1)) return IntStream.rangeClosed(startInclusive, endInclusive);
         return StreamSupport.intStream(new ClosedRangeIterator(startInclusive, endInclusive, step), false);
     }
