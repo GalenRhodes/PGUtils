@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils.collections.ring;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.PGResourceBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
@@ -32,6 +33,8 @@ import java.util.function.Supplier;
 
 @SuppressWarnings({ "SuspiciousSystemArraycopy", "unchecked" })
 public abstract class AbstractRingBuffer<E> implements AutoCloseable {
+
+    private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
     protected final int     initSize;
     protected final String  lock   = UUID.randomUUID().toString();
@@ -122,11 +125,11 @@ public abstract class AbstractRingBuffer<E> implements AutoCloseable {
     }
 
     protected void put1(@NotNull Object buf, int off, int len) {
-        if(getLocked(() -> put2(buf, off, len))) throw new IllegalStateException("Ring buffer is closed.");
+        if(getLocked(() -> put2(buf, off, len))) throw new IllegalStateException(msgs.getString("msg.err.ringbuff.buffer_is_closed"));
     }
 
     protected void put1(@NotNull E value) {
-        if(getLocked(() -> put2(value))) throw new IllegalStateException("Ring buffer is closed.");
+        if(getLocked(() -> put2(value))) throw new IllegalStateException(msgs.getString("msg.err.ringbuff.buffer_is_closed"));
     }
 
     protected boolean put2(@NotNull Object buf, int off, int len) {
@@ -203,7 +206,7 @@ public abstract class AbstractRingBuffer<E> implements AutoCloseable {
     private int incSize(int sz) {
         long l = (long)Math.floor(sz * 1.75);
         if(l <= Integer.MAX_VALUE) return (int)l;
-        throw new IllegalStateException("Resulting Buffer Too Large.");
+        throw new IllegalStateException(msgs.getString("msg.err.ringbuff.buffer_too_large"));
     }
 
     private int incTail(@Range(from = 0, to = Integer.MAX_VALUE) int delta) {

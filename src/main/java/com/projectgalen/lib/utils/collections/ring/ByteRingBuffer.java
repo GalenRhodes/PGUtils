@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils.collections.ring;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.PGResourceBundle;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -31,8 +32,10 @@ import java.io.OutputStream;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+@SuppressWarnings({ "OptionalUsedAsFieldOrParameterType", "unused" })
 public class ByteRingBuffer extends AbstractRingBuffer<Byte> {
+
+    private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
     public ByteRingBuffer(int initSize)                                                 { super(initSize); }
 
@@ -97,7 +100,7 @@ public class ByteRingBuffer extends AbstractRingBuffer<Byte> {
                 if(closed || strmClsd) return true;
                 runnable.run();
                 return false;
-            })) throw new IOException("Output stream is closed.");
+            })) throw new IOException(msgs.getString("msg.err.output_stream_closed"));
         }
     }
 }
