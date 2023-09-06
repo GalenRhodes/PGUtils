@@ -23,7 +23,6 @@ package com.projectgalen.lib.utils.collections.ring;
 // ===========================================================================
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Range;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,33 +34,33 @@ import java.util.function.Supplier;
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class ByteRingBuffer extends AbstractRingBuffer<Byte> {
 
-    public ByteRingBuffer(int initSize)                                                                { super(initSize); }
+    public ByteRingBuffer(int initSize)                                                 { super(initSize); }
 
-    public ByteRingBuffer()                                                                            { super(); }
+    public ByteRingBuffer()                                                             { super(); }
 
-    public int get()                                                                                   { return get1().map(this::bar).orElse(-2); }
+    public int get()                                                                    { return get1().map(this::bar).orElse(-2); }
 
-    public int get(byte @NotNull [] buf, int off, int len)                                             { return get1(buf, off, len); }
+    public int get(byte @NotNull [] buf, int off, int len)                              { return get1(buf, off, len); }
 
-    public int get(byte @NotNull [] buf)                                                               { return get1(buf, 0, buf.length); }
+    public int get(byte @NotNull [] buf)                                                { return get1(buf, 0, buf.length); }
 
-    public void put(int aByte)                                                                         { put1((byte)(aByte & 0x00ff)); }
+    public void put(int aByte)                                                          { put1((byte)(aByte & 0x00ff)); }
 
-    public void put(byte @NotNull [] buf, int off, int len)                                            { put1(buf, off, len); }
+    public void put(byte @NotNull [] buf, int off, int len)                             { put1(buf, off, len); }
 
-    public void put(byte @NotNull [] buf)                                                              { put1(buf, 0, buf.length); }
+    public void put(byte @NotNull [] buf)                                               { put1(buf, 0, buf.length); }
 
-    public int wget(byte @NotNull [] buf, int off, int len) throws InterruptedException                { return waitFor(() -> get2(buf, off, len)).orElse(-1); }
+    public int wget(byte @NotNull [] buf, int off, int len) throws InterruptedException { return waitFor(() -> get2(buf, off, len)).orElse(-1); }
 
-    public int wget(byte @NotNull [] buf) throws InterruptedException                                  { return waitFor(() -> get2(buf, 0, buf.length)).orElse(-1); }
+    public int wget(byte @NotNull [] buf) throws InterruptedException                   { return waitFor(() -> get2(buf, 0, buf.length)).orElse(-1); }
 
-    public int wget() throws InterruptedException                                                      { return waitFor(() -> bar(get2())).orElse(-1); }
+    public int wget() throws InterruptedException                                       { return waitFor(() -> bar(get2())).orElse(-1); }
 
-    protected @Override @NotNull Object createArray(@Range(from = 0, to = Integer.MAX_VALUE) int size) { return new byte[size]; }
+    protected @Override @NotNull Object createArray(int size)                           { return new byte[size]; }
 
-    private int bar(@NotNull Optional<Byte> ob)                                                        { return ob.map(this::map).orElse(-1); }
+    private int bar(@NotNull Optional<Byte> ob)                                         { return ob.map(this::map).orElse(-1); }
 
-    private int map(byte b)                                                                            { return (b & 0x00ff); }
+    private int map(byte b)                                                             { return (b & 0x00ff); }
 
     private final class RingInputStream extends InputStream {
         private boolean strmClsd = false;
