@@ -35,7 +35,7 @@ import java.util.*;
 public final class Dates {
     private static final PGResourceBundle              msgs          = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
     private static final Map<String, SimpleDateFormat> formatters    = new TreeMap<>();
-    private static final int[]                         DAYS_OF_MONTH = new int[]{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    private static final int[]                         DAYS_OF_MONTH = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
     private Dates() { }
 
@@ -169,6 +169,10 @@ public final class Dates {
     @Contract("_, _ -> new")
     public static @NotNull Date addYear(@NotNull Date c, int value) {
         return setYear(toCalendar(c), value).getTime();
+    }
+
+    public static int compareNoTime(Date lhDate, Date rhDate) {
+        return PGCalendar.toCalendar(lhDate).compareDate(PGCalendar.toCalendar(rhDate));
     }
 
     @Contract("_ -> new")
@@ -355,20 +359,28 @@ public final class Dates {
         return c.get(Calendar.DATE);
     }
 
+    public static int getDate(@NotNull Date date) {
+        return PGCalendar.toCalendar(date).getDate();
+    }
+
     public static int @NotNull [] getDateComponents(@NotNull Date date) {
         GregorianCalendar c = new GregorianCalendar();
         c.setTime(date);
-        return new int[]{ c.get(Calendar.MONTH) + 1,
-                          c.get(Calendar.DATE),
-                          c.get(Calendar.YEAR),
-                          c.get(Calendar.HOUR_OF_DAY),
-                          c.get(Calendar.MINUTE),
-                          c.get(Calendar.SECOND),
-                          c.get(Calendar.MILLISECOND) };
+        return new int[] { c.get(Calendar.MONTH) + 1,
+                           c.get(Calendar.DATE),
+                           c.get(Calendar.YEAR),
+                           c.get(Calendar.HOUR_OF_DAY),
+                           c.get(Calendar.MINUTE),
+                           c.get(Calendar.SECOND),
+                           c.get(Calendar.MILLISECOND) };
     }
 
     public static @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int getDayOfWeek(@NotNull Calendar c) {
         return c.get(Calendar.DAY_OF_WEEK);
+    }
+
+    public static int getDayOfWeek(@NotNull Date date) {
+        return PGCalendar.toCalendar(date).getDayOfWeek();
     }
 
     public static int getDstOffset(@NotNull Calendar c) {
@@ -379,6 +391,10 @@ public final class Dates {
         return c.get(Calendar.HOUR_OF_DAY);
     }
 
+    public static int getHours(@NotNull Date date) {
+        return PGCalendar.toCalendar(date).getHour();
+    }
+
     public static @Range(from = 0, to = 999) int getMillisecond(@NotNull Calendar c) {
         return c.get(Calendar.MILLISECOND);
     }
@@ -387,16 +403,32 @@ public final class Dates {
         return c.get(Calendar.MINUTE);
     }
 
+    public static int getMinutes(@NotNull Date date) {
+        return PGCalendar.toCalendar(date).getMinute();
+    }
+
     public static @Range(from = 0, to = 11) int getMonth(@NotNull Calendar c) {
         return c.get(Calendar.MONTH);
+    }
+
+    public static int getMonth(@NotNull Date date) {
+        return PGCalendar.toCalendar(date).getMonth();
     }
 
     public static @Range(from = 1, to = 12) int getRealMonth(@NotNull Calendar c) {
         return c.get(Calendar.MONTH) + 1;
     }
 
+    public static int getRealMonth(@NotNull Date date) {
+        return (getMonth(date) + 1);
+    }
+
     public static @Range(from = 0, to = 59) int getSecond(@NotNull Calendar c) {
         return c.get(Calendar.SECOND);
+    }
+
+    public static int getSeconds(@NotNull Date date) {
+        return PGCalendar.toCalendar(date).getSecond();
     }
 
     @Contract("-> new")
@@ -406,6 +438,10 @@ public final class Dates {
 
     public static int getYear(@NotNull Calendar c) {
         return c.get(Calendar.YEAR);
+    }
+
+    public static int getYear(@NotNull Date date) {
+        return PGCalendar.toCalendar(date).getYear();
     }
 
     public static boolean isInOpenRange(@NotNull Calendar when, Calendar date1, Calendar date2) {
@@ -667,37 +703,5 @@ public final class Dates {
     @Contract("_, _ -> new")
     private static @NotNull Calendar getCalendarInstance(@Nullable TimeZone tz, @Nullable Locale locale) {
         return Calendar.getInstance(((tz == null) ? TimeZone.getDefault() : tz), ((locale == null) ? Locale.getDefault() : locale));
-    }
-
-    public static int getDate(@NotNull Date date) {
-        return PGCalendar.toCalendar(date).getDate();
-    }
-
-    public static int getDayOfWeek(@NotNull Date date) {
-        return PGCalendar.toCalendar(date).getDayOfWeek();
-    }
-
-    public static int getHours(@NotNull Date date) {
-        return PGCalendar.toCalendar(date).getHour();
-    }
-
-    public static int getMinutes(@NotNull Date date) {
-        return PGCalendar.toCalendar(date).getMinute();
-    }
-
-    public static int getMonth(@NotNull Date date) {
-        return PGCalendar.toCalendar(date).getMonth();
-    }
-
-    public static int getRealMonth(@NotNull Date date) {
-        return (getMonth(date) + 1);
-    }
-
-    public static int getSeconds(@NotNull Date date) {
-        return PGCalendar.toCalendar(date).getSecond();
-    }
-
-    public static int getYear(@NotNull Date date) {
-        return PGCalendar.toCalendar(date).getYear();
     }
 }

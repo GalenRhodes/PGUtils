@@ -557,6 +557,16 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         return new java.sql.Date(getTimeInMillis());
     }
 
+    public int compareDate(PGCalendar cal) {
+        if(cal == null) return 1;
+        int c = (getYear() - cal.getYear());
+        return ((c == 0) ? (((c = (getMonth() - cal.getMonth())) == 0) ? (getDate() - cal.getDate()) : c) : c);
+    }
+
+    public int compareDate(Calendar cal) {
+        return compareDate(new PGCalendar(cal));
+    }
+
     public Time toSQLTime() {
         return new Time(getTimeInMillis());
     }

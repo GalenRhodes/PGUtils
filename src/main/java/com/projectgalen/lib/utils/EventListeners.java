@@ -22,16 +22,11 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.concurrency.Locks;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,32 +34,35 @@ import java.util.stream.Stream;
 @SuppressWarnings({ "unchecked", "unused" })
 public class EventListeners {
 
-    private final Lock       lock      = new ReentrantLock(true);
     private final List<Pair> listeners = new ArrayList<>();
 
     public EventListeners() { }
 
-    public <T extends EventListener> void add(@NotNull Class<T> cls, @NotNull T listener) {
-        Locks.doWithLock(lock, () -> {
+    public <L extends EventListener> void add(@NotNull Class<L> cls, @NotNull L listener) {
+        synchronized(listeners) {
             listeners.removeIf(Pair::isEmpty);
             if(stream(cls).noneMatch(l -> (l == listener))) listeners.add(new Pair(cls, listener));
-        });
+        }
     }
 
-    public <T extends EventListener> void forEach(@NotNull Class<T> cls, @NotNull Consumer<T> consumer) {
-        Locks.doWithLock(lock, () -> stream(cls).forEach(consumer));
+    public <L extends EventListener, E extends EventObject> void fireEvent(@NotNull Class<L> cls, @NotNull E event, @NotNull BiConsumer<L, E> biConsumer) {
+        synchronized(listeners) { stream(cls).forEach(l -> { try { biConsumer.accept(l, event); } catch(Throwable t) { t.printStackTrace(System.err); } }); }
     }
 
-    public <T extends EventListener> @NotNull List<T> getListeners(@NotNull Class<T> cls) {
-        return Locks.getWithLock(lock, () -> stream(cls).collect(Collectors.toList()));
+    public <L extends EventListener> void forEach(@NotNull Class<L> cls, @NotNull Consumer<L> consumer) {
+        synchronized(listeners) { stream(cls).forEach(consumer); }
     }
 
-    public <T extends EventListener> void remove(@NotNull Class<T> cls, @NotNull T listener) {
-        Locks.doWithLock(lock, () -> listeners.removeIf(p -> (p.isEmpty() || ((p.cls == cls) && (p.listener.get() == listener)))));
+    public <L extends EventListener> @NotNull List<L> getListeners(@NotNull Class<L> cls) {
+        synchronized(listeners) { return stream(cls).collect(Collectors.toList()); }
     }
 
-    private <T extends EventListener> @NotNull Stream<T> stream(@NotNull Class<T> cls) {
-        return listeners.stream().filter(p -> (p.cls == cls)).map(p -> (T)p.listener.get()).filter(Objects::nonNull);
+    public <L extends EventListener> void remove(@NotNull Class<L> cls, @NotNull L listener) {
+        synchronized(listeners) { listeners.removeIf(p -> (p.isEmpty() || ((p.cls == cls) && (p.listener.get() == listener)))); }
+    }
+
+    private <L extends EventListener> @NotNull Stream<L> stream(@NotNull Class<L> cls) {
+        return listeners.stream().filter(p -> p.cls == cls).map(p -> (L)p.listener.get()).filter(Objects::nonNull);
     }
 
     private static class Pair {
