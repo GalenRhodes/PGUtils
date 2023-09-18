@@ -46,7 +46,7 @@ public class EventListeners {
     }
 
     public <L extends EventListener, E extends EventObject> void fireEvent(@NotNull Class<L> cls, @NotNull E event, @NotNull BiConsumer<L, E> biConsumer) {
-        synchronized(listeners) { stream(cls).forEach(l -> { try { biConsumer.accept(l, event); } catch(Throwable t) { t.printStackTrace(System.err); } }); }
+        synchronized(listeners) { stream(cls).forEach(l -> biConsumer.accept(l, event)); }
     }
 
     public <L extends EventListener> void forEach(@NotNull Class<L> cls, @NotNull Consumer<L> consumer) {
