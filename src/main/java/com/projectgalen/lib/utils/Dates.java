@@ -171,6 +171,14 @@ public final class Dates {
         return setYear(toCalendar(c), value).getTime();
     }
 
+    /**
+     * Compares two {@link Date} objects using only the year, month, and day of month values in that order. The values of the hour, minute, second, and millisecond are ignored.
+     *
+     * @param lhDate The left-hand date object.
+     * @param rhDate The right-hand date object.
+     *
+     * @return And integer value that is less than zero, zero, or greater than zero when the left-hand date object is less than, equal to, or greater than the right-hand date object.
+     */
     public static int compareDate(Date lhDate, Date rhDate) {
         return PGCalendar.toCalendar(lhDate).compareDate(PGCalendar.toCalendar(rhDate));
     }
