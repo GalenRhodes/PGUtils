@@ -31,7 +31,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@SuppressWarnings({ "DuplicatedCode" })
+@SuppressWarnings({ "DuplicatedCode", "unused" })
 public final class Dates {
     private static final PGResourceBundle              msgs          = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
     private static final Map<String, SimpleDateFormat> formatters    = new TreeMap<>();
@@ -171,7 +171,7 @@ public final class Dates {
         return setYear(toCalendar(c), value).getTime();
     }
 
-    public static int compareNoTime(Date lhDate, Date rhDate) {
+    public static int compareDate(Date lhDate, Date rhDate) {
         return PGCalendar.toCalendar(lhDate).compareDate(PGCalendar.toCalendar(rhDate));
     }
 
