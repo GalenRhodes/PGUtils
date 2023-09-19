@@ -275,7 +275,8 @@ public final class U {
     }
 
     public static @NotNull String requireNonEmptyOrElse(@Nullable String str, @NotNull String defaultString) {
-        return (U.z(str) ? defaultString : str.trim());
+        String s = ((str == null) ? "" : str.trim());
+        return (s.isEmpty() ? defaultString : s);
     }
 
     public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
