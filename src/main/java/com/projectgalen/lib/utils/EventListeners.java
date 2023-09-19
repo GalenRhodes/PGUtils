@@ -23,6 +23,7 @@ package com.projectgalen.lib.utils;
 // ===========================================================================
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -40,8 +41,8 @@ public class EventListeners {
 
     public <L extends EventListener> void add(@NotNull Class<L> cls, @NotNull L listener) {
         synchronized(listeners) {
-            listeners.removeIf(Pair::isEmpty);
-            if(stream(cls).noneMatch(l -> (l == listener))) listeners.add(new Pair(cls, listener));
+            listeners.removeIf(p -> (p.listener.get() == null));
+            if(stream(cls).noneMatch(l -> (l.equals(listener)))) listeners.add(new Pair(cls, listener));
         }
     }
 
@@ -58,11 +59,15 @@ public class EventListeners {
     }
 
     public <L extends EventListener> void remove(@NotNull Class<L> cls, @NotNull L listener) {
-        synchronized(listeners) { listeners.removeIf(p -> (p.isEmpty() || ((p.cls == cls) && (p.listener.get() == listener)))); }
+        synchronized(listeners) { listeners.removeIf(p -> _pred(cls, p.cls, listener, p.listener.get())); }
+    }
+
+    private boolean _pred(@NotNull Class<?> c1, @NotNull Class<?> c2, @NotNull EventListener l1, @Nullable EventListener l2) {
+        return ((l2 == null) || ((c1 == c2) && l1.equals(l2)));
     }
 
     private <L extends EventListener> @NotNull Stream<L> stream(@NotNull Class<L> cls) {
-        return listeners.stream().filter(p -> p.cls == cls).map(p -> (L)p.listener.get()).filter(Objects::nonNull);
+        return listeners.stream().filter(p -> (p.cls == cls)).map(p -> (L)p.listener.get()).filter(Objects::nonNull);
     }
 
     private static class Pair {
@@ -73,7 +78,5 @@ public class EventListeners {
             this.cls      = cls;
             this.listener = new WeakReference<>(listener);
         }
-
-        public boolean isEmpty() { return listener.get() == null; }
     }
 }
