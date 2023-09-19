@@ -172,7 +172,7 @@ public final class Dates {
     }
 
     /**
-     * Compares two {@link Date} objects using only the year, month, and day of month values in that order. The values of the hour, minute, second, and millisecond are ignored.
+     * Compares two {@link Date} objects using only the year, month, and day-of-month values in that order. The values of the hour, minute, second, and millisecond are ignored.
      *
      * @param lhDate The left-hand date object.
      * @param rhDate The right-hand date object.
