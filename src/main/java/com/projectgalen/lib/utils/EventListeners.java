@@ -25,7 +25,6 @@ package com.projectgalen.lib.utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -41,7 +40,7 @@ public class EventListeners {
 
     public <L extends EventListener> void add(@NotNull Class<L> cls, @NotNull L listener) {
         synchronized(listeners) {
-            listeners.removeIf(p -> (p.listener.get() == null));
+            listeners.removeIf(p -> (p.getListener() == null));
             if(stream(cls).noneMatch(l -> (l.equals(listener)))) listeners.add(new Pair(cls, listener));
         }
     }
@@ -59,7 +58,7 @@ public class EventListeners {
     }
 
     public <L extends EventListener> void remove(@NotNull Class<L> cls, @NotNull L listener) {
-        synchronized(listeners) { listeners.removeIf(p -> _pred(cls, p.cls, listener, p.listener.get())); }
+        synchronized(listeners) { listeners.removeIf(p -> _pred(cls, p.getCls(), listener, p.getListener())); }
     }
 
     private boolean _pred(@NotNull Class<?> c1, @NotNull Class<?> c2, @NotNull EventListener l1, @Nullable EventListener l2) {
@@ -67,16 +66,28 @@ public class EventListeners {
     }
 
     private <L extends EventListener> @NotNull Stream<L> stream(@NotNull Class<L> cls) {
-        return listeners.stream().filter(p -> (p.cls == cls)).map(p -> (L)p.listener.get()).filter(Objects::nonNull);
+        return listeners.stream().filter(p -> (p.getCls() == cls)).map(p -> (L)p.getListener()).filter(Objects::nonNull);
     }
 
+    @SuppressWarnings("NullableProblems")
     private static class Pair {
-        public final @NotNull Class<? extends EventListener> cls;
-        public final @NotNull WeakReference<EventListener>   listener;
+        private final @NotNull Class<? extends EventListener> cls;
+        private final @NotNull EventListener                  listener;
+        // private final @NotNull WeakReference<EventListener>   listener;
 
         public Pair(@NotNull Class<? extends EventListener> cls, @NotNull EventListener listener) {
-            this.cls      = cls;
-            this.listener = new WeakReference<>(listener);
+            this.cls = cls;
+            // this.listener = new WeakReference<>(listener);
+            this.listener = listener;
+        }
+
+        public @NotNull Class<? extends EventListener> getCls() {
+            return cls;
+        }
+
+        public EventListener getListener() {
+            // return listener.get();
+            return listener;
         }
     }
 }
