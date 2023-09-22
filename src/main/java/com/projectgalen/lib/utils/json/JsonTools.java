@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.TimeZone;
 
+@SuppressWarnings("unused")
 public final class JsonTools {
     private JsonTools() { }
 
