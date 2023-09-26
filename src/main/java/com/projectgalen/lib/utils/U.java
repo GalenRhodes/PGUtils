@@ -34,9 +34,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 @SuppressWarnings({ "unused", "SameParameterValue", "unchecked" })
@@ -111,7 +113,7 @@ public final class U {
     public static <R> R getSafe(R defaultValue, @NotNull ThrowingSupplier<R> supplier) { return getSafe(false, defaultValue, supplier); }
 
     public static @NotNull String cleanNumberString(String numberString) {
-        return requireNonEmptyOrElse(Objects.toString(numberString, "0").replaceAll("[^0-9.+-]", ""), "0");
+        return toNonEmptyString(Objects.toString(numberString, "0").replaceAll("[^0-9.+-]", ""), "0");
     }
 
     @Contract(value = "_, _, _ -> new", pure = true)
@@ -274,9 +276,17 @@ public final class U {
         return ((str == null) || (str.trim().isEmpty()));
     }
 
-    public static @NotNull String requireNonEmptyOrElse(@Nullable String str, @NotNull String defaultString) {
+    public static @NotNull String toNonEmptyString(@Nullable String str, @NotNull String defaultString) {
+        return toNonEmptyString(str, () -> defaultString);
+    }
+
+    public static @NotNull String toNonEmptyString(@Nullable String str, @NotNull Supplier<String> defaultSupplier) {
         String s = ((str == null) ? "" : str.trim());
-        return (s.isEmpty() ? defaultString : s);
+        return (s.isEmpty() ? defaultSupplier.get() : s);
+    }
+
+    public static String toString(@Nullable String str, @NotNull Supplier<String> supplier) {
+        return Optional.ofNullable(str).orElseGet(supplier);
     }
 
     public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
