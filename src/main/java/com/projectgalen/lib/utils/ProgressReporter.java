@@ -43,4 +43,10 @@ public interface ProgressReporter {
     void setProgressMin(int value);
 
     void setProgressText(String text);
+
+    default void setup(int min, int max, int value) {
+        setProgressMin(min);
+        setProgressMax(max);
+        setProgress(value);
+    }
 }
