@@ -341,6 +341,13 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         return (PGCalendar)super.clone();
     }
 
+    public int compareDate(@Nullable Calendar other) {
+        PGCalendar cal = ((other == null) ? null : ((other instanceof PGCalendar _cal) ? _cal : new PGCalendar(other)));
+        if(cal == null) return 1;
+        int c = (getYear() - cal.getYear());
+        return ((c == 0) ? (((c = (getMonth() - cal.getMonth())) == 0) ? (getDate() - cal.getDate()) : c) : c);
+    }
+
     public @Range(from = 28, to = 31) int daysInMonth() {
         return Dates.daysInMonth(getRealMonth(), getYear());
     }
@@ -476,6 +483,11 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
     }
 
     public PGCalendar setDate(@Range(from = 1, to = 31) int value) {
+        return setDate(value, false);
+    }
+
+    public PGCalendar setDate(@Range(from = 1, to = 31) int value, boolean truncate) {
+        if(truncate && (value > getActualMaximum(DATE))) value = getActualMaximum(DATE);
         set(Calendar.DATE, value);
         return this;
     }
@@ -555,13 +567,6 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
 
     public java.sql.Date toSQLDate() {
         return new java.sql.Date(getTimeInMillis());
-    }
-
-    public int compareDate(@Nullable Calendar other) {
-        PGCalendar cal = ((other == null) ? null : ((other instanceof PGCalendar _cal) ? _cal : new PGCalendar(other)));
-        if(cal == null) return 1;
-        int c = (getYear() - cal.getYear());
-        return ((c == 0) ? (((c = (getMonth() - cal.getMonth())) == 0) ? (getDate() - cal.getDate()) : c) : c);
     }
 
     public Time toSQLTime() {
