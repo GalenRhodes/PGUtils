@@ -23,6 +23,7 @@ package com.projectgalen.lib.utils.enums;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.PGResourceBundle;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
@@ -58,16 +59,28 @@ public enum WeekDay {
         return (wd1.id - wd2.id);
     }
 
-    public int getDistance(@NotNull WeekDay wd) {
+    public int getDistanceFrom(@NotNull WeekDay wd) {
         return getDistance(wd.id, id);
     }
 
-    public int getDistance(@Range(from = 1, to = 7) int wd) {
+    public int getDistanceFrom(@Range(from = 1, to = 7) int wd) {
         return getDistance(wd, id);
+    }
+
+    public int getDistanceTo(@NotNull WeekDay wd) {
+        return getDistance(id, wd.id);
+    }
+
+    public int getDistanceTo(@Range(from = 1, to = 7) int wd) {
+        return getDistance(id, wd);
     }
 
     public static int getDistance(@Range(from = 1, to = 7) int wdFrom, @Range(from = 1, to = 7) int wdTo) {
         return ((wdFrom <= wdTo) ? (wdTo - wdFrom) : (7 - (wdFrom - wdTo)));
+    }
+
+    @Contract(pure = true) public static int getDistance(@NotNull WeekDay wdFrom, @NotNull WeekDay wdTo) {
+        return getDistance(wdFrom.id, wdTo.id);
     }
 
     @Override
