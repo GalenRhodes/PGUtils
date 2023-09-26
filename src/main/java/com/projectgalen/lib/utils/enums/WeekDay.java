@@ -59,11 +59,11 @@ public enum WeekDay {
     }
 
     public int getDistance(@NotNull WeekDay wd) {
-        return getDistance(wd.id);
+        return getDistance(wd.id, id);
     }
 
     public int getDistance(@Range(from = 1, to = 7) int wd) {
-        return ((wd <= id) ? (id - wd) : (7 - (wd - id)));
+        return getDistance(wd, id);
     }
 
     public static int getDistance(@Range(from = 1, to = 7) int wdFrom, @Range(from = 1, to = 7) int wdTo) {
