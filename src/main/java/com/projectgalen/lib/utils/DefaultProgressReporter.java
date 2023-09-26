@@ -74,10 +74,4 @@ public class DefaultProgressReporter implements ProgressReporter {
     public @Override void setProgressText(String text) {
         progressText = text;
     }
-
-    public @Override void setup(int min, int max, int value) {
-        progressMin = min;
-        progressMax = max;
-        progress    = value;
-    }
 }

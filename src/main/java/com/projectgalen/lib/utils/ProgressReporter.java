@@ -44,9 +44,19 @@ public interface ProgressReporter {
 
     void setProgressText(String text);
 
+    default void incrementProgress() {
+        incrementProgress(1);
+    }
+
+    default void incrementProgress(int delta) {
+        setProgress(Math.max(getProgressMin(), Math.min(getProgressMax(), (getProgress() + delta))));
+    }
+
     default void setup(int min, int max, int value) {
-        setProgressMin(min);
-        setProgressMax(max);
-        setProgress(value);
+        int _min = Math.min(min, max);
+        int _max = Math.max(min, max);
+        setProgressMin(_min);
+        setProgressMax(_max);
+        setProgress(Math.max(_min, Math.min(_max, value)));
     }
 }
