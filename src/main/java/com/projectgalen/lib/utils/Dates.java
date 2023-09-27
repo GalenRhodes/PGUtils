@@ -196,6 +196,44 @@ public final class Dates {
     }
 
     @Contract("_,_,_ -> new")
+    public static @NotNull Date createDate(int year,
+                                           @MagicConstant(intValues = { Calendar.JANUARY,
+                                                                        Calendar.FEBRUARY,
+                                                                        Calendar.MARCH,
+                                                                        Calendar.APRIL,
+                                                                        Calendar.MAY,
+                                                                        Calendar.JUNE,
+                                                                        Calendar.JULY,
+                                                                        Calendar.AUGUST,
+                                                                        Calendar.SEPTEMBER,
+                                                                        Calendar.OCTOBER,
+                                                                        Calendar.NOVEMBER,
+                                                                        Calendar.DECEMBER,
+                                                                        Calendar.UNDECIMBER }) int month,
+                                           @Range(from = 1, to = 31) int date) {
+        return new PGCalendar(year, month, date).getTime();
+    }
+
+    @Contract("_,_,_ -> new")
+    public static @NotNull Date createSQLDate(int year,
+                                              @MagicConstant(intValues = { Calendar.JANUARY,
+                                                                           Calendar.FEBRUARY,
+                                                                           Calendar.MARCH,
+                                                                           Calendar.APRIL,
+                                                                           Calendar.MAY,
+                                                                           Calendar.JUNE,
+                                                                           Calendar.JULY,
+                                                                           Calendar.AUGUST,
+                                                                           Calendar.SEPTEMBER,
+                                                                           Calendar.OCTOBER,
+                                                                           Calendar.NOVEMBER,
+                                                                           Calendar.DECEMBER,
+                                                                           Calendar.UNDECIMBER }) int month,
+                                              @Range(from = 1, to = 31) int date) {
+        return new PGCalendar(year, month, date).toSQLDate();
+    }
+
+    @Contract("_,_,_ -> new")
     public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = { Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST, Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER }) int month, int date) {/*@f0*/
         return createCalendar(year, month, date, null, null);/*@f1*/
     }
