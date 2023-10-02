@@ -47,6 +47,14 @@ public final class U {
 
     private U() { }
 
+    public static boolean isFlagCleared(int value, int flag) {
+        return ((value & flag) != flag);
+    }
+
+    public static boolean isFlagSet(int value, int flag) {
+        return ((value & flag) == flag);
+    }
+
     public static <T> void doIfChanged(T object1, T object2, @NotNull BiConsumer<T, T> biConsumer) {
         if(!Objects.equals(object1, object2)) biConsumer.accept(object1, object2);
     }
