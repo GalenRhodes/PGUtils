@@ -47,11 +47,11 @@ public final class U {
 
     private U() { }
 
-    public static boolean isFlagCleared(int value, int flag) {
+    public static boolean isFlagCleared(long value, int flag) {
         return ((value & flag) != flag);
     }
 
-    public static boolean isFlagSet(int value, int flag) {
+    public static boolean isFlagSet(long value, int flag) {
         return ((value & flag) == flag);
     }
 
