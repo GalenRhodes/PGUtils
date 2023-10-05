@@ -47,27 +47,6 @@ public final class PGCollections {
         return map;
     }
 
-    public static <T> @NotNull List<T> copyAndClear(@NotNull List<T> list) {
-        return copyAndClear(list, ArrayList::new);
-    }
-
-    public static <T> @NotNull List<T> copyAndClear(@NotNull List<T> list, @NotNull Supplier<List<T>> listSupplier) {
-        List<T> clone = listSupplier.get();
-        clone.addAll(list);
-        list.clear();
-        return clone;
-    }
-
-    public static <T extends Comparable<T>, L extends List<T>> @Contract("null -> null; !null -> param1") L sort(L list) {
-        if(list != null) list.sort(Comparable::compareTo);
-        return list;
-    }
-
-    public static <T, L extends List<T>> @Contract("null,_ -> null; !null,_ -> param1") L sort(L list, @NotNull Comparator<T> comparator) {
-        if(list != null) list.sort(comparator);
-        return list;
-    }
-
     public static <T, C extends Collection<T>> BigDecimal bigDecimalSum(@NotNull C collection, @NotNull GetBigDecFromDelegate<T> delegate) {
         return bigDecimalSum(collection, MathContext.UNLIMITED, delegate);
     }
@@ -83,6 +62,17 @@ public final class PGCollections {
         BigInteger sum = BigInteger.ZERO;
         for(T obj : collection) sum = sum.add(delegate.getBigInteger(obj));
         return sum;
+    }
+
+    public static <T> @NotNull List<T> copyAndClear(@NotNull List<T> list) {
+        return copyAndClear(list, ArrayList::new);
+    }
+
+    public static <T> @NotNull List<T> copyAndClear(@NotNull List<T> list, @NotNull Supplier<List<T>> listSupplier) {
+        List<T> clone = listSupplier.get();
+        clone.addAll(list);
+        list.clear();
+        return clone;
     }
 
     public static <T, C extends Collection<T>> double doubleSum(@NotNull C collection, @NotNull GetDoubleFromDelegate<T> delegate) {
@@ -122,6 +112,16 @@ public final class PGCollections {
         long sum = 0;
         for(T obj : collection) sum += delegate.getLong(obj);
         return sum;
+    }
+
+    public static <T extends Comparable<T>, L extends List<T>> @Contract("null -> null; !null -> param1") L sort(L list) {
+        if(list != null) list.sort(Comparable::compareTo);
+        return list;
+    }
+
+    public static <T, L extends List<T>> @Contract("null,_ -> null; !null,_ -> param1") L sort(L list, @NotNull Comparator<T> comparator) {
+        if(list != null) list.sort(comparator);
+        return list;
     }
 
     public interface GetBigDecFromDelegate<T> {

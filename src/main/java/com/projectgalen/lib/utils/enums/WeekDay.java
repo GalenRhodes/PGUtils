@@ -39,26 +39,6 @@ public enum WeekDay {
         this.id = id;
     }
 
-    public @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int getId() {
-        return id;
-    }
-
-    public @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int toCalendarWeekDay() {
-        return id;
-    }
-
-    public static @NotNull WeekDay max(@NotNull WeekDay wd1, @NotNull WeekDay wd2) {
-        return ((wd1.id >= wd2.id) ? wd1 : wd2);
-    }
-
-    public static @NotNull WeekDay min(@NotNull WeekDay wd1, @NotNull WeekDay wd2) {
-        return ((wd1.id <= wd2.id) ? wd1 : wd2);
-    }
-
-    public static int compare(@NotNull WeekDay wd1, @NotNull WeekDay wd2) {
-        return (wd1.id - wd2.id);
-    }
-
     public int getDistanceFrom(@NotNull WeekDay wd) {
         return getDistance(wd.id, id);
     }
@@ -75,12 +55,12 @@ public enum WeekDay {
         return getDistance(id, wd);
     }
 
-    public static int getDistance(@Range(from = 1, to = 7) int wdFrom, @Range(from = 1, to = 7) int wdTo) {
-        return ((wdFrom <= wdTo) ? (wdTo - wdFrom) : (7 - (wdFrom - wdTo)));
+    public @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int getId() {
+        return id;
     }
 
-    @Contract(pure = true) public static int getDistance(@NotNull WeekDay wdFrom, @NotNull WeekDay wdTo) {
-        return getDistance(wdFrom.id, wdTo.id);
+    public @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int toCalendarWeekDay() {
+        return id;
     }
 
     @Override
@@ -89,9 +69,29 @@ public enum WeekDay {
         return msgs.getString(String.format("enum.week_day.name.%d", id), super.toString());
     }
 
+    public static int compare(@NotNull WeekDay wd1, @NotNull WeekDay wd2) {
+        return (wd1.id - wd2.id);
+    }
+
+    public static int getDistance(@Range(from = 1, to = 7) int wdFrom, @Range(from = 1, to = 7) int wdTo) {
+        return ((wdFrom <= wdTo) ? (wdTo - wdFrom) : (7 - (wdFrom - wdTo)));
+    }
+
+    @Contract(pure = true) public static int getDistance(@NotNull WeekDay wdFrom, @NotNull WeekDay wdTo) {
+        return getDistance(wdFrom.id, wdTo.id);
+    }
+
     public static @NotNull WeekDay getWeekDay(@Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int id) {
         for(WeekDay e : WeekDay.values()) if(e.id == id) return e;
         PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
         throw new IllegalArgumentException(msgs.format("msg.err.invalid_enum_id", msgs.getString("msg.week_day"), id));
+    }
+
+    public static @NotNull WeekDay max(@NotNull WeekDay wd1, @NotNull WeekDay wd2) {
+        return ((wd1.id >= wd2.id) ? wd1 : wd2);
+    }
+
+    public static @NotNull WeekDay min(@NotNull WeekDay wd1, @NotNull WeekDay wd2) {
+        return ((wd1.id <= wd2.id) ? wd1 : wd2);
     }
 }

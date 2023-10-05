@@ -428,6 +428,22 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         return isLeapYear(getYear());
     }
 
+    public boolean onOrAfter(@NotNull Calendar calendar) {
+        return (compareTo(calendar) >= 0);
+    }
+
+    public boolean onOrAfter(@NotNull Date date) {
+        return (getTime().compareTo(date) >= 0);
+    }
+
+    public boolean onOrBefore(@NotNull Calendar calendar) {
+        return (compareTo(calendar) <= 0);
+    }
+
+    public boolean onOrBefore(@NotNull Date date) {
+        return (getTime().compareTo(date) <= 0);
+    }
+
     public @NotNull PGCalendar setAll(int year, int month, int date) {
         set(YEAR, year);
         set(MONTH, month);

@@ -47,44 +47,6 @@ public final class U {
 
     private U() { }
 
-    public static boolean isFlagCleared(long value, int flag) {
-        return ((value & flag) != flag);
-    }
-
-    public static boolean isFlagSet(long value, int flag) {
-        return ((value & flag) == flag);
-    }
-
-    public static <T> void doIfChanged(T object1, T object2, @NotNull BiConsumer<T, T> biConsumer) {
-        if(!Objects.equals(object1, object2)) biConsumer.accept(object1, object2);
-    }
-
-    public static @NotNull String capitalize(@NotNull String str) {
-        return ((str.isEmpty()) ? str : ((str.length() == 1) ? str.toUpperCase() : (str.substring(0, 1).toUpperCase() + str.substring(1))));
-    }
-
-    public static @NotNull String getPart(@NotNull String str, @NotNull @NonNls @Language("RegExp") String separator, @NotNull Parts part) {
-        Matcher m = Regex.getMatcher(separator, str);
-        return switch(part) {/*@f0*/
-            case NOT_FIRST -> (m.find() ? str.substring(m.end()) : str);
-            case NOT_LAST  -> (m.find() ? str.substring(0, getLastMatchLocation(m, Matcher::start)) : str);
-            case LAST      -> (m.find() ? str.substring(getLastMatchLocation(m, Matcher::end)) : str);
-            default        -> (m.find() ? str.substring(0, m.start()) : str);
-        };/*@f1*/
-    }
-
-    public static <R> R getSafe(boolean debug, @NotNull ThrowingSupplier<R> supplier)  { return getSafe(debug, null, supplier); }
-
-    public static <R> R getSafe(boolean debug, R defaultValue, @NotNull ThrowingSupplier<R> supplier) {
-        try {
-            return supplier.get();
-        }
-        catch(Throwable t) {
-            if(debug) t.printStackTrace(System.err);
-            return defaultValue;
-        }
-    }
-
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
         return sb.append(String.format(format, args));
     }
@@ -118,7 +80,9 @@ public final class U {
         return Base64.getEncoder().encodeToString(data);
     }
 
-    public static <R> R getSafe(R defaultValue, @NotNull ThrowingSupplier<R> supplier) { return getSafe(false, defaultValue, supplier); }
+    public static @NotNull String capitalize(@NotNull String str) {
+        return ((str.isEmpty()) ? str : ((str.length() == 1) ? str.toUpperCase() : (str.substring(0, 1).toUpperCase() + str.substring(1))));
+    }
 
     public static @NotNull String cleanNumberString(String numberString) {
         return toNonEmptyString(Objects.toString(numberString, "0").replaceAll("[^0-9.+-]", ""), "0");
@@ -163,10 +127,18 @@ public final class U {
         return concat(new StringBuilder(), args).toString();
     }
 
-    public static <R> R getSafe(@NotNull ThrowingSupplier<R> supplier)                 { return getSafe(false, null, supplier); }
+    public static <T> void doIfChanged(T object1, T object2, @NotNull BiConsumer<T, T> biConsumer) {
+        if(!Objects.equals(object1, object2)) biConsumer.accept(object1, object2);
+    }
 
-    public static @NotNull String ifNullOrEmpty(@Nullable String str, @NotNull String def) {
-        return ((str == null || str.isEmpty()) ? def : str);
+    public static @NotNull String getPart(@NotNull String str, @NotNull @NonNls @Language("RegExp") String separator, @NotNull Parts part) {
+        Matcher m = Regex.getMatcher(separator, str);
+        return switch(part) {/*@f0*/
+            case NOT_FIRST -> (m.find() ? str.substring(m.end()) : str);
+            case NOT_LAST  -> (m.find() ? str.substring(0, getLastMatchLocation(m, Matcher::start)) : str);
+            case LAST      -> (m.find() ? str.substring(getLastMatchLocation(m, Matcher::end)) : str);
+            default        -> (m.find() ? str.substring(0, m.start()) : str);
+        };/*@f1*/
     }
 
     public static int @NotNull [] getRange(int start, int end, int stride) {
@@ -190,8 +162,24 @@ public final class U {
         return arr;
     }
 
-    public static boolean nz(@Nullable String str) {
-        return ((str != null) && (!str.trim().isEmpty()));
+    public static <R> R getSafe(boolean debug, @NotNull ThrowingSupplier<R> supplier) { return getSafe(debug, null, supplier); }
+
+    public static <R> R getSafe(boolean debug, R defaultValue, @NotNull ThrowingSupplier<R> supplier) {
+        try {
+            return supplier.get();
+        }
+        catch(Throwable t) {
+            if(debug) t.printStackTrace(System.err);
+            return defaultValue;
+        }
+    }
+
+    public static <R> R getSafe(R defaultValue, @NotNull ThrowingSupplier<R> supplier) { return getSafe(false, defaultValue, supplier); }
+
+    public static <R> R getSafe(@NotNull ThrowingSupplier<R> supplier)                 { return getSafe(false, null, supplier); }
+
+    public static @NotNull String ifNullOrEmpty(@Nullable String str, @NotNull String def) {
+        return ((str == null || str.isEmpty()) ? def : str);
     }
 
     @Contract(pure = true)
@@ -215,6 +203,14 @@ public final class U {
     public static boolean isDoubleIn(double dbl, double @NotNull ... others) {
         for(double other : others) if(dbl == other) return true;
         return false;
+    }
+
+    public static boolean isFlagCleared(long value, int flag) {
+        return ((value & flag) != flag);
+    }
+
+    public static boolean isFlagSet(long value, int flag) {
+        return ((value & flag) == flag);
     }
 
     @Contract(pure = true)
@@ -280,8 +276,13 @@ public final class U {
         return (U.z(str) ? null : str);
     }
 
-    public static boolean z(@Nullable String str) {
-        return ((str == null) || (str.trim().isEmpty()));
+    public static boolean nz(@Nullable String str) {
+        return ((str != null) && (!str.trim().isEmpty()));
+    }
+
+    public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
+        int i = path.lastIndexOf('.');
+        return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
     }
 
     public static @NotNull String toNonEmptyString(@Nullable String str, @NotNull String defaultString) {
@@ -297,11 +298,6 @@ public final class U {
         return Optional.ofNullable(str).orElseGet(supplier);
     }
 
-    public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
-        int i = path.lastIndexOf('.');
-        return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
-    }
-
     @Contract("!null -> !null; null -> null")
     public static String tr(@Nullable String str) {
         return ((str == null) ? null : str.trim());
@@ -310,6 +306,10 @@ public final class U {
     @Contract("!null -> !null; null -> null")
     public static String uc(@Nullable String str) {
         return ((str == null) ? null : str.toUpperCase());
+    }
+
+    public static boolean z(@Nullable String str) {
+        return ((str == null) || (str.trim().isEmpty()));
     }
 
     private static int getLastMatchLocation(Matcher m, @NotNull Function<Matcher, Integer> function) {

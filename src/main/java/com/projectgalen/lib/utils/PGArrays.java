@@ -93,6 +93,10 @@ public final class PGArrays {
         return ((ch1 == null) && (ch2 == null));
     }
 
+    public static <U, T> T @NotNull [] copyAs(@NotNull Class<? extends T[]> cls, U @NotNull ... array) {
+        return Arrays.copyOf(array, array.length, cls);
+    }
+
     public static <T> T @NotNull [] createAndFill(int length, @NotNull T value) {
         T[] array = (T[])Array.newInstance(value.getClass(), length);
         Arrays.fill(array, value);
@@ -229,10 +233,6 @@ public final class PGArrays {
         return copy;
     }
 
-    public static <U, T> T @NotNull [] copyAs(@NotNull Class<? extends T[]> cls, U @NotNull ... array) {
-        return Arrays.copyOf(array, array.length, cls);
-    }
-
     public static <T> T[] newArray(Class<? extends Object[]> arrayType, int length) {
         //noinspection unchecked
         return ((arrayType == Object[].class) ? (T[])new Object[length] : (T[])Array.newInstance(arrayType.getComponentType(), length));
@@ -345,15 +345,15 @@ public final class PGArrays {
             if(!Character.isWhitespace(cp[0])) return tr2(chars, i);
             i = cp[1];
         }
-        return new int[]{ 0, 0 };
+        return new int[] { 0, 0 };
     }
 
     private static int @NotNull [] tr2(char @NotNull [] chars, int i) {
         for(int j = chars.length; j > i; ) {
             int[] cp = U.codePointAt(chars, j, true);
-            if(!Character.isWhitespace(cp[0])) return new int[]{ i, j };
+            if(!Character.isWhitespace(cp[0])) return new int[] { i, j };
             j = cp[1];
         }
-        return new int[]{ i, (i + 1) };
+        return new int[] { i, (i + 1) };
     }
 }

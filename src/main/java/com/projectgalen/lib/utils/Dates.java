@@ -196,6 +196,29 @@ public final class Dates {
     }
 
     @Contract("_,_,_ -> new")
+    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = { Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST, Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER }) int month, int date) {/*@f0*/
+        return createCalendar(year, month, date, null, null);/*@f1*/
+    }
+
+    @Contract("_,_,_,_,_ -> new")
+    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = { Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST, Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER }) int month, int date, @Nullable TimeZone tz, @Nullable Locale locale) {/*@f0*/
+        return createCalendar(year, month, date, 0, 0, 0, 0, tz, locale);/*@f1*/
+    }
+
+    @Contract("_,_,_,_,_,_,_ -> new")
+    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = { Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST, Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER }) int month, int date, int hour24, int minute, int second, int ms) {/*@f0*/
+        return createCalendar(year, month, date, hour24, minute, second, ms, null, null);/*@f1*/
+    }
+
+    @Contract("_,_,_,_,_,_,_,_,_ -> new")
+    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = { Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST, Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER }) int month, int date, int hour24, int minute, int second, int ms, @Nullable TimeZone tz, @Nullable Locale locale) {/*@f0*/
+        Calendar c = getCalendarInstance(tz, locale);/*@f1*/
+        c.set(year, month, date, hour24, minute, second);
+        c.set(Calendar.MILLISECOND, ms);
+        return c;
+    }
+
+    @Contract("_,_,_ -> new")
     public static @NotNull Date createDate(int year,
                                            @MagicConstant(intValues = { Calendar.JANUARY,
                                                                         Calendar.FEBRUARY,
@@ -231,29 +254,6 @@ public final class Dates {
                                                                            Calendar.UNDECIMBER }) int month,
                                               @Range(from = 1, to = 31) int date) {
         return new PGCalendar(year, month, date).toSQLDate();
-    }
-
-    @Contract("_,_,_ -> new")
-    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = { Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST, Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER }) int month, int date) {/*@f0*/
-        return createCalendar(year, month, date, null, null);/*@f1*/
-    }
-
-    @Contract("_,_,_,_,_ -> new")
-    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = { Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST, Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER }) int month, int date, @Nullable TimeZone tz, @Nullable Locale locale) {/*@f0*/
-        return createCalendar(year, month, date, 0, 0, 0, 0, tz, locale);/*@f1*/
-    }
-
-    @Contract("_,_,_,_,_,_,_ -> new")
-    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = { Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST, Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER }) int month, int date, int hour24, int minute, int second, int ms) {/*@f0*/
-        return createCalendar(year, month, date, hour24, minute, second, ms, null, null);/*@f1*/
-    }
-
-    @Contract("_,_,_,_,_,_,_,_,_ -> new")
-    public static @NotNull Calendar createCalendar(int year, @MagicConstant(intValues = { Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL, Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST, Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER, Calendar.DECEMBER, Calendar.UNDECIMBER }) int month, int date, int hour24, int minute, int second, int ms, @Nullable TimeZone tz, @Nullable Locale locale) {/*@f0*/
-        Calendar c = getCalendarInstance(tz, locale);/*@f1*/
-        c.set(year, month, date, hour24, minute, second);
-        c.set(Calendar.MILLISECOND, ms);
-        return c;
     }
 
     public static boolean datesOverlap(Date dateStart1, Date dateEnd1, Date dateStart2, Date dateEnd2) {
@@ -564,6 +564,14 @@ public final class Dates {
         if(c1 == null) return c2;
         if(c2 == null) return c1;
         return ((c1.compareTo(c2) <= 0) ? c1 : c2);
+    }
+
+    public static boolean onOrAfter(@NotNull Date date1, @NotNull Date date2) {
+        return (date1.compareTo(date2) >= 0);
+    }
+
+    public static boolean onOrBefore(@NotNull Date date1, @NotNull Date date2) {
+        return (date1.compareTo(date2) <= 0);
     }
 
     @Contract("_, _ -> param1")

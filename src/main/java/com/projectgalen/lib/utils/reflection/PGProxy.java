@@ -36,7 +36,7 @@ public final class PGProxy {
     public static @NotNull ProxyInfo getProxyForClassName(@NotNull String className, @NotNull InvocationHandler proxyHandler) {
         try {
             Class<?> listenerClass = Class.forName(className);
-            Object   listener      = Proxy.newProxyInstance(null, new Class<?>[]{ listenerClass }, proxyHandler);
+            Object   listener      = Proxy.newProxyInstance(null, new Class<?>[] { listenerClass }, proxyHandler);
             return new ProxyInfo(listener, listenerClass);
         }
         catch(Exception e) {

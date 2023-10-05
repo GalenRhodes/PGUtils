@@ -54,6 +54,14 @@ public final class Range {
         return ((end == xxx) ? (count + 1) : count);
     }
 
+    public static boolean isInClosedRange(int v, int a, int b) {
+        return ((v >= Math.min(a, b)) && (v <= Math.max(a, b)));
+    }
+
+    public static boolean isInRange(int v, int a, int b) {
+        return ((v >= Math.min(a, b)) && (v < Math.max(a, b)));
+    }
+
     public static int rangeCount(int start, int end, int step) {
         if(start <= end) {
             if(step <= 0) throw new IllegalArgumentException(msgs.format("msg.err.range.count.bad_step", msgs.getString("text.greater"), step, "<="));
@@ -61,6 +69,15 @@ public final class Range {
         }
         if(step >= 0) throw new IllegalArgumentException(msgs.format("msg.err.range.count.bad_step", msgs.getString("text.less"), step, ">="));
         return (int)Math.ceil((((double)start) - ((double)end)) / ((double)Math.abs(step)));
+    }
+
+    @Contract("_, _ -> new")
+    public static @NotNull Range valueOf(int start, int end) {
+        if(start < 0) throw new IllegalArgumentException(msgs.getString("msg.err.range.start.lt.zero"));
+        if(end < 0) throw new IllegalArgumentException(msgs.getString("msg.err.range.end.lt.zero"));
+        if(end < start) throw new IllegalArgumentException(msgs.getString("msg.err.range.end.lt.start"));
+
+        return new Range(start, (end - start));
     }
 
     @Contract("_ -> new")
@@ -73,22 +90,5 @@ public final class Range {
         int s = matcher.start(group);
         int e = matcher.end(group);
         return new Range(s, (e - s));
-    }
-
-    @Contract("_, _ -> new")
-    public static @NotNull Range valueOf(int start, int end) {
-        if(start < 0) throw new IllegalArgumentException(msgs.getString("msg.err.range.start.lt.zero"));
-        if(end < 0) throw new IllegalArgumentException(msgs.getString("msg.err.range.end.lt.zero"));
-        if(end < start) throw new IllegalArgumentException(msgs.getString("msg.err.range.end.lt.start"));
-
-        return new Range(start, (end - start));
-    }
-
-    public static boolean isInClosedRange(int v, int a, int b) {
-        return ((v >= Math.min(a, b)) && (v <= Math.max(a, b)));
-    }
-
-    public static boolean isInRange(int v, int a, int b) {
-        return ((v >= Math.min(a, b)) && (v < Math.max(a, b)));
     }
 }

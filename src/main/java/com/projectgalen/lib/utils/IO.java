@@ -129,7 +129,11 @@ public final class IO {
         return readFile(new InputStreamReader(inputStream, cs));
     }
 
-    public static long translate(@NotNull InputStream inputStream, @NotNull Charset csInput, @NotNull OutputStream outputStream, @NotNull Charset csOutput, boolean closeOutputOnSuccess) throws IOException {
+    public static long translate(@NotNull InputStream inputStream,
+                                 @NotNull Charset csInput,
+                                 @NotNull OutputStream outputStream,
+                                 @NotNull Charset csOutput,
+                                 boolean closeOutputOnSuccess) throws IOException {
         return copy(new InputStreamReader(inputStream, csInput), new OutputStreamWriter(outputStream, csOutput), closeOutputOnSuccess);
     }
 

@@ -55,14 +55,6 @@ public class PGProperties extends Properties {
         super(defaults);
     }
 
-    public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key) {
-        return getStreamOf(key, DEFAULT_LIST_SEPARATOR_PATTERN);
-    }
-
-    public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key, @NotNull @RegExp @Language("RegExp") @NonNls String regexp) {
-        return Streams.splitStream(U.tr(getProperty(key)), regexp);
-    }
-
     public String format(@NotNull @NonNls String key, Object... args) {
         String fmt = getProperty(key);
         return ((fmt == null) ? null : String.format(fmt, args));
@@ -194,7 +186,10 @@ public class PGProperties extends Properties {
     }
 
     @Contract("_,_,_,!null -> !null")
-    public Map<String, String> getMap(@NotNull @NonNls String key, @NotNull @NonNls @Language("RegExp") String listSepPat, @NotNull @NonNls @Language("RegExp") String kvSepPat, @Nullable Map<String, String> defaultMap) {
+    public Map<String, String> getMap(@NotNull @NonNls String key,
+                                      @NotNull @NonNls @Language("RegExp") String listSepPat,
+                                      @NotNull @NonNls @Language("RegExp") String kvSepPat,
+                                      @Nullable Map<String, String> defaultMap) {
         List<String> list = getList(key, listSepPat, 0, null);
         if(list == null) return defaultMap;
 
@@ -252,6 +247,14 @@ public class PGProperties extends Properties {
 
     public short getShort(@NotNull @NonNls String key) {
         return getShort(key, (short)0);
+    }
+
+    public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key) {
+        return getStreamOf(key, DEFAULT_LIST_SEPARATOR_PATTERN);
+    }
+
+    public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key, @NotNull @RegExp @Language("RegExp") @NonNls String regexp) {
+        return Streams.splitStream(U.tr(getProperty(key)), regexp);
     }
 
     private String _gp(@NotNull @NonNls String key) {

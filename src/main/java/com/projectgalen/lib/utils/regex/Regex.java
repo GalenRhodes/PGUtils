@@ -91,7 +91,10 @@ public final class Regex {
         return ((input == null) ? null : replaceUsingDelegate(pattern, 0, input, delegate));
     }
 
-    public static String replaceUsingDelegate(@Language("RegExp") @NonNls @NotNull String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, CharSequence input, @NotNull Function<Matcher, String> delegate) {
+    public static String replaceUsingDelegate(@Language("RegExp") @NonNls @NotNull String pattern,
+                                              @MagicConstant(flagsFromClass = Pattern.class) int flags,
+                                              CharSequence input,
+                                              @NotNull Function<Matcher, String> delegate) {
         return ((input == null) ? null : replaceUsingDelegate(getMatcher(pattern, flags, input), delegate));
     }
 
