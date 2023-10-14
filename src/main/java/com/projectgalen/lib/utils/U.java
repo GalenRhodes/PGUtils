@@ -47,6 +47,10 @@ public final class U {
 
     private U() { }
 
+    public static <T extends Comparable<T>> int compare(boolean sortNullFirst, @Nullable T lhs, @Nullable T rhs) {
+        return (((lhs == null) && (rhs == null)) ? 0 : ((lhs == null) ? (sortNullFirst ? -1 : 1) : ((rhs == null) ? (sortNullFirst ? 1 : -1) : lhs.compareTo(rhs))));
+    }
+
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
         return sb.append(String.format(format, args));
     }
