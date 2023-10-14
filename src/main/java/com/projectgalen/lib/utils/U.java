@@ -47,6 +47,10 @@ public final class U {
 
     private U() { }
 
+    public static <T extends Comparable<T>> int compare(@Nullable T lhs, @Nullable T rhs) {
+        return compare(true, lhs, rhs);
+    }
+
     public static <T extends Comparable<T>> int compare(boolean sortNullFirst, @Nullable T lhs, @Nullable T rhs) {
         return (((lhs == null) && (rhs == null)) ? 0 : ((lhs == null) ? (sortNullFirst ? -1 : 1) : ((rhs == null) ? (sortNullFirst ? 1 : -1) : lhs.compareTo(rhs))));
     }
