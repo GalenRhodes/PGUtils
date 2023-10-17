@@ -73,13 +73,11 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
         }
     }
 
-    @Override
-    public int compareTo(@NotNull TypeInfo o) {
+    public @Override int compareTo(@NotNull TypeInfo o) {
         return toString().compareTo(o.toString());
     }
 
-    @Override
-    public boolean equals(Object o) {
+    public @Override boolean equals(Object o) {
         return ((this == o) || ((o instanceof TypeInfo) && _equals((TypeInfo)o)));
     }
 
@@ -106,13 +104,11 @@ public class TypeInfo implements Comparable<TypeInfo>, Serializable {
         } //@f:1
     }
 
-    @Override
-    public int hashCode() {
+    public @Override int hashCode() {
         return Objects.hash(isParameterizedType, typeName, argTypes);
     }
 
-    @Override
-    public String toString() {
+    public @Override String toString() {
         StringBuilder sb = new StringBuilder();
 
         sb.append(typeName);

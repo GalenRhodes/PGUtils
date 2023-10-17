@@ -89,9 +89,9 @@ public class ByteRingBuffer extends AbstractRingBuffer<Byte> {
 
         public RingOutputStream()                                                            { super(); }
 
-        @Override public void close()                                                        { doLocked(() -> strmClsd = true); }
+        public @Override void close()                                                        { doLocked(() -> strmClsd = true); }
 
-        @Override public void write(byte @NotNull [] b, int off, int len) throws IOException { foo(() -> put2(b, off, len)); }
+        public @Override void write(byte @NotNull [] b, int off, int len) throws IOException { foo(() -> put2(b, off, len)); }
 
         public @Override void write(int b) throws IOException                                { foo(() -> put2((byte)(b & 0x00ff))); }
 

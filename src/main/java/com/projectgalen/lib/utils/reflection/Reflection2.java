@@ -40,19 +40,19 @@ public final class Reflection2 extends Reflection {
 
     Reflection2() { }
 
-    @SafeVarargs public static @NotNull Stream<Field> getAnnotatedFields(@NotNull Class<?> clazz, Class<? extends Annotation>... annotationClasses) {
+    public static @SafeVarargs @NotNull Stream<Field> getAnnotatedFields(@NotNull Class<?> clazz, Class<? extends Annotation>... annotationClasses) {
         return getAnnotatedFields(clazz, true, annotationClasses);
     }
 
-    @SafeVarargs public static @NotNull Stream<Field> getAnnotatedFields(@NotNull Class<?> clazz, boolean lookInSuper, Class<? extends Annotation>... annotationClasses) {
+    public static @SafeVarargs @NotNull Stream<Field> getAnnotatedFields(@NotNull Class<?> clazz, boolean lookInSuper, Class<? extends Annotation>... annotationClasses) {
         return getFields(clazz, true).filter(f -> hasAnyAnnotation(f, annotationClasses));
     }
 
-    @SafeVarargs public static @NotNull Stream<Method> getAnnotatedMethods(@NotNull Class<?> clazz, Class<? extends Annotation>... annotationClasses) {
+    public static @SafeVarargs @NotNull Stream<Method> getAnnotatedMethods(@NotNull Class<?> clazz, Class<? extends Annotation>... annotationClasses) {
         return getAnnotatedMethods(clazz, true, annotationClasses);
     }
 
-    @SafeVarargs public static @NotNull Stream<Method> getAnnotatedMethods(@NotNull Class<?> clazz, boolean lookInSuper, Class<? extends Annotation>... annotationClasses) {
+    public static @SafeVarargs @NotNull Stream<Method> getAnnotatedMethods(@NotNull Class<?> clazz, boolean lookInSuper, Class<? extends Annotation>... annotationClasses) {
         return getMethods(clazz, true).filter(f -> hasAnyAnnotation(f, annotationClasses));
     }
 
@@ -134,7 +134,7 @@ public final class Reflection2 extends Reflection {
             this.lookInSuper = lookInSuper;
         }
 
-        @Override public boolean hasNext() {
+        public @Override boolean hasNext() {
             while(clazz != null) {
                 if(idx < fields.length) return true;
                 clazz  = (lookInSuper ? clazz.getSuperclass() : null);
@@ -144,7 +144,7 @@ public final class Reflection2 extends Reflection {
             return false;
         }
 
-        @Override public Field next() {
+        public @Override Field next() {
             if(hasNext()) return fields[idx++];
             throw new NoSuchElementException();
         }
@@ -163,7 +163,7 @@ public final class Reflection2 extends Reflection {
             this.lookInSuper = lookInSuper;
         }
 
-        @Override public boolean hasNext() {
+        public @Override boolean hasNext() {
             while(clazz != null) {
                 if(idx < methods.length) return true;
                 clazz   = (lookInSuper ? clazz.getSuperclass() : null);
@@ -173,7 +173,7 @@ public final class Reflection2 extends Reflection {
             return false;
         }
 
-        @Override public Method next() {
+        public @Override Method next() {
             if(hasNext()) return methods[idx++];
             throw new NoSuchElementException();
         }

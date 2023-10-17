@@ -59,8 +59,7 @@ public enum Month {
         return id;
     }
 
-    @Override
-    public @NotNull String toString() {
+    public @Override @NotNull String toString() {
         PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
         return msgs.getString(String.format("enum.month.name.%d", id), super.toString());
     }

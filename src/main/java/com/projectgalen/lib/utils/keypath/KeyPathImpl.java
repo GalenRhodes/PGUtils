@@ -105,8 +105,7 @@ public final class KeyPathImpl {
         throw new KeyPathException(msgs.format("msg.err.reflect.keypath.elem_not_found", key, source.getClass().getName()));
     }
 
-    @Nullable
-    private static <T> T _getValueForKeyPath(@NotNull Class<T> type, @NotNull String keyPath, Object source) {
+    private static @Nullable <T> T _getValueForKeyPath(@NotNull Class<T> type, @NotNull String keyPath, Object source) {
         if(keyPath.length() == 0) throw new KeyPathException(msgs.getString("msg.err.reflect.keypath.key_path_empty"));
 
         Matcher m       = Regex.getMatcher(props.getProperty("keypath.separator.regexp"), keyPath);

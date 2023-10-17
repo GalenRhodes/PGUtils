@@ -163,13 +163,11 @@ public class Reflection {
         }
     }
 
-    @SafeVarargs
-    public static @NotNull List<Field> getFieldsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static @SafeVarargs @NotNull List<Field> getFieldsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         return Reflection2.getFields(cls).filter(f -> hasAllAnnotations(f, annotationClasses)).collect(Collectors.toList());
     }
 
-    @SafeVarargs
-    public static @NotNull List<Field> getFieldsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static @SafeVarargs @NotNull List<Field> getFieldsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         return Reflection2.getFields(cls).filter(f -> hasAnyAnnotation(f, annotationClasses)).collect(Collectors.toList());
     }
 
@@ -239,14 +237,12 @@ public class Reflection {
     }
 
     @NotNull
-    @SafeVarargs
-    public static List<Method> getMethodsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static @SafeVarargs List<Method> getMethodsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         return Reflection2.getMethods(cls).filter(m -> hasAllAnnotations(m, annotationClasses)).collect(Collectors.toList());
     }
 
     @NotNull
-    @SafeVarargs
-    public static List<Method> getMethodsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static @SafeVarargs List<Method> getMethodsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         return Reflection2.getMethods(cls).filter(m -> hasAnyAnnotation(m, annotationClasses)).collect(Collectors.toList());
     }
 

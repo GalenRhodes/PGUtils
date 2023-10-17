@@ -22,22 +22,20 @@ package com.projectgalen.lib.utils.refs;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public class BooleanRef {
     public boolean value;
 
-    public BooleanRef() { }
+    public BooleanRef()                                           { }
 
-    public BooleanRef(boolean initialValue) { value = initialValue; }
+    public BooleanRef(boolean initialValue)                       { value = initialValue; }
 
-    @Override
-    public boolean equals(Object o) {
-        return ((this == o) || ((o instanceof BooleanRef) && (value == ((BooleanRef)o).value)));
-    }
+    public @Override boolean equals(Object o)                     { return ((this == o) || ((o instanceof BooleanRef) && (value == ((BooleanRef)o).value))); }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
+    public @Override int hashCode()                               { return Objects.hash(value); }
+
+    public static @NotNull BooleanRef getReference(boolean value) { return new BooleanRef(value); }
 }

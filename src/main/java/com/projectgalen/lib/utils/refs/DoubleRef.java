@@ -22,22 +22,44 @@ package com.projectgalen.lib.utils.refs;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public class DoubleRef {
     public double value;
 
-    public DoubleRef() { }
+    public DoubleRef()                                          { }
 
-    public DoubleRef(double initialValue) { value = initialValue; }
+    public DoubleRef(double initialValue)                       { value = initialValue; }
 
-    @Override
-    public boolean equals(Object o) {
-        return ((this == o) || ((o instanceof DoubleRef) && (value == ((DoubleRef)o).value)));
-    }
+    public double add(double other)                             { return (value += other); }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
+    public double add(@NotNull DoubleRef other)                 { return add(other.value); }
+
+    public double divide(double other)                          { return (value /= other); }
+
+    public double divide(@NotNull DoubleRef other)              { return divide(other.value); }
+
+    public @Override boolean equals(Object o)                   { return ((this == o) || ((o instanceof DoubleRef d) && (value == d.value))); }
+
+    public @Override int hashCode()                             { return Objects.hash(value); }
+
+    public double multiply(double other)                        { return (value *= other); }
+
+    public double multiply(@NotNull DoubleRef other)            { return multiply(other.value); }
+
+    public double setMax(double other)                          { return (value = Math.max(value, other)); }
+
+    public double setMax(@NotNull DoubleRef other)              { return setMax(other.value); }
+
+    public double setMin(double other)                          { return (value = Math.min(value, other)); }
+
+    public double setMin(@NotNull DoubleRef other)              { return setMin(other.value); }
+
+    public double subtract(double other)                        { return (value -= other); }
+
+    public double subtract(@NotNull DoubleRef other)            { return subtract(other.value); }
+
+    public static @NotNull DoubleRef getReference(double value) { return new DoubleRef(value); }
 }

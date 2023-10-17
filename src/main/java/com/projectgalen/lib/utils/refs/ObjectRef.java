@@ -22,22 +22,20 @@ package com.projectgalen.lib.utils.refs;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public class ObjectRef<T> {
     public T value;
 
-    public ObjectRef() { value = null; }
+    public ObjectRef()                                            { value = null; }
 
-    public ObjectRef(T initialValue) { value = initialValue; }
+    public ObjectRef(T initialValue)                              { value = initialValue; }
 
-    @Override
-    public boolean equals(Object o) {
-        return ((this == o) || ((o instanceof ObjectRef) && Objects.equals(value, ((ObjectRef<?>)o).value)));
-    }
+    public @Override boolean equals(Object o)                     { return ((this == o) || ((o instanceof ObjectRef) && Objects.equals(value, ((ObjectRef<?>)o).value))); }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
+    public @Override int hashCode()                               { return Objects.hash(value); }
+
+    public static @NotNull <T> ObjectRef<T> getReference(T value) { return new ObjectRef<>(value); }
 }

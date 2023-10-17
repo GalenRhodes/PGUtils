@@ -22,22 +22,44 @@ package com.projectgalen.lib.utils.refs;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public class ByteRef {
     public byte value;
 
-    public ByteRef() { }
+    public ByteRef()                                        { }
 
-    public ByteRef(byte initialValue) { value = initialValue; }
+    public ByteRef(byte initialValue)                       { value = initialValue; }
 
-    @Override
-    public boolean equals(Object o) {
-        return ((this == o) || ((o instanceof ByteRef) && (value == ((ByteRef)o).value)));
-    }
+    public byte add(byte other)                             { return (value += other); }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
+    public byte add(@NotNull ByteRef other)                 { return add(other.value); }
+
+    public byte divide(byte other)                          { return (value /= other); }
+
+    public byte divide(@NotNull ByteRef other)              { return divide(other.value); }
+
+    public @Override boolean equals(Object o)               { return ((this == o) || ((o instanceof ByteRef b) && (value == b.value))); }
+
+    public @Override int hashCode()                         { return Objects.hash(value); }
+
+    public byte multiply(byte other)                        { return (value *= other); }
+
+    public byte multiply(@NotNull ByteRef other)            { return multiply(other.value); }
+
+    public byte setMax(byte other)                          { return (value = (byte)Math.max(value, other)); }
+
+    public byte setMax(@NotNull ByteRef other)              { return setMax(other.value); }
+
+    public byte setMin(byte other)                          { return (value = (byte)Math.min(value, other)); }
+
+    public byte setMin(@NotNull ByteRef other)              { return setMin(other.value); }
+
+    public byte subtract(byte other)                        { return (value -= other); }
+
+    public byte subtract(@NotNull ByteRef other)            { return subtract(other.value); }
+
+    public static @NotNull ByteRef getReference(byte value) { return new ByteRef(value); }
 }

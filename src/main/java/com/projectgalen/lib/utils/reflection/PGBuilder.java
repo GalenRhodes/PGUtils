@@ -35,13 +35,11 @@ public class PGBuilder<T> implements Builder<T> {
 
     public PGBuilder() { }
 
-    @Override
-    public void accept(T t) {
+    public @Override void accept(T t) {
         builder.accept(t);
     }
 
-    @Override
-    public PGBuilder<T> add(T t) {
+    public @Override PGBuilder<T> add(T t) {
         builder.accept(t);
         return this;
     }
@@ -64,8 +62,7 @@ public class PGBuilder<T> implements Builder<T> {
         return this;
     }
 
-    @Override
-    public Stream<T> build() {
+    public @Override Stream<T> build() {
         return builder.build();
     }
 }

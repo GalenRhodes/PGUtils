@@ -215,8 +215,7 @@ public class PGProperties extends Properties {
         return getMap(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_MAP_KV_PATTERN, Collections.emptyMap());
     }
 
-    @Override
-    public String getProperty(@NotNull @NonNls String key) {
+    public @Override String getProperty(@NotNull @NonNls String key) {
         return getProperty(key, true);
     }
 

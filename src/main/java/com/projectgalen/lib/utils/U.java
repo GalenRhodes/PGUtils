@@ -47,14 +47,6 @@ public final class U {
 
     private U() { }
 
-    public static <T extends Comparable<T>> int compare(@Nullable T lhs, @Nullable T rhs) {
-        return compare(true, lhs, rhs);
-    }
-
-    public static <T extends Comparable<T>> int compare(boolean sortNullFirst, @Nullable T lhs, @Nullable T rhs) {
-        return (((lhs == null) && (rhs == null)) ? 0 : ((lhs == null) ? (sortNullFirst ? -1 : 1) : ((rhs == null) ? (sortNullFirst ? 1 : -1) : lhs.compareTo(rhs))));
-    }
-
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
         return sb.append(String.format(format, args));
     }
@@ -117,6 +109,14 @@ public final class U {
             if(Character.isLowSurrogate(c2)) return new int[] { Character.toCodePoint(c1, c2), (idx + 1) };
         }
         return new int[] { c1, idx };
+    }
+
+    public static <T extends Comparable<T>> int compare(@Nullable T lhs, @Nullable T rhs) {
+        return compare(true, lhs, rhs);
+    }
+
+    public static <T extends Comparable<T>> int compare(boolean sortNullFirst, @Nullable T lhs, @Nullable T rhs) {
+        return (((lhs == null) && (rhs == null)) ? 0 : ((lhs == null) ? (sortNullFirst ? -1 : 1) : ((rhs == null) ? (sortNullFirst ? 1 : -1) : lhs.compareTo(rhs))));
     }
 
     @Contract("_, _ -> param1")
@@ -240,8 +240,7 @@ public final class U {
     }
 
     @Contract(pure = true)
-    @SafeVarargs
-    public static <T> boolean isObjIn(T obj, T @NotNull ... others) {
+    public static @SafeVarargs <T> boolean isObjIn(T obj, T @NotNull ... others) {
         for(T other : others) if(Objects.equals(obj, other)) return true;
         return false;
     }
@@ -268,8 +267,7 @@ public final class U {
         return ((str == null) ? null : str.toLowerCase());
     }
 
-    @SafeVarargs
-    public static @NotNull <P, R> R @NotNull [] map(@NotNull Class<R> cls, @NotNull Function<P, R> delegate, @NotNull P @NotNull ... args) {
+    public static @SafeVarargs @NotNull <P, R> R @NotNull [] map(@NotNull Class<R> cls, @NotNull Function<P, R> delegate, @NotNull P @NotNull ... args) {
         R[] out = (R[])Array.newInstance(cls, args.length);
         for(int i = 0; i < args.length; i++) out[i] = delegate.apply(args[i]);
         return out;

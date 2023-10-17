@@ -22,22 +22,20 @@ package com.projectgalen.lib.utils.refs;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public class CharRef {
     public char value;
 
-    public CharRef() { }
+    public CharRef()                                        { }
 
-    public CharRef(char initialValue) { value = initialValue; }
+    public CharRef(char initialValue)                       { value = initialValue; }
 
-    @Override
-    public boolean equals(Object o) {
-        return ((this == o) || ((o instanceof CharRef) && (value == ((CharRef)o).value)));
-    }
+    public @Override boolean equals(Object o)               { return ((this == o) || ((o instanceof CharRef ch) && (value == ch.value))); }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
+    public @Override int hashCode()                         { return Objects.hash(value); }
+
+    public static @NotNull CharRef getReference(char value) { return new CharRef(value); }
 }

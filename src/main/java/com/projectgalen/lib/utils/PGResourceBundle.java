@@ -56,8 +56,7 @@ public final class PGResourceBundle extends ResourceBundle {
         return String.format(getString(key, macroExpansion), args);
     }
 
-    @Override
-    public @NotNull Enumeration<String> getKeys() {
+    public @Override @NotNull Enumeration<String> getKeys() {
         return bundle.getKeys();
     }
 
@@ -117,8 +116,7 @@ public final class PGResourceBundle extends ResourceBundle {
     }
 
     @Override
-    @Unmodifiable
-    protected @Nullable Object handleGetObject(@NotNull String key) {
+    protected @Unmodifiable @Nullable Object handleGetObject(@NotNull String key) {
         try {
             return Macro.replaceMacros(bundle.getString(key), this::getStringQuietly);
         }
@@ -189,13 +187,11 @@ public final class PGResourceBundle extends ResourceBundle {
             this.e = e;
         }
 
-        @Override
-        public boolean hasMoreElements() {
+        public @Override boolean hasMoreElements() {
             return e.hasMoreElements();
         }
 
-        @Override
-        public String nextElement() {
+        public @Override String nextElement() {
             return Objects.toString(e.nextElement(), null);
         }
     }
@@ -214,14 +210,12 @@ public final class PGResourceBundle extends ResourceBundle {
         }
 
         @NotNull
-        @Override
-        public Enumeration<String> getKeys() {
+        public @Override Enumeration<String> getKeys() {
             return new XMLKeyEnumerator(props.keys());
         }
 
         @Override
-        @Unmodifiable
-        protected Object handleGetObject(@NotNull String key) {
+        protected @Unmodifiable Object handleGetObject(@NotNull String key) {
             return props.getProperty(key);
         }
     }

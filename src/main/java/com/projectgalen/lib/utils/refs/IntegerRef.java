@@ -22,22 +22,44 @@ package com.projectgalen.lib.utils.refs;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public class IntegerRef {
     public int value;
 
-    public IntegerRef() { }
+    public IntegerRef()                                       { }
 
-    public IntegerRef(int initialValue) { value = initialValue; }
+    public IntegerRef(int initialValue)                       { value = initialValue; }
 
-    @Override
-    public boolean equals(Object o) {
-        return ((this == o) || ((o instanceof IntegerRef) && (value == ((IntegerRef)o).value)));
-    }
+    public int add(int other)                                 { return (value += other); }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
+    public int add(@NotNull IntegerRef other)                 { return add(other.value); }
+
+    public int divide(int other)                              { return (value /= other); }
+
+    public int divide(@NotNull IntegerRef other)              { return divide(other.value); }
+
+    public @Override boolean equals(Object o)                 { return ((this == o) || ((o instanceof IntegerRef i) && (value == i.value))); }
+
+    public @Override int hashCode()                           { return Objects.hash(value); }
+
+    public int multiply(int other)                            { return (value *= other); }
+
+    public int multiply(@NotNull IntegerRef other)            { return multiply(other.value); }
+
+    public int setMax(int other)                              { return (value = Math.max(value, other)); }
+
+    public int setMax(@NotNull IntegerRef other)              { return setMax(other.value); }
+
+    public int setMin(int other)                              { return (value = Math.min(value, other)); }
+
+    public int setMin(@NotNull IntegerRef other)              { return setMin(other.value); }
+
+    public int subtract(int other)                            { return (value -= other); }
+
+    public int subtract(@NotNull IntegerRef other)            { return subtract(other.value); }
+
+    public static @NotNull IntegerRef getReference(int value) { return new IntegerRef(value); }
 }

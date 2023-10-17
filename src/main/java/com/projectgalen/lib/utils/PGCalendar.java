@@ -336,8 +336,7 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         return this;
     }
 
-    @Override
-    public PGCalendar clone() {
+    public @Override PGCalendar clone() {
         return (PGCalendar)super.clone();
     }
 
@@ -593,7 +592,7 @@ public class PGCalendar extends GregorianCalendar implements Cloneable {
         return new Timestamp(getTimeInMillis());
     }
 
-    @Override public String toString() {
+    public @Override String toString() {
         return new SimpleDateFormat("yyyy-MM-dd@HH:mm:ss").format(getTime());
     }
 

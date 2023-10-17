@@ -36,15 +36,13 @@ public class CollectionItem<T> {
         this.item  = item;
     }
 
-    @Override
-    public boolean equals(Object o) { return ((this == o) || ((o instanceof CollectionItem) && _equals((CollectionItem<?>)o))); }
+    public @Override boolean equals(Object o) { return ((this == o) || ((o instanceof CollectionItem) && _equals((CollectionItem<?>)o))); }
 
-    public int getIndex() { return index; }
+    public int getIndex()                     { return index; }
 
-    public T getItem() { return item; }
+    public T getItem()                        { return item; }
 
-    @Override
-    public int hashCode() { return Objects.hash(index, item); }
+    public @Override int hashCode()           { return Objects.hash(index, item); }
 
     @Contract(pure = true)
     private boolean _equals(@NotNull CollectionItem<?> that) { return ((index == that.index) && Objects.equals(item, that.item)); }

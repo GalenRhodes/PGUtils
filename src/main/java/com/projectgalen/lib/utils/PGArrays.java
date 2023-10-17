@@ -220,8 +220,7 @@ public final class PGArrays {
     }
 
     @Contract(pure = true)
-    @SafeVarargs
-    public static <T> int getIndex(@Nullable T item, T @NotNull ... items) {
+    public static @SafeVarargs <T> int getIndex(@Nullable T item, T @NotNull ... items) {
         for(int i = 0; i < items.length; i++) if(Objects.equals(item, items[i])) return i;
         return -1;
     }
@@ -260,8 +259,7 @@ public final class PGArrays {
      *
      * @return An array of the elements.
      */
-    @SafeVarargs
-    public static <T> T[] wrap(T... elements) { return elements; }
+    public static @SafeVarargs <T> T[] wrap(T... elements) { return elements; }
 
     /**
      * Quick way to wrap characters in an array.

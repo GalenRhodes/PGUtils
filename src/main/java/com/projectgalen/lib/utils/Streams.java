@@ -137,11 +137,11 @@ public class Streams {
             this.array = array;
         }
 
-        @Override public boolean hasNext() {
+        public @Override boolean hasNext() {
             return (idx < array.length);
         }
 
-        @Contract(" -> new") @Override public @NotNull CollectionItem<T> next() {
+        @Contract(" -> new") public @Override @NotNull CollectionItem<T> next() {
             if(!hasNext()) throw new NoSuchElementException();
             int i = idx++;
             return new CollectionItem<>(i, array[i]);
@@ -165,7 +165,7 @@ public class Streams {
             this.up    = (start <= end);
         }
 
-        @Override public boolean tryAdvance(IntConsumer action) {
+        public @Override boolean tryAdvance(IntConsumer action) {
             if(!hasNext()) return false;
             action.accept(next);
             next += step;
@@ -205,7 +205,7 @@ public class Streams {
             this.provider = provider;
         }
 
-        @Override public boolean hasNext() {
+        public @Override boolean hasNext() {
             if(state == LambdaIteratorState.Unkown) {
                 BooleanRef done = new BooleanRef(false);
                 last  = provider.provide(done);
@@ -214,7 +214,7 @@ public class Streams {
             return (state == LambdaIteratorState.Yes);
         }
 
-        @Override public T next() {
+        public @Override T next() {
             if(hasNext()) {
                 T obj = last;
                 last  = null;
@@ -242,7 +242,7 @@ public class Streams {
             this.up    = (start <= end);
         }
 
-        @Override public boolean tryAdvance(IntConsumer action) {
+        public @Override boolean tryAdvance(IntConsumer action) {
             if(!hasNext()) return false;
             action.accept(next);
             next += step;

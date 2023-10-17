@@ -22,22 +22,44 @@ package com.projectgalen.lib.utils.refs;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public class LongRef {
     public long value;
 
-    public LongRef() { }
+    public LongRef()                                        { }
 
-    public LongRef(long initialValue) { value = initialValue; }
+    public LongRef(long initialValue)                       { value = initialValue; }
 
-    @Override
-    public boolean equals(Object o) {
-        return ((this == o) || ((o instanceof LongRef) && (value == ((LongRef)o).value)));
-    }
+    public long add(long other)                             { return (value += other); }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
+    public long add(@NotNull LongRef other)                 { return add(other.value); }
+
+    public long divide(long other)                          { return (value /= other); }
+
+    public long divide(@NotNull LongRef other)              { return divide(other.value); }
+
+    public @Override boolean equals(Object o)               { return ((this == o) || ((o instanceof LongRef l) && (value == l.value))); }
+
+    public @Override int hashCode()                         { return Objects.hash(value); }
+
+    public long multiply(long other)                        { return (value *= other); }
+
+    public long multiply(@NotNull LongRef other)            { return multiply(other.value); }
+
+    public long setMax(long other)                          { return (value = Math.max(value, other)); }
+
+    public long setMax(@NotNull LongRef other)              { return setMax(other.value); }
+
+    public long setMin(long other)                          { return (value = Math.min(value, other)); }
+
+    public long setMin(@NotNull LongRef other)              { return setMin(other.value); }
+
+    public long subtract(long other)                        { return (value -= other); }
+
+    public long subtract(@NotNull LongRef other)            { return subtract(other.value); }
+
+    public static @NotNull LongRef getReference(long value) { return new LongRef(value); }
 }

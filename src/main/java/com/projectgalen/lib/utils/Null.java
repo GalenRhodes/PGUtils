@@ -36,25 +36,21 @@ import java.util.function.Supplier;
 public final class Null implements Cloneable {
     private Null() { }
 
-    @Override
-    public boolean equals(Object obj) {
+    public @Override boolean equals(Object obj) {
         return (obj instanceof Null);
     }
 
-    @Override
-    public int hashCode() {
+    public @Override int hashCode() {
         return 0;
     }
 
     @Contract(pure = true)
-    @Override
-    public @NotNull String toString() {
+    public @Override @NotNull String toString() {
         return "null";
     }
 
     @Contract(pure = true)
-    @Override
-    protected @Unmodifiable Object clone() {
+    protected @Override @Unmodifiable Object clone() {
         return NULL();
     }
 

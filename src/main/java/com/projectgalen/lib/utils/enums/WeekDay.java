@@ -63,8 +63,7 @@ public enum WeekDay {
         return id;
     }
 
-    @Override
-    public @NotNull String toString() {
+    public @Override @NotNull String toString() {
         PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
         return msgs.getString(String.format("enum.week_day.name.%d", id), super.toString());
     }
