@@ -28,21 +28,52 @@ import com.projectgalen.lib.utils.refs.IntegerRef;
 import com.projectgalen.lib.utils.regex.Regex;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.RegExp;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
-import java.util.function.IntConsumer;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.*;
 import java.util.regex.Matcher;
+import java.util.stream.Collector;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-@SuppressWarnings({ "unused", "SpellCheckingInspection" })
+import static java.util.stream.Collector.Characteristics.CONCURRENT;
+import static java.util.stream.Collector.Characteristics.UNORDERED;
+
+@SuppressWarnings({ "unused", "SpellCheckingInspection", "unchecked" })
 public class Streams {
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+
+    public static final Collector<BigDecimal, Object, BigDecimal> sumBigDecimal = new Collector<>() {
+        @Contract(pure = true) public @Override @NotNull BiConsumer<Object, BigDecimal> accumulator() { return (a, v) -> { c(a).set(c(a).get().add(v)); }; }
+
+        @Contract(value = " -> new", pure = true) public @Override @NotNull @Unmodifiable Set<Characteristics> characteristics() { return Set.of(CONCURRENT, UNORDERED); }
+
+        @Contract(pure = true) public @Override @NotNull BinaryOperator<Object> combiner() { return (a, b) -> new AtomicReference<BigDecimal>(c(a).get().add(c(b).get())); }
+
+        @Contract(pure = true) public @Override @NotNull Function<Object, BigDecimal> finisher() { return a -> c(a).get(); }
+
+        @Contract(pure = true) public @Override @NotNull Supplier<Object> supplier() { return () -> new AtomicReference<BigDecimal>(BigDecimal.ZERO); }
+
+        private AtomicReference<BigDecimal> c(Object a) { return (AtomicReference<BigDecimal>)a; }
+    };
+    public static final Collector<BigInteger, Object, BigInteger> sumBigInteger = new Collector<>() {
+        public @Contract(pure = true) @Override @NotNull BiConsumer<Object, BigInteger> accumulator() { return (a, v) -> c(a).set(c(a).get().add(v)); }
+
+        public @Contract(value = " -> new", pure = true) @Override @NotNull @Unmodifiable Set<Characteristics> characteristics() { return Set.of(CONCURRENT, UNORDERED); }
+
+        public @Contract(pure = true) @Override @NotNull BinaryOperator<Object> combiner() { return (a, b) -> new AtomicReference<BigInteger>(c(a).get().add(c(b).get())); }
+
+        public @Contract(pure = true) @Override @NotNull Function<Object, BigInteger> finisher() { return a -> c(a).get(); }
+
+        public @Contract(pure = true) @Override @NotNull Supplier<Object> supplier() { return () -> new AtomicReference<BigInteger>(BigInteger.ZERO); }
+
+        private AtomicReference<BigInteger> c(Object o) { return (AtomicReference<BigInteger>)o; }
+    };
 
     public Streams() { }
 
