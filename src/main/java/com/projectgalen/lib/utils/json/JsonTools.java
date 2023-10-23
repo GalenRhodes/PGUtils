@@ -29,7 +29,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.TimeZone;
 
 @SuppressWarnings("unused")
@@ -37,11 +39,24 @@ public final class JsonTools {
     private JsonTools() { }
 
     public static @NotNull ObjectMapper getObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setTimeZone(TimeZone.getDefault());
-        mapper.enable(JsonParser.Feature.IGNORE_UNDEFINED, JsonParser.Feature.AUTO_CLOSE_SOURCE);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        return mapper;
+        return new ObjectMapper().setTimeZone(TimeZone.getDefault()).enable(JsonParser.Feature.IGNORE_UNDEFINED, JsonParser.Feature.AUTO_CLOSE_SOURCE).enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
+    public static <T> void writeJsonFile(@NotNull File file, T value) throws IOException {
+        try(OutputStream outputStream = new FileOutputStream(file)) {
+            ObjectMapper mapper = getObjectMapper();
+            mapper.enable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED);
+            mapper.writeValue(outputStream, value);
+            outputStream.flush();
+        }
+    }
+
+    public static <T> void writeJsonFile(@NotNull String pathname, T value) throws IOException {
+        writeJsonFile(new File(pathname), value);
+    }
+
+    public static <T> void writeJsonFile(@NotNull String dir, @NotNull String filename, T value) throws IOException {
+        writeJsonFile(new File(dir, filename), value);
     }
 
     public static <T> T readJsonFile(@NotNull String dir, @NotNull String filename, @NotNull Class<T> rootClass) throws IOException {
