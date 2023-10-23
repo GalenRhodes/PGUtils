@@ -48,6 +48,9 @@ import static java.util.stream.Collector.Characteristics.UNORDERED;
 public class Streams {
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
+    /**
+     * A summing collector for {@link BigDecimal} values that maintains precision.
+     */
     public static final Collector<BigDecimal, Object, BigDecimal> sumBigDecimal = new Collector<>() {
         @Contract(pure = true) public @Override @NotNull BiConsumer<Object, BigDecimal> accumulator() { return (a, v) -> { c(a).set(c(a).get().add(v)); }; }
 
@@ -61,6 +64,9 @@ public class Streams {
 
         private AtomicReference<BigDecimal> c(Object a) { return (AtomicReference<BigDecimal>)a; }
     };
+    /**
+     * A summing collector for {@link BigInteger} values that maintains precision.
+     */
     public static final Collector<BigInteger, Object, BigInteger> sumBigInteger = new Collector<>() {
         public @Contract(pure = true) @Override @NotNull BiConsumer<Object, BigInteger> accumulator() { return (a, v) -> c(a).set(c(a).get().add(v)); }
 

@@ -23,6 +23,7 @@ package com.projectgalen.lib.utils.json;
 // ===========================================================================
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.jetbrains.annotations.NotNull;
@@ -43,11 +44,29 @@ public final class JsonTools {
         return mapper;
     }
 
-    public static <T> T readJsonFile(String dir, String filename, Class<T> rootClass) throws IOException {
-        return readJsonFile(new File(dir, filename), rootClass);
+    public static <T> T readJsonFile(@NotNull String dir, @NotNull String filename, @NotNull Class<T> rootClass) throws IOException {
+        return readJsonFile(dir, filename, rootClass, false);
     }
 
-    public static <T> T readJsonFile(File file, Class<T> rootClass) throws IOException {
-        return getObjectMapper().readValue(file, rootClass);
+    public static <T> T readJsonFile(@NotNull String filePath, @NotNull Class<T> rootClass) throws IOException {
+        return readJsonFile(new File(filePath), rootClass, false);
+    }
+
+    public static <T> T readJsonFile(@NotNull String dir, @NotNull String filename, @NotNull Class<T> rootClass, boolean acceptSingleValueAsArray) throws IOException {
+        return readJsonFile(new File(dir, filename), rootClass, acceptSingleValueAsArray);
+    }
+
+    public static <T> T readJsonFile(@NotNull String filePath, @NotNull Class<T> rootClass, boolean acceptSingleValueAsArray) throws IOException {
+        return readJsonFile(new File(filePath), rootClass, acceptSingleValueAsArray);
+    }
+
+    public static <T> T readJsonFile(@NotNull File file, @NotNull Class<T> rootClass) throws IOException {
+        return readJsonFile(file, rootClass, false);
+    }
+
+    public static <T> T readJsonFile(@NotNull File file, @NotNull Class<T> rootClass, boolean acceptSingleValueAsArray) throws IOException {
+        ObjectMapper mapper = getObjectMapper();
+        if(acceptSingleValueAsArray) mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        return mapper.readValue(file, rootClass);
     }
 }
