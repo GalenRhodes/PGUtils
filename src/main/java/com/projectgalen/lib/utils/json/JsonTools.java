@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.TimeZone;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({ "unused", "ResultOfMethodCallIgnored" })
 public final class JsonTools {
     private JsonTools() { }
 
@@ -43,6 +43,7 @@ public final class JsonTools {
     }
 
     public static <T> void writeJsonFile(@NotNull File file, T value) throws IOException {
+        file.getParentFile().mkdirs();
         try(OutputStream outputStream = new FileOutputStream(file)) {
             ObjectMapper mapper = getObjectMapper();
             mapper.enable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED);
