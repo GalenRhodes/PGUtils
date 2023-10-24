@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils.collections;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.PGResourceBundle;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,10 +39,12 @@ import java.util.stream.Stream.Builder;
 @SuppressWarnings("unused")
 public final class PGCollections {
 
+    private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+
     public PGCollections() { }
 
     public static <K, V> @NotNull Map<K, V> asMap(K @NotNull [] keys, V @NotNull [] vals) {
-        if(keys.length != vals.length) throw new IllegalArgumentException(String.format("The number of keys and the number of values must match: %d != %d", keys.length, vals.length));
+        if(keys.length != vals.length) throw new IllegalArgumentException(msgs.format("msg.err.key_count_value_count_mismatch", keys.length, vals.length));
         Map<K, V> map = new LinkedHashMap<>();
         IntStream.range(0, keys.length).forEach(i -> map.put(keys[i], vals[i]));
         return map;

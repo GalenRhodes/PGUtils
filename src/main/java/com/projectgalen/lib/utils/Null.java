@@ -67,7 +67,7 @@ public final class Null implements Cloneable {
         if(value != null) delegate.accept(value);
     }
 
-    public static <P> void doIfNotNullThrows(@Nullable P value, @NotNull ThrowingConsumer<P> delegate) throws Exception {
+    public static <T> void doIfNotNullThrows(@Nullable T value, @NotNull ThrowingConsumer<T, Exception> delegate) throws Exception {
         if(value != null) delegate.accept(value);
     }
 

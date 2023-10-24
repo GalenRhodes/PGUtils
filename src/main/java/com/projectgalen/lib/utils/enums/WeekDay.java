@@ -33,6 +33,8 @@ public enum WeekDay {
 
     SUNDAY(Calendar.SUNDAY), MONDAY(Calendar.MONDAY), TUESDAY(Calendar.TUESDAY), WEDNESDAY(Calendar.WEDNESDAY), THURSDAY(Calendar.THURSDAY), FRIDAY(Calendar.FRIDAY), SATURDAY(Calendar.SATURDAY);
 
+    private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+
     @Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) private final int id;
 
     WeekDay(@Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int id) {
@@ -64,8 +66,15 @@ public enum WeekDay {
     }
 
     public @Override @NotNull String toString() {
-        PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
-        return msgs.getString(String.format("enum.week_day.name.%d", id), super.toString());
+        return switch(this) {/*@f0*/
+            case SUNDAY    -> msgs.getString("enum.week_day.name.1");
+            case MONDAY    -> msgs.getString("enum.week_day.name.2");
+            case TUESDAY   -> msgs.getString("enum.week_day.name.3");
+            case WEDNESDAY -> msgs.getString("enum.week_day.name.4");
+            case THURSDAY  -> msgs.getString("enum.week_day.name.5");
+            case FRIDAY    -> msgs.getString("enum.week_day.name.6");
+            case SATURDAY  -> msgs.getString("enum.week_day.name.7");
+        };/*@f1*/
     }
 
     public static int compare(@NotNull WeekDay wd1, @NotNull WeekDay wd2) {
@@ -81,9 +90,16 @@ public enum WeekDay {
     }
 
     public static @NotNull WeekDay getWeekDay(@Range(from = Calendar.SUNDAY, to = Calendar.SATURDAY) int id) {
-        for(WeekDay e : WeekDay.values()) if(e.id == id) return e;
-        PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
-        throw new IllegalArgumentException(msgs.format("msg.err.invalid_enum_id", msgs.getString("msg.week_day"), id));
+        return switch(id) {/*@f0*/
+            case Calendar.SUNDAY    -> WeekDay.SUNDAY;
+            case Calendar.MONDAY    -> WeekDay.MONDAY;
+            case Calendar.TUESDAY   -> WeekDay.TUESDAY;
+            case Calendar.WEDNESDAY -> WeekDay.WEDNESDAY;
+            case Calendar.THURSDAY  -> WeekDay.THURSDAY;
+            case Calendar.FRIDAY    -> WeekDay.FRIDAY;
+            case Calendar.SATURDAY  -> WeekDay.SATURDAY;
+            default -> throw new IllegalArgumentException(msgs.format("msg.err.invalid_enum_id", msgs.getString("msg.week_day"), id));
+        };/*@f1*/
     }
 
     public static @NotNull WeekDay max(@NotNull WeekDay wd1, @NotNull WeekDay wd2) {

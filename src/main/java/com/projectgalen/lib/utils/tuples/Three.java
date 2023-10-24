@@ -1,10 +1,11 @@
-package com.projectgalen.lib.utils.delegates;
+package com.projectgalen.lib.utils.tuples;
+
 // ===========================================================================
 //     PROJECT: PGUtils
-//    FILENAME: WithValueThrowsDelegate.java
+//    FILENAME: Three.java
 //         IDE: IntelliJ IDEA
 //      AUTHOR: Galen Rhodes
-//        DATE: January 26, 2023
+//        DATE: October 24, 2023
 //
 // Copyright © 2023 Project Galen. All rights reserved.
 //
@@ -21,8 +22,5 @@ package com.projectgalen.lib.utils.delegates;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import org.jetbrains.annotations.NotNull;
-
-public interface ThrowingConsumer<T, E extends Throwable> {
-    void accept(@NotNull T value) throws E;
+public record Three<T, U, V>(T t, U u, V v) {
 }

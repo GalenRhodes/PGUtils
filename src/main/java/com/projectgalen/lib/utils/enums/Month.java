@@ -33,6 +33,8 @@ public enum Month {
 
     JANUARY(1), FEBRUARY(2), MARCH(3), APRIL(4), MAY(5), JUNE(6), JULY(7), AUGUST(8), SEPTEMBER(9), OCTOBER(10), NOVEMBER(11), DECEMBER(12);
 
+    private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+
     @Range(from = 1, to = 12) private final int id;
 
     Month(@Range(from = 1, to = 12) int id) {
@@ -60,8 +62,20 @@ public enum Month {
     }
 
     public @Override @NotNull String toString() {
-        PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
-        return msgs.getString(String.format("enum.month.name.%d", id), super.toString());
+        return switch(this) {/*@f0*/
+            case JANUARY   -> msgs.getString("enum.month.name.1");
+            case FEBRUARY  -> msgs.getString("enum.month.name.2");
+            case MARCH     -> msgs.getString("enum.month.name.3");
+            case APRIL     -> msgs.getString("enum.month.name.4");
+            case MAY       -> msgs.getString("enum.month.name.5");
+            case JUNE      -> msgs.getString("enum.month.name.6");
+            case JULY      -> msgs.getString("enum.month.name.7");
+            case AUGUST    -> msgs.getString("enum.month.name.8");
+            case SEPTEMBER -> msgs.getString("enum.month.name.9");
+            case OCTOBER   -> msgs.getString("enum.month.name.10");
+            case NOVEMBER  -> msgs.getString("enum.month.name.11");
+            case DECEMBER  -> msgs.getString("enum.month.name.12");
+        };/*@f1*/
     }
 
     public static int compare(@NotNull Month m1, @NotNull Month m2) {
@@ -69,9 +83,21 @@ public enum Month {
     }
 
     public static @NotNull Month getMonth(@Range(from = 1, to = 12) int id) {
-        for(Month e : Month.values()) if(e.id == id) return e;
-        PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
-        throw new IllegalArgumentException(msgs.format("msg.err.invalid_enum_id", msgs.getString("text.month"), id));
+        return switch(id) {/*@f0*/
+            case 1  -> Month.JANUARY;
+            case 2  -> Month.FEBRUARY;
+            case 3  -> Month.MARCH;
+            case 4  -> Month.APRIL;
+            case 5  -> Month.MAY;
+            case 6  -> Month.JUNE;
+            case 7  -> Month.JULY;
+            case 8  -> Month.AUGUST;
+            case 9  -> Month.SEPTEMBER;
+            case 10 -> Month.OCTOBER;
+            case 11 -> Month.NOVEMBER;
+            case 12 -> Month.DECEMBER;
+            default -> throw new IllegalArgumentException(msgs.format("msg.err.invalid_enum_id", msgs.getString("text.month"), id));
+        };/*@f1*/
     }
 
     public static @NotNull Month max(@NotNull Month m1, @NotNull Month m2) {
