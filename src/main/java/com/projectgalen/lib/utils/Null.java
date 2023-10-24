@@ -87,11 +87,11 @@ public final class Null implements Cloneable {
         return ((value == null) ? defaultValue : delegate.apply(value));
     }
 
-    public static <P, R> R getIfNotNullThrows(@Nullable P value, @NotNull ThrowingFunction<P, R> delegate) throws Exception {
+    public static <P, R> R getIfNotNullThrows(@Nullable P value, @NotNull ThrowingFunction<P, R, Exception> delegate) throws Exception {
         return getIfNotNullThrows(value, null, delegate);
     }
 
-    public static <P, R> R getIfNotNullThrows(@Nullable P value, @Nullable R defaultValue, @NotNull ThrowingFunction<P, R> delegate) throws Exception {
+    public static <P, R> R getIfNotNullThrows(@Nullable P value, @Nullable R defaultValue, @NotNull ThrowingFunction<P, R, Exception> delegate) throws Exception {
         return ((value == null) ? defaultValue : delegate.apply(value));
     }
 

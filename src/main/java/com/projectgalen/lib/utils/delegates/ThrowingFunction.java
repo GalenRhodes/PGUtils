@@ -23,6 +23,6 @@ package com.projectgalen.lib.utils.delegates;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface ThrowingFunction<P, R> {
-    R apply(@NotNull P value) throws Exception;
+public interface ThrowingFunction<P, R, E extends Throwable> {
+    R apply(@NotNull P value) throws E;
 }
