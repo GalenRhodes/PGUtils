@@ -14,7 +14,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@SuppressWarnings({ "SameParameterValue", "MismatchedQueryAndUpdateOfCollection" })
+@SuppressWarnings({ "SameParameterValue", "MismatchedQueryAndUpdateOfCollection", "unused" })
 public class Main {
 
     private static final PGResourceBundle msgs     = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.test.test_messages");
@@ -28,53 +28,73 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            for(int i = 0; i < 100; i++) {
-                int start = (int)(Math.random() * 1000);
-                int end   = (int)(Math.random() * 1000);
-                int step  = (int)(Math.random() * 20);
-
-                if(start != end && step > 0) {
-                    if(start < end) {
-                        int count1 = (int)Math.ceil(((double)end - (double)start) / (double)step);
-                        int count2 = 0;
-                        int z1     = start;
-
-                        while(z1 <= end) {
-                            count2++;
-                            z1 += step;
-                        }
-
-                        if(count1 != count2) {
-                            System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d ***\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
-                        }
-                        else {
-                            System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
-                        }
-                    }
-                    else {
-                        step = (-step);
-                        int count1 = (int)Math.ceil(((double)start - (double)end) / (double)Math.abs(step));
-                        int count2 = 0;
-                        int z1     = start;
-
-                        while(z1 >= end) {
-                            count2++;
-                            z1 += step;
-                        }
-
-                        if(count1 != count2) {
-                            System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d ***\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
-                        }
-                        else {
-                            System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
-                        }
-                    }
-                }
+            String[] strs = {
+                    "galen-rhodes-🤣-was-here-2023",
+                    "GALEN-RHODES-🤣-WAS-HERE-2023",
+                    "-galen-rhodes-🤣-was-here-2023-",
+                    "-GALEN-RHODES-🤣-WAS-HERE-2023-",
+                    "--galen--rhodes--🤣--was--here--2023--",
+                    "--GALEN--RHODES--🤣--WAS--HERE--2023--",
+                    };
+            System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
+            for(String str : strs) {
+                System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertKebabCaseToCamelCase(str));
             }
+            System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
+            for(String str : strs) {
+                System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertKebabCaseToPascalCase(str));
+            }
+            System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
         }
         catch(Exception e) {
             System.err.printf(String.format("\n\nERROR: %s\n", e));
             e.printStackTrace(System.err);
+        }
+    }
+
+    private static void rangeIterationTest() {
+        for(int i = 0; i < 100; i++) {
+            int start = (int)(Math.random() * 1000);
+            int end   = (int)(Math.random() * 1000);
+            int step  = (int)(Math.random() * 20);
+
+            if(start != end && step > 0) {
+                if(start < end) {
+                    int count1 = (int)Math.ceil(((double)end - (double)start) / (double)step);
+                    int count2 = 0;
+                    int z1     = start;
+
+                    while(z1 <= end) {
+                        count2++;
+                        z1 += step;
+                    }
+
+                    if(count1 != count2) {
+                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d ***\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                    }
+                    else {
+                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                    }
+                }
+                else {
+                    step = (-step);
+                    int count1 = (int)Math.ceil(((double)start - (double)end) / (double)Math.abs(step));
+                    int count2 = 0;
+                    int z1     = start;
+
+                    while(z1 >= end) {
+                        count2++;
+                        z1 += step;
+                    }
+
+                    if(count1 != count2) {
+                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d ***\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                    }
+                    else {
+                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                    }
+                }
+            }
         }
     }
 
@@ -163,6 +183,26 @@ public class Main {
         PGProperties     props  = PGProperties.getXMLProperties("main_settings.xml", Main.class);
 
         propsTest(bundle, props);
+    }
+
+    private static void testSnakeCaseToCamelCaseAndPascalCase() {
+        String[] strs = {
+                "galen_rhodes_🤣_was_here_2023",
+                "GALEN_RHODES_🤣_WAS_HERE_2023",
+                "_galen_rhodes_🤣_was_here_2023_",
+                "_GALEN_RHODES_🤣_WAS_HERE_2023_",
+                "__galen__rhodes__🤣__was__here__2023__",
+                "__GALEN__RHODES__🤣__WAS__HERE__2023__",
+                };
+        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
+        for(String str : strs) {
+            System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertSnakeCaseToCamelCase(str));
+        }
+        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
+        for(String str : strs) {
+            System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertSnakeCaseToPascalCase(str));
+        }
+        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
     }
 
     private static void showMethods() {

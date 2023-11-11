@@ -42,24 +42,6 @@ public final class JsonTools {
         return new ObjectMapper().setTimeZone(TimeZone.getDefault()).enable(JsonParser.Feature.IGNORE_UNDEFINED, JsonParser.Feature.AUTO_CLOSE_SOURCE).enable(SerializationFeature.INDENT_OUTPUT);
     }
 
-    public static <T> void writeJsonFile(@NotNull File file, T value) throws IOException {
-        file.getParentFile().mkdirs();
-        try(OutputStream outputStream = new FileOutputStream(file)) {
-            ObjectMapper mapper = getObjectMapper();
-            mapper.enable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED);
-            mapper.writeValue(outputStream, value);
-            outputStream.flush();
-        }
-    }
-
-    public static <T> void writeJsonFile(@NotNull String pathname, T value) throws IOException {
-        writeJsonFile(new File(pathname), value);
-    }
-
-    public static <T> void writeJsonFile(@NotNull String dir, @NotNull String filename, T value) throws IOException {
-        writeJsonFile(new File(dir, filename), value);
-    }
-
     public static <T> T readJsonFile(@NotNull String dir, @NotNull String filename, @NotNull Class<T> rootClass) throws IOException {
         return readJsonFile(dir, filename, rootClass, false);
     }
@@ -84,5 +66,23 @@ public final class JsonTools {
         ObjectMapper mapper = getObjectMapper();
         if(acceptSingleValueAsArray) mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
         return mapper.readValue(file, rootClass);
+    }
+
+    public static <T> void writeJsonFile(@NotNull File file, T value) throws IOException {
+        file.getParentFile().mkdirs();
+        try(OutputStream outputStream = new FileOutputStream(file)) {
+            ObjectMapper mapper = getObjectMapper();
+            mapper.enable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED);
+            mapper.writeValue(outputStream, value);
+            outputStream.flush();
+        }
+    }
+
+    public static <T> void writeJsonFile(@NotNull String pathname, T value) throws IOException {
+        writeJsonFile(new File(pathname), value);
+    }
+
+    public static <T> void writeJsonFile(@NotNull String dir, @NotNull String filename, T value) throws IOException {
+        writeJsonFile(new File(dir, filename), value);
     }
 }

@@ -236,13 +236,11 @@ public class Reflection {
         return Reflection2.getMethods(cls).filter(m -> (m.getName().equals(name) && doTypesMatch(exactTypeMatch, m.getParameterTypes(), parameterTypes))).findFirst().orElse(null);
     }
 
-    @NotNull
-    public static @SafeVarargs List<Method> getMethodsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static @NotNull @SafeVarargs List<Method> getMethodsWithAllAnnotations(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         return Reflection2.getMethods(cls).filter(m -> hasAllAnnotations(m, annotationClasses)).collect(Collectors.toList());
     }
 
-    @NotNull
-    public static @SafeVarargs List<Method> getMethodsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
+    public static @NotNull @SafeVarargs List<Method> getMethodsWithAnyAnnotation(@NotNull Class<?> cls, @NotNull Class<? extends Annotation>... annotationClasses) {
         return Reflection2.getMethods(cls).filter(m -> hasAnyAnnotation(m, annotationClasses)).collect(Collectors.toList());
     }
 

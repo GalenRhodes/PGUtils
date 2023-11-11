@@ -32,6 +32,9 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.regex.Pattern.UNICODE_CASE;
+import static java.util.regex.Pattern.UNICODE_CHARACTER_CLASS;
+
 @SuppressWarnings("unused")
 public final class Regex {
 
@@ -59,6 +62,16 @@ public final class Regex {
             }
             return p.matcher(input);
         }
+    }
+
+    public static @NotNull Matcher getUnicodeMatcher(@NotNull @NonNls @Language("RegExp") String pattern,
+                                                     @MagicConstant(flagsFromClass = Pattern.class) int flags,
+                                                     @NotNull @NonNls CharSequence input) {
+        return getMatcher(pattern, UNICODE_CHARACTER_CLASS | UNICODE_CASE | flags, input);
+    }
+
+    public static @NotNull Matcher getUnicodeMatcher(@NotNull @NonNls @Language("RegExp") String pattern, @NotNull @NonNls CharSequence input) {
+        return getMatcher(pattern, UNICODE_CHARACTER_CLASS | UNICODE_CASE, input);
     }
 
     public static Range rangeOfFirstMatch(@NotNull @NonNls @Language("RegExp") String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, @NotNull @NonNls CharSequence input) {

@@ -23,82 +23,113 @@ package com.projectgalen.lib.utils;
 // ===========================================================================
 
 import com.projectgalen.lib.utils.enums.Align;
-import com.projectgalen.lib.utils.refs.BooleanRef;
-import com.projectgalen.lib.utils.refs.ObjectRef;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.text.BreakIterator;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-@SuppressWarnings("unused")
+import static com.projectgalen.lib.utils.regex.Regex.getUnicodeMatcher;
+
+@SuppressWarnings({ "unused", "SpellCheckingInspection" })
 public final class Text {
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
     private Text() { }
 
-    public static <T> @Nullable T forEachCodePoint(@NotNull String str, int startIndex, @Nullable T defaultReturnValue, @NotNull CodePointIteratorHandler<T> handler) {
-        return forEachCodePoint(str, startIndex, str.length(), defaultReturnValue, handler);
+    /**
+     * Converts a string from kebab-case or SCREAMING-KEBAB-CASE to camelCase.
+     *
+     * @param charSequence The text to convert.
+     *
+     * @return The camelCase version of the string.
+     */
+    public static @NotNull String convertKebabCaseToCamelCase(@NotNull CharSequence charSequence) { return convertKebabCaseToCamelCase(charSequence, false); }
+
+    /**
+     * Converts a string from kebab-case or SCREAMING-KEBAB-CASE to camelCase.
+     *
+     * @param charSequence           The text to convert.
+     * @param keepLeadingAndTrailing If set to true then any leading and/or trailing dashes will be kept.
+     *
+     * @return The camelCase version of the string.
+     */
+    public static @NotNull String convertKebabCaseToCamelCase(@NotNull CharSequence charSequence, boolean keepLeadingAndTrailing) {
+        return convertToCamelCase(charSequence, keepLeadingAndTrailing, "-+", '-');
     }
 
-    public static <T> @Nullable T forEachCodePoint(@NotNull String str, int startIndex, @NotNull CodePointIteratorHandler<T> handler) {
-        return forEachCodePoint(str, startIndex, str.length(), null, handler);
+    /**
+     * Converts a string from kebab-case or SCREAMING-KEBAB-CASE to PascalCase.
+     *
+     * @param charSequence The text to convert.
+     *
+     * @return The camelCase version of the string.
+     */
+    public static String convertKebabCaseToPascalCase(@NotNull CharSequence charSequence) { return convertKebabCaseToPascalCase(charSequence, false); }
+
+    /**
+     * Converts a string from kebab-case or SCREAMING-KEBAB-CASE to PascalCase.
+     *
+     * @param charSequence           The text to convert.
+     * @param keepLeadingAndTrailing If set to true then any leading and/or trailing dashes will be kept.
+     *
+     * @return The camelCase version of the string.
+     */
+    public static String convertKebabCaseToPascalCase(@NotNull CharSequence charSequence, boolean keepLeadingAndTrailing) {
+        return getUnicodeMatcher("^-*[^-]", convertKebabCaseToCamelCase(charSequence, keepLeadingAndTrailing)).replaceAll(m -> m.group().toUpperCase());
     }
 
-    public static <T> @Nullable T forEachCodePoint(@NotNull String str, @Nullable T defaultReturnValue, @NotNull CodePointIteratorHandler<T> handler) {
-        return forEachCodePoint(str, 0, str.length(), defaultReturnValue, handler);
+    /**
+     * Converts a string from snake_case or SCREAMING_SNAKE_CASE to camelCase.
+     *
+     * @param charSequence The text to convert.
+     *
+     * @return The camelCase version of the string.
+     */
+    public static @NotNull String convertSnakeCaseToCamelCase(@NotNull CharSequence charSequence) { return convertSnakeCaseToCamelCase(charSequence, false); }
+
+    /**
+     * Converts a string from snake_case or SCREAMING_SNAKE_CASE to camelCase.
+     *
+     * @param charSequence           The text to convert.
+     * @param keepLeadingAndTrailing If set to true then any leading and/or trailing underscores will be kept.
+     *
+     * @return The camelCase version of the string.
+     */
+    public static @NotNull String convertSnakeCaseToCamelCase(@NotNull CharSequence charSequence, boolean keepLeadingAndTrailing) {
+        return convertToCamelCase(charSequence, keepLeadingAndTrailing, "_+", '_');
     }
 
-    public static <T> @Nullable T forEachCodePoint(@NotNull String str, @NotNull CodePointIteratorHandler<T> handler) {
-        return forEachCodePoint(str, 0, str.length(), null, handler);
+    /**
+     * Converts a string from snake_case or SCREAMING_SNAKE_CASE to PascalCase.
+     *
+     * @param charSequence The text to convert.
+     *
+     * @return The camelCase version of the string.
+     */
+    public static String convertSnakeCaseToPascalCase(@NotNull CharSequence charSequence) {
+        return getUnicodeMatcher("^_*[^_]", convertSnakeCaseToCamelCase(charSequence)).replaceAll(m -> m.group().toUpperCase());
     }
 
-    public static <T> @Nullable T forEachCodePoint(@NotNull String str, int startIndex, int endIndex, @Nullable T defaultReturnValue, @NotNull CodePointIteratorHandler<T> handler) {
-        if(startIndex > endIndex) throw new IllegalArgumentException(msgs.format("msg.err.text.start_greater_than_end", startIndex, endIndex));
-        if(startIndex == endIndex) return null;
-        if(startIndex < 0) throw new IllegalArgumentException(msgs.format("msg.err.text.start_neg", startIndex));
-        if(endIndex > str.length()) throw new IllegalArgumentException(msgs.format("msg.err.text.end_greater_than_length", endIndex, str.length()));
+    public static boolean isAllWhitespace(@NotNull CharSequence charSequence, int startIndex, int endIndex) {
+        return streamCodePoints(charSequence, startIndex, endIndex).allMatch(cp -> Character.isWhitespace(cp.codePoint));
+    }
 
-        ObjectRef<T> retValue = new ObjectRef<>(defaultReturnValue);
-        BooleanRef   stop     = new BooleanRef(false);
-        int          idx      = startIndex;
+    public static boolean isAllWhitespace(@NotNull CharSequence charSequence) {
+        return isAllWhitespace(charSequence, 0, charSequence.length());
+    }
 
-        while((idx < endIndex) && !stop.value) {
-            char ch = str.charAt(idx++);
-            if(Character.isHighSurrogate(ch) && (idx < endIndex)) {
-                char ch2 = str.charAt(idx);
-                if(Character.isLowSurrogate(ch2)) {
-                    idx++;
-                    handler.action(Character.toCodePoint(ch, ch2), stop, retValue);
-                    continue;
-                }
-            }
-            handler.action(ch, stop, retValue);
+    public static boolean isWS(@NotNull CharSequence charSequence, int idx) {
+        char ch1 = charSequence.charAt(idx++);
+        if(Character.isHighSurrogate(ch1) && (idx < charSequence.length())) {
+            char ch2 = charSequence.charAt(idx);
+            if(Character.isLowSurrogate(ch2)) return Character.isWhitespace(Character.toCodePoint(ch1, ch2));
         }
-
-        return retValue.value;
-    }
-
-    public static boolean isAllWhitespace(@NotNull String str, int startIndex, int endIndex) {
-        //noinspection ConstantValue
-        @Nullable Boolean obj = forEachCodePoint(str, startIndex, endIndex, true, (cp, stop, returnValueRef) -> {
-            if(!Character.isWhitespace(cp)) {
-                //noinspection ConstantValue
-                returnValueRef.value = !(stop.value = true);
-            }
-        });
-        return Objects.requireNonNullElse(obj, false);
-    }
-
-    public static boolean isAllWhitespace(@NotNull String str) {
-        return isAllWhitespace(str, 0, str.length());
-    }
-
-    public static boolean isWS(@NotNull String str, int idx) {
-        char ch = str.charAt(idx);
-        return ((Character.isHighSurrogate(ch) && ((idx + 1) < str.length())) ? Character.isWhitespace(str.codePointAt(idx)) : Character.isWhitespace(ch));
+        return Character.isWhitespace(ch1);
     }
 
     public static @NotNull String pad(String str, int width) {
@@ -114,11 +145,11 @@ public final class Text {
         if(strLen <= width) return _pad(str, align, width);
         if(!trim) return str;
 
-        switch(align) {/*@f0*/
-            case Left:  return str.substring(0, width);
-            case Right: return str.substring(strLen - width);
-            default:    return str.substring(((strLen - width) / 2), (((strLen - width) / 2) + width));
-        }/*@f1*/
+        return switch(align) {/*@f0*/
+            case Left  -> str.substring(0, width);
+            case Right -> str.substring(strLen - width);
+            default    -> str.substring(((strLen - width) / 2), (((strLen - width) / 2) + width));
+        };/*@f1*/
     }
 
     public static @NotNull String pad(String str, Align align, int width) {
@@ -128,7 +159,7 @@ public final class Text {
     public static String @NotNull [] padWithWrap(String str, Align align, int width, boolean stripEachLineLeading) {
         if(str == null) return new String[] { String.valueOf(PGArrays.createAndFill(width, ' ')) };
 
-        String[]     lines = str.split("\\r\\n|\\n");
+        String[] lines = str.split("\\R");
         List<String> out   = new ArrayList<>();
 
         for(String _line : lines) {
@@ -153,6 +184,18 @@ public final class Text {
         if(l > string.length()) return false;
         for(int i = 0; i < l; i++) if(Character.toLowerCase(subString.charAt(i)) != Character.toLowerCase(string.charAt(i))) return false;
         return true;
+    }
+
+    public static @NotNull Stream<CodePointPosition> streamCodePoints(@NotNull CharSequence charSequence) {
+        return streamCodePoints(charSequence, 0, charSequence.length());
+    }
+
+    public static @NotNull Stream<CodePointPosition> streamCodePoints(@NotNull CharSequence charSequence, int startIndex) {
+        return streamCodePoints(charSequence, startIndex, charSequence.length());
+    }
+
+    public static @NotNull Stream<CodePointPosition> streamCodePoints(@NotNull CharSequence charSequence, int startIndex, int endIndex) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new MyCodePointIterator(charSequence, startIndex, endIndex), Spliterator.IMMUTABLE | Spliterator.ORDERED), false);
     }
 
     public static @NotNull List<String> wrap(@NotNull String str, int width, boolean stripLeading) {
@@ -237,7 +280,98 @@ public final class Text {
         return end;
     }
 
-    public interface CodePointIteratorHandler<T> {
-        void action(int codePoint, BooleanRef stopRef, ObjectRef<T> returnValueRef);
+    private static boolean contains(@NotNull CharSequence charSequence, int index, char @NotNull ... characters) {
+        char ch1 = charSequence.charAt(index);
+        for(char ch2 : characters) if(ch1 == ch2) return true;
+        return false;
+    }
+
+    private static @NotNull String convertToCamelCase(@NotNull CharSequence charSequence, boolean keepLeadingAndTrailing, @Language("RegExp") String regex, char... x) {
+        Matcher m = getUnicodeMatcher(regex, charSequence);
+        if(m.find()) {
+            StringBuilder sb = new StringBuilder();
+            int           i  = 0;
+            do {
+                if(m.start() == 0) {
+                    if(keepLeadingAndTrailing) sb.append(charSequence, 0, m.end());
+                }
+                else {
+                    sb.append(charSequence.subSequence(i, m.start()).toString().toLowerCase());
+                    i = m.end();
+                    if(i < charSequence.length()) {
+                        char ch1 = charSequence.charAt(i++);
+                        if(Character.isHighSurrogate(ch1) && i < charSequence.length()) {
+                            char ch2 = charSequence.charAt(i);
+                            if(Character.isLowSurrogate(ch2)) {
+                                i++;
+                                int    cp  = Character.toUpperCase(Character.toCodePoint(ch1, ch2));
+                                char[] out = Character.toChars(cp);
+                            }
+                        }
+                    }
+                }
+            }
+            while(m.find());
+
+            return sb.toString();
+        }
+        return charSequence.toString().toLowerCase();
+    }
+
+    private static @NotNull List<String> getMessage(int startIndex, int endIndex, int len) {
+        List<String> arr = new ArrayList<>();
+        if(startIndex < 0) arr.add(msgs.format("msg.err.text.code_point_iterator.start_index_less_than_zero", startIndex));
+        if(startIndex > len) arr.add(msgs.format("msg.err.text.code_point_iterator.start_index_greater_than_input_length", startIndex, len));
+        if(endIndex < 0) arr.add(msgs.format("msg.err.text.code_point_iterator.end_index_less_than_zero", endIndex));
+        if(endIndex > len) arr.add(msgs.format("msg.err.text.code_point_iterator.end_index_greater_than_input_length", endIndex, len));
+        if(startIndex > endIndex) arr.add(msgs.format("msg.err.text.code_point_iterator.start_index_greater_than_end_index", startIndex, endIndex));
+        return arr;
+    }
+
+    public record CodePointPosition(int codePoint, int index) implements Comparable<CodePointPosition> {
+        public @Override int compareTo(@NotNull Text.CodePointPosition o) {
+            return Integer.compare(codePoint, o.codePoint);
+        }
+    }
+
+    private static final class MyCodePointIterator implements Iterator<CodePointPosition> {
+        private final CharSequence charSequence;
+        private final int          endIndex;
+        private       int          currentIndex;
+
+        public MyCodePointIterator(@NotNull CharSequence charSequence, int startIndex, int endIndex) {
+            this.charSequence = charSequence;
+            int len = charSequence.length();
+
+            if((startIndex >= 0) && (startIndex <= endIndex) && (endIndex <= len)) {
+                this.endIndex = endIndex;
+                currentIndex  = startIndex;
+                if((currentIndex > 0) && Character.isLowSurrogate(charSequence.charAt(currentIndex)) && Character.isHighSurrogate(charSequence.charAt(currentIndex - 1))) currentIndex -= 1;
+            }
+            else {
+                throw new IllegalArgumentException(getMessage(startIndex, endIndex, len).stream().collect(Collectors.joining("; ", "", "")));
+            }
+        }
+
+        public @Override boolean hasNext() {
+            return (currentIndex < endIndex);
+        }
+
+        public @Override @NotNull CodePointPosition next() {
+            if(currentIndex >= endIndex) throw new NoSuchElementException();
+            int  idx = currentIndex;
+            char ch1 = charSequence.charAt(currentIndex++);
+
+            if(Character.isHighSurrogate(ch1) && (currentIndex < charSequence.length())) {
+                char ch2 = charSequence.charAt(currentIndex + 1);
+
+                if(Character.isLowSurrogate(ch2)) {
+                    currentIndex++;
+                    return new CodePointPosition(Character.toCodePoint(ch1, ch2), idx);
+                }
+            }
+
+            return new CodePointPosition(ch1, idx);
+        }
     }
 }
