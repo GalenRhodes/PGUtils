@@ -37,7 +37,7 @@ public final class IO {
     }
 
     public static long copy(@NotNull File inputFile, @NotNull OutputStream outputStream, boolean closeOutputOnSuccess) throws IOException {
-        return copy(new FileInputStream(inputFile), outputStream, closeOutputOnSuccess);
+        return copy(new FileInputStream(inputFile), outputStream, true, closeOutputOnSuccess);
     }
 
     public static long copy(@NotNull File inputFile, @NotNull File outputFile) throws IOException {
@@ -45,60 +45,66 @@ public final class IO {
     }
 
     public static long copy(@NotNull InputStream inputStream, @NotNull OutputStream outputStream) throws IOException {
-        return copy(inputStream, outputStream, true);
+        return copy(inputStream, outputStream, true, true);
     }
 
     public static long copy(@NotNull InputStream inputStream, @NotNull File outputFile) throws IOException {
-        return copy(inputStream, new FileOutputStream(outputFile), true);
+        return copy(inputStream, new FileOutputStream(outputFile), true, true);
     }
 
-    public static long copy(@NotNull InputStream inputStream, @NotNull OutputStream outputStream, boolean closeOutputOnSuccess) throws IOException {
-        try(inputStream) {
-            long total = 0;
+    public static long copy(@NotNull InputStream inputStream, @NotNull OutputStream outputStream, boolean closeInputOnSuccess, boolean closeOutputOnSuccess) throws IOException {
+        long total = 0;
 
-            try {
-                byte[] buff = new byte[props.getInt("default.read_buffer_size")];
-                int    cc   = inputStream.read(buff);
+        try {
+            byte[] buff = new byte[props.getInt("default.read_buffer_size")];
+            int    cc   = inputStream.read(buff);
 
-                while(cc >= 0) {
-                    outputStream.write(buff, 0, cc);
-                    total += cc;
-                    cc = inputStream.read(buff);
-                }
+            while(cc >= 0) {
+                outputStream.write(buff, 0, cc);
+                total += cc;
+                cc = inputStream.read(buff);
             }
-            finally {
-                outputStream.flush();
-            }
-
-            if(closeOutputOnSuccess) closeQuietly(outputStream);
-            return total;
         }
+        finally {
+            outputStream.flush();
+        }
+
+        if(closeOutputOnSuccess) closeQuietly(outputStream);
+        if(closeInputOnSuccess) closeQuietly(inputStream);
+        return total;
     }
 
-    public static long copy(@NotNull Reader reader, @NotNull Writer writer, boolean closeOutputOnSuccess) throws IOException {
-        try(reader) {
-            long total = 0;
+    public static long copy(@NotNull Reader reader, @NotNull Writer writer, boolean closeReaderOnSuccess, boolean closeWriterOnSuccess) throws IOException {
+        long total = 0;
 
-            try {
-                char[] buff = new char[props.getInt("default.read_buffer_size")];
-                int    cc   = reader.read(buff);
+        try {
+            char[] buff = new char[props.getInt("default.read_buffer_size")];
+            int    cc   = reader.read(buff);
 
-                while(cc >= 0) {
-                    writer.write(buff, 0, cc);
-                    cc = reader.read(buff);
-                }
+            while(cc >= 0) {
+                writer.write(buff, 0, cc);
+                cc = reader.read(buff);
             }
-            finally {
-                writer.flush();
-            }
-
-            if(closeOutputOnSuccess) closeQuietly(writer);
-            return total;
         }
+        finally {
+            writer.flush();
+        }
+
+        if(closeWriterOnSuccess) closeQuietly(writer);
+        if(closeReaderOnSuccess) closeQuietly(reader);
+        return total;
     }
 
     public static long copy(@NotNull Reader reader, @NotNull Writer writer) throws IOException {
-        return copy(reader, writer, true);
+        return copy(reader, writer, true, true);
+    }
+
+    public static void flushQuietly(@NotNull OutputStream outputStream) {
+        try { outputStream.flush(); } catch(IOException ignore) { }
+    }
+
+    public static void flushQuietly(@NotNull Writer writer) {
+        try { writer.flush(); } catch(IOException ignore) { }
     }
 
     public static File getCanonicalFileQuietly(@NotNull File file) {
@@ -115,13 +121,13 @@ public final class IO {
 
     public static @NotNull String readFile(@NotNull Reader reader) throws IOException {
         StringWriter sw = new StringWriter();
-        copy(reader, sw, true);
+        copy(reader, sw, true, true);
         return sw.toString();
     }
 
     public static byte @NotNull [] readFile(@NotNull InputStream inputStream) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        copy(inputStream, outputStream, true);
+        copy(inputStream, outputStream, true, true);
         return outputStream.toByteArray();
     }
 
@@ -134,7 +140,7 @@ public final class IO {
                                  @NotNull OutputStream outputStream,
                                  @NotNull Charset csOutput,
                                  boolean closeOutputOnSuccess) throws IOException {
-        return copy(new InputStreamReader(inputStream, csInput), new OutputStreamWriter(outputStream, csOutput), closeOutputOnSuccess);
+        return copy(new InputStreamReader(inputStream, csInput), new OutputStreamWriter(outputStream, csOutput), true, closeOutputOnSuccess);
     }
 
     public static long translate(@NotNull InputStream inputStream, @NotNull Charset csInput, @NotNull OutputStream outputStream, @NotNull Charset csOutput) throws IOException {
@@ -142,7 +148,7 @@ public final class IO {
     }
 
     public static long translate(@NotNull Reader reader, @NotNull OutputStream outputStream, @NotNull Charset csOutput, boolean closeOutputOnSuccess) throws IOException {
-        return copy(reader, new OutputStreamWriter(outputStream, csOutput), closeOutputOnSuccess);
+        return copy(reader, new OutputStreamWriter(outputStream, csOutput), true, closeOutputOnSuccess);
     }
 
     public static long translate(@NotNull Reader reader, @NotNull OutputStream outputStream, @NotNull Charset csOutput) throws IOException {
