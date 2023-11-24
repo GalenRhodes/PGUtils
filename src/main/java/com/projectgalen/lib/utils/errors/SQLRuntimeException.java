@@ -33,20 +33,34 @@ public final class SQLRuntimeException extends RuntimeException {
     public static @NotNull SQLRuntimeException cast(@NotNull Throwable t) { return ((t instanceof SQLRuntimeException) ? ((SQLRuntimeException)t) : new SQLRuntimeException(t)); }
 
     public static void exec(@NotNull ThrowingRunnable runnable) throws SQLRuntimeException {
+        exec(runnable, () -> { });
+    }
+
+    public static void exec(@NotNull ThrowingRunnable runnable, @NotNull Runnable thenFinally) throws SQLRuntimeException {
         try {
             runnable.run();
         }
         catch(Throwable t) {
             throw cast(t);
         }
+        finally {
+            thenFinally.run();
+        }
     }
 
     public static <T> T get(@NotNull ThrowingSupplier<T> supplier) throws SQLRuntimeException {
+        return get(supplier, () -> { });
+    }
+
+    public static <T> T get(@NotNull ThrowingSupplier<T> supplier, @NotNull Runnable thenFinally) throws SQLRuntimeException {
         try {
             return supplier.get();
         }
         catch(Throwable t) {
             throw cast(t);
+        }
+        finally {
+            thenFinally.run();
         }
     }
 }
