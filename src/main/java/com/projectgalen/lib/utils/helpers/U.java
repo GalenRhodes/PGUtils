@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.helpers;
 // ===========================================================================
 //     PROJECT: PGUtils
 //    FILENAME: U.java
@@ -21,6 +21,7 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.PGResourceBundle;
 import com.projectgalen.lib.utils.delegates.ThrowingSupplier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

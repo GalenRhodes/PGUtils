@@ -119,7 +119,7 @@ public class Streams {
     }
 
     public static @NotNull Stream<String> splitStream(@Nullable String val) {
-        return splitStream(val, PGProperties.DEFAULT_LIST_SEPARATOR_PATTERN);
+        return splitStream(val, PGProperties.DEFAULT_LIST_SEPARATOR_RX);
     }
 
     public static @NotNull Stream<String> splitStream(@Nullable String val, @RegExp @Language("RegExp") @NotNull @NonNls String regexp) {

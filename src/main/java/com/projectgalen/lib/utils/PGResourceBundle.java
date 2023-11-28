@@ -21,6 +21,7 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.errors.InvalidPropertyKeyValuePair;
 import com.projectgalen.lib.utils.streams.Streams;
 import com.projectgalen.lib.utils.text.Text;
 import com.projectgalen.lib.utils.text.macro.Macro;
@@ -34,10 +35,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.projectgalen.lib.utils.PGProperties.DEFAULT_LIST_SEPARATOR_PATTERN;
-import static com.projectgalen.lib.utils.PGProperties.DEFAULT_MAP_KV_PATTERN;
+import static com.projectgalen.lib.utils.PGProperties.*;
 
 public final class PGResourceBundle extends ResourceBundle {
 
@@ -63,7 +64,7 @@ public final class PGResourceBundle extends ResourceBundle {
     }
 
     public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key) {
-        return getStreamOf(key, DEFAULT_LIST_SEPARATOR_PATTERN);
+        return getStreamOf(key, DEFAULT_LIST_SEPARATOR_RX);
     }
 
     public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key, @NotNull @RegExp @Language("RegExp") @NonNls String regexp) {
@@ -79,106 +80,84 @@ public final class PGResourceBundle extends ResourceBundle {
     }
 
     public @NotNull String getString(@NotNull String key, @NotNull String defaultValue, boolean macroExpansion) {
-        try {
-            return getString(key);
-        }
-        catch(MissingResourceException e) {
-            return (macroExpansion ? Macro.replaceMacros(defaultValue, this::getStringQuietly) : defaultValue);
-        }
+        try { return getString(key); } catch(MissingResourceException e) { return (macroExpansion ? Macro.replaceMacros(defaultValue, this::getStringQuietly) : defaultValue); }
     }
 
     public @NotNull List<String> getStringList(@NotNull String key) {
-        return getStringList(key, DEFAULT_LIST_SEPARATOR_PATTERN);
+        return getStringList(key, DEFAULT_LIST_SEPARATOR_RX);
     }
 
     public @NotNull List<String> getStringList(@NotNull String key, @NotNull @RegExp @Language("RegExp") String regexp) {
-        return new ArrayList<>(Arrays.asList(getString(key).trim().split(regexp)));
+        return listStream(key, regexp).collect(Collectors.toList());
     }
 
     public @NotNull Map<String, String> getStringMap(@NotNull String key) {
-        return getStringMap(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_MAP_KV_PATTERN);
+        return getStringMap(key, DEFAULT_LIST_SEPARATOR_RX, DEFAULT_MAP_KV_RX);
     }
 
     public @NotNull Map<String, String> getStringMap(@NotNull String key, @NotNull @RegExp @Language("RegExp") String listRegexp, @NotNull @RegExp @Language("RegExp") String kvRegexp) {
-        Map<String, String> map = new LinkedHashMap<>();
-        for(String s : getStringList(key, listRegexp)) {
-            String[] kv = s.split(kvRegexp, 2);
-            if(kv.length == 2) map.put(kv[0], kv[1]);
-        }
-        return map;
+        return listStream(key, listRegexp).map(s -> checkKvPair(s, s.split(kvRegexp, 2))).collect(KV_ARRAY_COLLECTOR);
     }
 
     public @Nullable String getStringQuietly(@NotNull String key) {
-        try {
-            return bundle.getString(key);
-        }
-        catch(MissingResourceException e) {
-            return null;
-        }
+        try { return bundle.getString(key); } catch(MissingResourceException e) { return null; }
     }
 
     protected @Override @Unmodifiable @Nullable Object handleGetObject(@NotNull String key) {
-        try {
-            return Macro.replaceMacros(bundle.getString(key), this::getStringQuietly);
-        }
-        catch(MissingResourceException ignore) {
-            return null;
-        }
+        try { return Macro.replaceMacros(bundle.getString(key), this::getStringQuietly); } catch(MissingResourceException ignore) { return null; }
     }
 
-    @Contract("_ -> new")
-    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName) {
+    private @NotNull Stream<String> listStream(@NotNull String key, @RegExp @Language("RegExp") @NotNull String regexp) {
+        return Stream.of(getString(key).trim().split(regexp, -1));
+    }
+
+    public static @Contract("_ -> new") @NotNull PGResourceBundle getPGBundle(@NotNull String baseName) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName));
     }
 
-    @Contract("_,_ -> new")
-    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Module module) {
+    public static @Contract("_,_ -> new") @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Module module) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, module));
     }
 
-    @Contract("_,_ -> new")
-    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale) {
+    public static @Contract("_,_ -> new") @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale));
     }
 
-    @Contract("_,_,_ -> new")
-    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, Module module) {
+    public static @Contract("_,_,_ -> new") @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, Module module) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, module));
     }
 
-    @Contract("_,_,_ -> new")
-    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader) {
+    public static @Contract("_,_,_ -> new") @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, loader));
     }
 
-    @Contract("_,_ -> new")
-    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Control control) {
+    public static @Contract("_,_ -> new") @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Control control) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, control));
     }
 
-    @Contract("_,_,_ -> new")
-    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, Control control) {
+    public static @Contract("_,_,_ -> new") @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, Control control) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, control));
     }
 
-    @Contract("_,_,_,_ -> new")
-    public static @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader, Control control) {
+    public static @Contract("_,_,_,_ -> new") @NotNull PGResourceBundle getPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader, Control control) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, loader, control));
     }
 
-    @Contract("_ -> new")
-    public static @NotNull PGResourceBundle getXMLPGBundle(@NotNull String baseName) {
+    public static @Contract("_ -> new") @NotNull PGResourceBundle getXMLPGBundle(@NotNull String baseName) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, new XMLResourceBundleControl()));
     }
 
-    @Contract("_,_ -> new")
-    public static @NotNull PGResourceBundle getXMLPGBundle(@NotNull String baseName, Locale locale) {
+    public static @Contract("_,_ -> new") @NotNull PGResourceBundle getXMLPGBundle(@NotNull String baseName, Locale locale) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, new XMLResourceBundleControl()));
     }
 
-    @Contract("_,_,_ -> new")
-    public static @NotNull PGResourceBundle getXMLPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader) {
+    public static @Contract("_,_,_ -> new") @NotNull PGResourceBundle getXMLPGBundle(@NotNull String baseName, Locale locale, ClassLoader loader) {
         return new PGResourceBundle(ResourceBundle.getBundle(baseName, locale, loader, new XMLResourceBundleControl()));
+    }
+
+    private static String @NotNull [] checkKvPair(@NotNull String kv, String @NotNull [] ar) {
+        if(ar.length == 2) return ar;
+        throw new InvalidPropertyKeyValuePair(msgs.format("msg.err.macro.kv_pair_missing_value", kv));
     }
 
     private static class XMLKeyEnumerator implements Enumeration<String> {

@@ -20,10 +20,10 @@ package com.projectgalen.lib.utils.reflection;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.Null;
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
 import com.projectgalen.lib.utils.errors.Errors;
+import com.projectgalen.lib.utils.helpers.Null;
 import com.projectgalen.lib.utils.math.PGMath;
 import com.projectgalen.lib.utils.text.Text;
 import org.jetbrains.annotations.Contract;

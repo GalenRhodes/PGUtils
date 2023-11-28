@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils;
 
 import com.projectgalen.lib.utils.collections.ObjCache;
 import com.projectgalen.lib.utils.errors.InvalidPropertyKeyValuePair;
+import com.projectgalen.lib.utils.errors.PGPropertiesException;
 import com.projectgalen.lib.utils.streams.Streams;
 import com.projectgalen.lib.utils.text.Text;
 import com.projectgalen.lib.utils.text.macro.Macro;
@@ -35,7 +36,13 @@ import org.jetbrains.annotations.Nullable;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.projectgalen.lib.utils.helpers.Null.requireOrThrow;
+import static java.util.Optional.ofNullable;
 
 @SuppressWarnings("unused")
 public class PGProperties extends Properties {
@@ -43,12 +50,13 @@ public class PGProperties extends Properties {
     private static final PGResourceBundle msgs  = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
     private static final PGProperties     props = getXMLProperties("pg_properties.xml", PGProperties.class);
 
-    public static final @Language("RegExp") @RegExp String DEFAULT_LIST_SEPARATOR_PATTERN = "\\s*,\\s*";
-    public static final @Language("RegExp") @RegExp String DEFAULT_MAP_KV_PATTERN         = "\\s*:\\s*";
-    public static final                             String DEFAULT_DATE_FORMAT            = "yyyy-MM-dd";
-    public static final                             String DEFAULT_TIME_FORMAT            = "HH:mm:ss.SSSZ";
-    public static final                             String DEFAULT_DATETIME_FORMAT        = String.format("%s'T'%s", DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT);
-    public static final                             int    DEFAULT_LIMIT                  = -1;
+    static final Collector<String[], ?, Map<String, String>> KV_ARRAY_COLLECTOR = Collectors.toMap(k -> k[0], v -> v[1], (v1, v2) -> v2, LinkedHashMap::new);
+
+    public static final @Language("RegExp") @RegExp String DEFAULT_LIST_SEPARATOR_RX = "\\s*,\\s*";
+    public static final @Language("RegExp") @RegExp String DEFAULT_MAP_KV_RX         = "\\s*:\\s*";
+    public static final                             String DEFAULT_DATE_FORMAT       = "yyyy-MM-dd";
+    public static final                             String DEFAULT_TIME_FORMAT       = "HH:mm:ss.SSSZ";
+    public static final                             String DEFAULT_DATETIME_FORMAT   = String.format("%s'T'%s", DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT);
 
     public PGProperties() {
         super();
@@ -58,46 +66,42 @@ public class PGProperties extends Properties {
         super(defaults);
     }
 
+    public void debug() {
+        debugProperties(this, System.out);
+    }
+
+    public void debug(@NotNull PrintStream out) {
+        debugProperties(this, out);
+    }
+
     public String format(@NotNull @NonNls String key, Object... args) {
-        String fmt = getProperty(key);
-        return ((fmt == null) ? null : String.format(fmt, args));
+        return ofNullable(getProperty(key)).map(fmt -> String.format(fmt, args)).orElse(null);
     }
 
     public boolean getBoolean(@NotNull @NonNls String key, boolean defaultBoolean) {
-        switch(getProperty(key, Boolean.toString(defaultBoolean)).trim()) {/*@f0*/
-            case "true":  return true;
-            case "false": return false;
-            default:      return defaultBoolean;
-        }/*@f1*/
-    }
+        return switch(getProperty(key, Boolean.toString(defaultBoolean)).trim()) { case "true" -> true; case "false" -> false; default -> defaultBoolean; };/*@f0*/
+    }/*@f1*/
 
     public boolean getBoolean(@NotNull @NonNls String key) {
         return getBoolean(key, false);
     }
 
     public byte getByte(@NotNull @NonNls String key, byte defaultValue) {
-        try {
-            return Byte.parseByte(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
-        }
-        catch(Exception e) {
-            return defaultValue;
-        }
+        try { return Byte.parseByte(prepForNumber(getProperty(key, String.valueOf(defaultValue)))); } catch(Exception e) { return defaultValue; }
     }
 
     public byte getByte(@NotNull @NonNls String key) {
         return getByte(key, (byte)0);
     }
 
-    @Contract("_,_,!null -> !null")
-    public Date getDateProperty(@NotNull @NonNls String key, @NotNull @NonNls String format, @Nullable Date defaultDate) {
+    public @Contract("_,_,!null -> !null") Date getDateProperty(@NotNull @NonNls String key, @NotNull @NonNls String format, @Nullable Date defaultDate) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         String           val = getProperty(key);
         if(val == null) return defaultDate;
         try { return sdf.parse(val); } catch(Exception e) { return defaultDate; }
     }
 
-    @Contract("_,!null -> !null")
-    public Date getDateProperty(@NotNull @NonNls String key, @Nullable Date defaultDate) {
+    public @Contract("_,!null -> !null") Date getDateProperty(@NotNull @NonNls String key, @Nullable Date defaultDate) {
         return getDateProperty(key, DEFAULT_DATETIME_FORMAT, defaultDate);
     }
 
@@ -106,12 +110,7 @@ public class PGProperties extends Properties {
     }
 
     public double getDouble(@NotNull @NonNls String key, double defaultValue) {
-        try {
-            return Double.parseDouble(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
-        }
-        catch(Exception e) {
-            return defaultValue;
-        }
+        try { return Double.parseDouble(prepForNumber(getProperty(key, String.valueOf(defaultValue)))); } catch(Exception e) { return defaultValue; }
     }
 
     public double getDouble(@NotNull @NonNls String key) {
@@ -119,12 +118,7 @@ public class PGProperties extends Properties {
     }
 
     public float getFloat(@NotNull @NonNls String key, float defaultValue) {
-        try {
-            return Float.parseFloat(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
-        }
-        catch(Exception e) {
-            return defaultValue;
-        }
+        try { return Float.parseFloat(prepForNumber(getProperty(key, String.valueOf(defaultValue)))); } catch(Exception e) { return defaultValue; }
     }
 
     public float getFloat(@NotNull @NonNls String key) {
@@ -132,104 +126,65 @@ public class PGProperties extends Properties {
     }
 
     public int getInt(@NotNull @NonNls String key, int defaultValue) {
-        try {
-            return Integer.parseInt(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
-        }
-        catch(Exception e) {
-            return defaultValue;
-        }
+        try { return Integer.parseInt(prepForNumber(getProperty(key, String.valueOf(defaultValue)))); } catch(Exception e) { return defaultValue; }
     }
 
     public int getInt(@NotNull @NonNls String key) {
         return getInt(key, 0);
     }
 
-    @Contract("_,_,_,!null -> !null")
-    public List<String> getList(@NotNull @NonNls String key, @Nullable @Language("RegExp") String separatorPattern, int limit, @Nullable List<String> defaultList) {
-        String str = getProperty(key);
-        if(str == null) return ((defaultList == null) ? Collections.emptyList() : defaultList);
-        String[] arr = str.trim().split(Objects.requireNonNullElse(separatorPattern, DEFAULT_LIST_SEPARATOR_PATTERN), limit);
-        return Arrays.asList(arr);
+    public @Contract("_,_,!null->!null") List<String> getList(@NotNull @NonNls String key, @NotNull @RegExp @Language("RegExp") String separator, List<String> defaultList) {
+        return ofNullable(getProperty(key)).map(String::trim).map(s -> s.split(separator, -1)).map(Arrays::asList).orElse(defaultList);
     }
 
-    @Contract("_,_,!null -> !null")
-    public List<String> getList(@NotNull @NonNls String key, @Nullable @Language("RegExp") @NonNls String separatorPattern, @Nullable List<String> defaultList) {
-        return getList(key, separatorPattern, DEFAULT_LIMIT, defaultList);
+    public @Contract("_,!null->!null") List<String> getList(@NotNull @NonNls String key, List<String> defaultList) {
+        return getList(key, DEFAULT_LIST_SEPARATOR_RX, defaultList);
     }
 
-    @Contract("_,_,!null -> !null")
-    public List<String> getList(@NotNull @NonNls String key, int limit, @Nullable List<String> defaultList) {
-        return getList(key, DEFAULT_LIST_SEPARATOR_PATTERN, limit, defaultList);
-    }
-
-    public @NotNull List<String> getList(@NotNull @NonNls String key, int limit) {
-        return getList(key, DEFAULT_LIST_SEPARATOR_PATTERN, limit, Collections.emptyList());
-    }
-
-    @Contract("_,!null -> !null")
-    public List<String> getList(@NotNull @NonNls String key, @Nullable List<String> defaultList) {
-        return getList(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_LIMIT, defaultList);
+    public @NotNull List<String> getList(@NotNull @NonNls String key, @NotNull @RegExp @Language("RegExp") String separator) {
+        return getList(key, separator, Collections.emptyList());
     }
 
     public @NotNull List<String> getList(@NotNull @NonNls String key) {
-        return getList(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_LIMIT, Collections.emptyList());
+        return getList(key, DEFAULT_LIST_SEPARATOR_RX, Collections.emptyList());
     }
 
     public long getLong(@NotNull @NonNls String key, long defaultValue) {
-        try {
-            return Long.parseLong(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
-        }
-        catch(Exception e) {
-            return defaultValue;
-        }
+        try { return Long.parseLong(prepForNumber(getProperty(key, String.valueOf(defaultValue)))); } catch(Exception e) { return defaultValue; }
     }
 
     public long getLong(@NotNull @NonNls String key) {
         return getLong(key, 0);
     }
 
-    @Contract("_,_,_,!null -> !null")
-    public Map<String, String> getMap(@NotNull @NonNls String key,
-                                      @NotNull @NonNls @Language("RegExp") String listSepPat,
-                                      @NotNull @NonNls @Language("RegExp") String kvSepPat,
-                                      @Nullable Map<String, String> defaultMap) {
-        List<String> list = getList(key, listSepPat, 0, null);
-        if(list == null) return defaultMap;
-
-        Map<String, String> map = new LinkedHashMap<>();
-        for(String kv : list) {
-            String[] arKv = kv.split(kvSepPat, 2);
-            if(arKv.length != 2) throw new InvalidPropertyKeyValuePair(msgs.format("msg.err.macro.kv_pair_missing_value", kv));
-            map.put(arKv[0], arKv[1]);
-        }
-        return map;
+    public @Contract("_,_,_,!null -> !null") Map<String, String> getMap(@NotNull @NonNls String key,
+                                                                        @NotNull @NonNls @Language("RegExp") String listSeparator,
+                                                                        @NotNull @NonNls @Language("RegExp") String kvSeparator,
+                                                                        Map<String, String> defaultMap) {
+        return ofNullable(getList(key, listSeparator, null)).map(Collection::stream).map(kvArrayMapFunction(kvSeparator)).orElse(Collections.emptyMap());
     }
 
     public @NotNull Map<String, String> getMap(@NotNull @NonNls String key, @NotNull @NonNls @Language("RegExp") String listSepPat, @NotNull @NonNls @Language("RegExp") String kvSepPat) {
         return getMap(key, listSepPat, kvSepPat, Collections.emptyMap());
     }
 
-    @Contract("_,!null -> !null")
-    public Map<String, String> getMap(@NotNull @NonNls String key, @Nullable Map<String, String> defaultMap) {
-        return getMap(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_MAP_KV_PATTERN, defaultMap);
+    public @Contract("_,!null -> !null") Map<String, String> getMap(@NotNull @NonNls String key, @Nullable Map<String, String> defaultMap) {
+        return getMap(key, DEFAULT_LIST_SEPARATOR_RX, DEFAULT_MAP_KV_RX, defaultMap);
     }
 
     public @NotNull Map<String, String> getMap(@NotNull @NonNls String key) {
-        return getMap(key, DEFAULT_LIST_SEPARATOR_PATTERN, DEFAULT_MAP_KV_PATTERN, Collections.emptyMap());
+        return getMap(key, DEFAULT_LIST_SEPARATOR_RX, DEFAULT_MAP_KV_RX, Collections.emptyMap());
     }
 
     public @Override String getProperty(@NotNull @NonNls String key) {
         return getProperty(key, true);
     }
 
-    @Override
-    @Contract("_,!null -> !null")
-    public String getProperty(@NotNull @NonNls String key, @Nullable String defaultValue) {
+    public @Override @Contract("_,!null -> !null") String getProperty(@NotNull @NonNls String key, @Nullable String defaultValue) {
         return getProperty(key, defaultValue, true);
     }
 
-    @Contract("_,!null,_ -> !null")
-    public String getProperty(@NotNull @NonNls String key, @Nullable String defaultValue, boolean macroExpansion) {
+    public @Contract("_,!null,_ -> !null") String getProperty(@NotNull @NonNls String key, @Nullable String defaultValue, boolean macroExpansion) {
         String value = _gp(key);
         return getString(((value == null) ? defaultValue : value), macroExpansion);
     }
@@ -239,12 +194,7 @@ public class PGProperties extends Properties {
     }
 
     public short getShort(@NotNull @NonNls String key, short defaultValue) {
-        try {
-            return Short.parseShort(prepForNumber(getProperty(key, String.valueOf(defaultValue))));
-        }
-        catch(Exception e) {
-            return defaultValue;
-        }
+        try { return Short.parseShort(prepForNumber(getProperty(key, String.valueOf(defaultValue)))); } catch(Exception e) { return defaultValue; }
     }
 
     public short getShort(@NotNull @NonNls String key) {
@@ -252,7 +202,7 @@ public class PGProperties extends Properties {
     }
 
     public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key) {
-        return getStreamOf(key, DEFAULT_LIST_SEPARATOR_PATTERN);
+        return getStreamOf(key, DEFAULT_LIST_SEPARATOR_RX);
     }
 
     public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key, @NotNull @RegExp @Language("RegExp") @NonNls String regexp) {
@@ -307,17 +257,12 @@ public class PGProperties extends Properties {
     }
 
     public static @NotNull PGProperties getProperties(@NotNull @NonNls String resourceName, @Nullable Properties defaults) {
-        Class<?> clazz = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
-        return getProperties(resourceName, clazz, defaults);
+        return getProperties(resourceName, StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass(), defaults);
     }
 
     public static @NotNull PGProperties getProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz, @Nullable Properties defaults) {
-        try {
-            return getProperties(clazz.getResourceAsStream(resourceName), defaults);
-        }
-        catch(Exception e) {
-            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.res", resourceName), e);
-        }
+        try { return getProperties(clazz.getResourceAsStream(resourceName), defaults); }
+        catch(Exception e) { throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.res", resourceName), e); }
     }
 
     public static @NotNull PGProperties getProperties(@NotNull File file) {
@@ -325,12 +270,8 @@ public class PGProperties extends Properties {
     }
 
     public static @NotNull PGProperties getProperties(@NotNull File file, @Nullable Properties defaults) {
-        try(InputStream inputStream = new FileInputStream(file)) {
-            return getProperties(inputStream, defaults);
-        }
-        catch(Exception e) {
-            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.file", file), e);
-        }
+        try(InputStream inputStream = new FileInputStream(file)) { return getProperties(inputStream, defaults); }
+        catch(Exception e) { throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.file", file), e); }
     }
 
     public static @NotNull PGProperties getProperties(InputStream inputStream) {
@@ -338,8 +279,7 @@ public class PGProperties extends Properties {
     }
 
     public static @NotNull PGProperties getProperties(InputStream inputStream, @Nullable Properties defaults) {
-        if(inputStream == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.input.stream"), new NullPointerException());
-        try(BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
+        try(BufferedInputStream bufferedInputStream = new BufferedInputStream(requireOrThrow(inputStream, PGProperties::missingInputStream))) {
             PGProperties props = new PGProperties(defaults);
             props.load(bufferedInputStream);
             return props;
@@ -354,8 +294,7 @@ public class PGProperties extends Properties {
     }
 
     public static @NotNull PGProperties getProperties(Reader reader, @Nullable Properties defaults) {
-        if(reader == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.reader"), new NullPointerException());
-        try(BufferedReader bufferedReader = new BufferedReader(reader)) {
+        try(BufferedReader bufferedReader = new BufferedReader(requireOrThrow(reader, PGProperties::missingReader))) {
             PGProperties props = new PGProperties(defaults);
             props.load(bufferedReader);
             return props;
@@ -370,8 +309,7 @@ public class PGProperties extends Properties {
     }
 
     public static @NotNull PGProperties getXMLProperties(InputStream inputStream, @Nullable Properties defaults) {
-        if(inputStream == null) throw new PGPropertiesException(msgs.getString("msg.err.props.missing.input.stream"), new NullPointerException());
-        try(BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
+        try(BufferedInputStream bufferedInputStream = new BufferedInputStream(requireOrThrow(inputStream, PGProperties::missingInputStream))) {
             PGProperties props = new PGProperties(defaults);
             props.loadFromXML(bufferedInputStream);
             return props;
@@ -386,12 +324,8 @@ public class PGProperties extends Properties {
     }
 
     public static @NotNull PGProperties getXMLProperties(@NotNull File file, @Nullable Properties defaults) {
-        try(InputStream inputStream = new FileInputStream(file)) {
-            return getXMLProperties(inputStream, defaults);
-        }
-        catch(Exception e) {
-            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.file", file), e);
-        }
+        try(InputStream inputStream = new FileInputStream(file)) { return getXMLProperties(inputStream, defaults); }
+        catch(Exception e) { throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.file", file), e); }
     }
 
     public static @NotNull PGProperties getXMLProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz) {
@@ -404,33 +338,32 @@ public class PGProperties extends Properties {
     }
 
     public static @NotNull PGProperties getXMLProperties(@NotNull @NonNls String resourceName, @NotNull Class<?> clazz, @Nullable Properties defaults) {
-        try {
-            return getXMLProperties(clazz.getResourceAsStream(resourceName), defaults);
-        }
-        catch(Exception e) {
-            throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.res", resourceName), e);
-        }
+        try { return getXMLProperties(clazz.getResourceAsStream(resourceName), defaults); }
+        catch(Exception e) { throw new PGPropertiesException(msgs.format("msg.err.props.load.failed.res", resourceName), e); }
+    }
+
+    private static String @NotNull [] checkKvPair(@NotNull String kv, String @NotNull [] ar) {
+        if(ar.length == 2) return ar;
+        throw new InvalidPropertyKeyValuePair(msgs.format("msg.err.macro.kv_pair_missing_value", kv));
+    }
+
+    private static @NotNull Function<Stream<String>, Map<String, String>> kvArrayMapFunction(@Language("RegExp") @NonNls String kvSeparator) {
+        return stream -> stream.map(kvSplitMapFunction(kvSeparator)).collect(KV_ARRAY_COLLECTOR);
+    }
+
+    private static @NotNull Function<String, String[]> kvSplitMapFunction(@Language("RegExp") @NonNls String kvSeparator) {
+        return kvString -> checkKvPair(kvString, kvString.split(kvSeparator, 2));
+    }
+
+    private static @NotNull PGPropertiesException missingInputStream() {
+        return new PGPropertiesException(msgs.getString("msg.err.props.missing.input.stream"), new NullPointerException());
+    }
+
+    private static @NotNull PGPropertiesException missingReader() {
+        return new PGPropertiesException(msgs.getString("msg.err.props.missing.reader"), new NullPointerException());
     }
 
     private static final class CacheHolder {
         private static final ObjCache CACHE = new ObjCache();
-    }
-
-    public static class PGPropertiesException extends RuntimeException {
-        public PGPropertiesException() {
-            super();
-        }
-
-        public PGPropertiesException(String message) {
-            super(message);
-        }
-
-        public PGPropertiesException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public PGPropertiesException(Throwable cause) {
-            super(cause);
-        }
     }
 }

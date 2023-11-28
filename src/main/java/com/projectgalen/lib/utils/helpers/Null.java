@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.helpers;
 // ===========================================================================
 //     PROJECT: PGUtils
 //    FILENAME: Null.java
@@ -100,8 +100,7 @@ public final class Null implements Cloneable {
         return Objects.requireNonNullElse(obj, defaultValue);
     }
 
-    @Contract("null, _ -> fail; !null, _ -> param1")
-    public static <T, E extends Exception> @NotNull T requireOrThrow(T obj, Supplier<E> supplier) throws E {
+    public static <T, E extends Throwable> @Contract("null, _ -> fail; !null, _ -> param1") @NotNull T requireOrThrow(T obj, Supplier<E> supplier) throws E {
         if(obj == null) throw supplier.get();
         return obj;
     }
