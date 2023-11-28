@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.math;
 
 // ===========================================================================
 //     PROJECT: PGUtils
@@ -22,6 +22,7 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.PGResourceBundle;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

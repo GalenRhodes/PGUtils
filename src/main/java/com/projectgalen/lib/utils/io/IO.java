@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.io;
 // ===========================================================================
 //     PROJECT: PGUtils
 //    FILENAME: IO.java
@@ -20,6 +20,7 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.PGProperties;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;

@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.ui;
 
 // ===========================================================================
 //     PROJECT: PGUtils
@@ -21,6 +21,8 @@ package com.projectgalen.lib.utils;
 // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
+
+import com.projectgalen.lib.utils.text.Text;
 
 public class DefaultProgressReporter implements ProgressReporter {
 
@@ -49,7 +51,7 @@ public class DefaultProgressReporter implements ProgressReporter {
     }
 
     public @Override String getProgressText() {
-        return U.toString(progressText, () -> {
+        return Text.toString(progressText, () -> {
             double lo = getProgressMin();
             return "%d%%".formatted((int)(((((double)getProgress()) - lo) / (((double)getProgressMax()) - lo)) * 100.0));
         });

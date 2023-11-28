@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils.macro;
+package com.projectgalen.lib.utils.text.macro;
 // ===========================================================================
 //     PROJECT: PGUtils
 //    FILENAME: Macro.java
@@ -23,7 +23,7 @@ package com.projectgalen.lib.utils.macro;
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
 import com.projectgalen.lib.utils.errors.InvalidPropertyMacro;
-import com.projectgalen.lib.utils.regex.Regex;
+import com.projectgalen.lib.utils.text.regex.Regex;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 

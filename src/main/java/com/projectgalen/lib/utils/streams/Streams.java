@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.streams;
 
 // ===========================================================================
 //     PROJECT: PGUtils
@@ -22,10 +22,13 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.PGProperties;
+import com.projectgalen.lib.utils.PGResourceBundle;
 import com.projectgalen.lib.utils.collections.CollectionItem;
+import com.projectgalen.lib.utils.math.Range;
 import com.projectgalen.lib.utils.refs.BooleanRef;
 import com.projectgalen.lib.utils.refs.IntegerRef;
-import com.projectgalen.lib.utils.regex.Regex;
+import com.projectgalen.lib.utils.text.regex.Regex;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.*;
@@ -190,7 +193,7 @@ public class Streams {
         protected       int     next;
 
         public ClosedRangeIterator(int start, int end, int step) {
-            super(Range.closedRangeCount(start, end, step), SIZED | NONNULL | ORDERED | IMMUTABLE | DISTINCT);
+            super(com.projectgalen.lib.utils.math.Range.closedRangeCount(start, end, step), SIZED | NONNULL | ORDERED | IMMUTABLE | DISTINCT);
             this.start = start;
             this.end   = end;
             this.step  = step;

@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.collections;
 
 // ===========================================================================
 //     PROJECT: PGUtils
@@ -22,8 +22,9 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.collections.CollectionItem;
 import com.projectgalen.lib.utils.delegates.*;
+import com.projectgalen.lib.utils.streams.Streams;
+import com.projectgalen.lib.utils.text.Text;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -339,7 +340,7 @@ public final class PGArrays {
 
     private static int @NotNull [] tr1(char @NotNull [] chars) {
         for(int i = 0; i < chars.length; ) {
-            int[] cp = U.codePointAt(chars, i);
+            int[] cp = Text.codePointAt(chars, i);
             if(!Character.isWhitespace(cp[0])) return tr2(chars, i);
             i = cp[1];
         }
@@ -348,7 +349,7 @@ public final class PGArrays {
 
     private static int @NotNull [] tr2(char @NotNull [] chars, int i) {
         for(int j = chars.length; j > i; ) {
-            int[] cp = U.codePointAt(chars, j, true);
+            int[] cp = Text.codePointAt(chars, j, true);
             if(!Character.isWhitespace(cp[0])) return new int[] { i, j };
             j = cp[1];
         }

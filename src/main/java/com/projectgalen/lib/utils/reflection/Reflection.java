@@ -20,8 +20,12 @@ package com.projectgalen.lib.utils.reflection;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.*;
+import com.projectgalen.lib.utils.Null;
+import com.projectgalen.lib.utils.PGProperties;
+import com.projectgalen.lib.utils.PGResourceBundle;
 import com.projectgalen.lib.utils.errors.Errors;
+import com.projectgalen.lib.utils.math.PGMath;
+import com.projectgalen.lib.utils.text.Text;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +42,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.projectgalen.lib.utils.PGArrays.areEqual;
+import static com.projectgalen.lib.utils.collections.PGArrays.areEqual;
 
 @SuppressWarnings({ "unused", "SpellCheckingInspection" })
 public class Reflection {
@@ -355,7 +359,7 @@ public class Reflection {
     }
 
     private static @NotNull String getClassNames(Class<?> @NotNull [] classes) {
-        return U.join(", ", Stream.of(classes).map(Class::getName).toArray());
+        return Text.join(", ", Stream.of(classes).map(Class::getName).toArray());
     }
 
     private static @NotNull RuntimeException getError(@NotNull Exception e, @NotNull String key, Object @NotNull ... args) {

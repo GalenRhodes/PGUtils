@@ -17,7 +17,6 @@ package com.projectgalen.lib.utils.io;
 // NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ================================================================================================================================
 
-import com.projectgalen.lib.utils.IO;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;

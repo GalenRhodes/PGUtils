@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.text;
 
 // ===========================================================================
 //     PROJECT: PGUtils
@@ -22,24 +22,96 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.PGResourceBundle;
+import com.projectgalen.lib.utils.collections.PGArrays;
 import com.projectgalen.lib.utils.enums.Align;
+import com.projectgalen.lib.utils.enums.Parts;
+import com.projectgalen.lib.utils.text.regex.Regex;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.BreakIterator;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static com.projectgalen.lib.utils.regex.Regex.getUnicodeMatcher;
+import static com.projectgalen.lib.utils.text.regex.Regex.getUnicodeMatcher;
 
 @SuppressWarnings({ "unused", "SpellCheckingInspection" })
 public final class Text {
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
     private Text() { }
+
+    public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
+        return sb.append(String.format(format, args));
+    }
+
+    public static @NotNull StringBuffer appendFormat(@NotNull StringBuffer sb, @NotNull String format, @Nullable Object... args) {
+        return sb.append(String.format(format, args));
+    }
+
+    public static byte @NotNull [] base64Decode(@NotNull String encStr) {
+        return Base64.getDecoder().decode(encStr);
+    }
+
+    public static @NotNull String base64Encode(byte @NotNull [] data) {
+        return Base64.getEncoder().encodeToString(data);
+    }
+
+    public static @NotNull String capitalize(@NotNull String str) {
+        return ((str.isEmpty()) ? str : ((str.length() == 1) ? str.toUpperCase() : (str.substring(0, 1).toUpperCase() + str.substring(1))));
+    }
+
+    public static @NotNull String cleanNumberString(String numberString) {
+        return toNonEmptyString(Objects.toString(numberString, "0").replaceAll("[^0-9.+-]", ""), "0");
+    }
+
+    @Contract(value = "_, _, _ -> new", pure = true)
+    public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx, boolean backwards) {
+        if(!backwards) return codePointAt(chars, idx);
+        if(idx < 1 || idx > chars.length) return new int[] { -1, idx };
+        char c2 = chars[--idx];
+        if(Character.isLowSurrogate(c2) && (idx > 0)) {
+            char c1 = chars[idx - 1];
+            if(Character.isHighSurrogate(c1)) return new int[] { Character.toCodePoint(c1, c2), (idx - 1) };
+        }
+        return new int[] { c2, idx };
+    }
+
+    @Contract(value = "_, _ -> new", pure = true)
+    public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx) {
+        if(idx < 0 || idx >= chars.length) return new int[] { -1, idx };
+        char c1 = chars[idx++];
+        if(Character.isHighSurrogate(c1) && (idx < chars.length)) {
+            char c2 = chars[idx];
+            if(Character.isLowSurrogate(c2)) return new int[] { Character.toCodePoint(c1, c2), (idx + 1) };
+        }
+        return new int[] { c1, idx };
+    }
+
+    @Contract("_, _ -> param1")
+    public static @NotNull StringBuffer concat(@NotNull StringBuffer sb, Object @NotNull ... args) {
+        for(Object o : args) sb.append(o);
+        return sb;
+    }
+
+    @Contract("_, _ -> param1")
+    public static @NotNull StringBuilder concat(@NotNull StringBuilder sb, Object @NotNull ... args) {
+        for(Object o : args) sb.append(o);
+        return sb;
+    }
+
+    public static @NotNull String concat(Object... args) {
+        return concat(new StringBuilder(), args).toString();
+    }
 
     /**
      * Converts a string from kebab-case or SCREAMING-KEBAB-CASE to camelCase.
@@ -115,6 +187,20 @@ public final class Text {
         return getUnicodeMatcher("^_*[^_]", convertSnakeCaseToCamelCase(charSequence)).replaceAll(m -> m.group().toUpperCase());
     }
 
+    public static @NotNull String getPart(@NotNull String str, @NotNull @NonNls @Language("RegExp") String separator, @NotNull Parts part) {
+        Matcher m = Regex.getMatcher(separator, str);
+        return switch(part) {/*@f0*/
+            case NOT_FIRST -> (m.find() ? str.substring(m.end()) : str);
+            case NOT_LAST  -> (m.find() ? str.substring(0, getLastMatchLocation(m, Matcher::start)) : str);
+            case LAST      -> (m.find() ? str.substring(getLastMatchLocation(m, Matcher::end)) : str);
+            default        -> (m.find() ? str.substring(0, m.start()) : str);
+        };/*@f1*/
+    }
+
+    public static @NotNull String ifNullOrEmpty(@Nullable String str, @NotNull String def) {
+        return ((str == null || str.isEmpty()) ? def : str);
+    }
+
     public static boolean isAllWhitespace(@NotNull CharSequence charSequence, int startIndex, int endIndex) {
         return streamCodePoints(charSequence, startIndex, endIndex).allMatch(cp -> Character.isWhitespace(cp.codePoint));
     }
@@ -130,6 +216,31 @@ public final class Text {
             if(Character.isLowSurrogate(ch2)) return Character.isWhitespace(Character.toCodePoint(ch1, ch2));
         }
         return Character.isWhitespace(ch1);
+    }
+
+    public static @NotNull String join(char separator, Object @NotNull ... args) {
+        return join(Character.toString(separator), args);
+    }
+
+    public static @NotNull String join(@NotNull String separator, Object @NotNull ... args) {
+        if(args.length == 0) return "";
+        StringBuilder sb = new StringBuilder().append(args[0]);
+        for(int i = 1; i < args.length; i++) sb.append(separator).append(args[i]);
+        return sb.toString();
+    }
+
+    @Contract("!null -> !null; null -> null")
+    public static String lc(@Nullable String str) {
+        return ((str == null) ? null : str.toLowerCase());
+    }
+
+    @Contract(pure = true)
+    public static @Nullable String nullIfEmpty(@Nullable String str) {
+        return (z(str) ? null : str);
+    }
+
+    public static boolean nz(@Nullable String str) {
+        return ((str != null) && (!str.trim().isEmpty()));
     }
 
     public static @NotNull String pad(String str, int width) {
@@ -179,6 +290,11 @@ public final class Text {
         return out.toArray(new String[0]);
     }
 
+    public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
+        int i = path.lastIndexOf('.');
+        return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
+    }
+
     public static boolean startsWithIgnoreCase(@NotNull String string, @NotNull String subString) {
         int l = subString.length();
         if(l > string.length()) return false;
@@ -198,8 +314,35 @@ public final class Text {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new MyCodePointIterator(charSequence, startIndex, endIndex), Spliterator.IMMUTABLE | Spliterator.ORDERED), false);
     }
 
+    public static @NotNull String toNonEmptyString(@Nullable String str, @NotNull String defaultString) {
+        return toNonEmptyString(str, () -> defaultString);
+    }
+
+    public static @NotNull String toNonEmptyString(@Nullable String str, @NotNull Supplier<String> defaultSupplier) {
+        String s = ((str == null) ? "" : str.trim());
+        return (s.isEmpty() ? defaultSupplier.get() : s);
+    }
+
+    public static String toString(@Nullable String str, @NotNull Supplier<String> supplier) {
+        return Optional.ofNullable(str).orElseGet(supplier);
+    }
+
+    @Contract("!null -> !null; null -> null")
+    public static String tr(@Nullable String str) {
+        return ((str == null) ? null : str.trim());
+    }
+
+    @Contract("!null -> !null; null -> null")
+    public static String uc(@Nullable String str) {
+        return ((str == null) ? null : str.toUpperCase());
+    }
+
     public static @NotNull List<String> wrap(@NotNull String str, int width, boolean stripLeading) {
         return _wrap((stripLeading ? str.strip() : str.stripTrailing()), width);
+    }
+
+    public static boolean z(@Nullable String str) {
+        return ((str == null) || (str.trim().isEmpty()));
     }
 
     private static @NotNull String _pad(@NotNull String str, @NotNull Align align, int width) {
@@ -316,6 +459,12 @@ public final class Text {
             return sb.toString();
         }
         return charSequence.toString().toLowerCase();
+    }
+
+    private static int getLastMatchLocation(Matcher m, @NotNull Function<Matcher, Integer> function) {
+        int i = function.apply(m);
+        while(m.find()) i = function.apply(m);
+        return i;
     }
 
     private static @NotNull List<String> getMessage(int startIndex, int endIndex, int len) {

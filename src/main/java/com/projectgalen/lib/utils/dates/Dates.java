@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.dates;
 // ===========================================================================
 //     PROJECT: PGUtils
 //    FILENAME: Dates.java
@@ -20,6 +20,7 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import com.projectgalen.lib.utils.PGResourceBundle;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -33,8 +34,8 @@ import java.util.*;
 
 @SuppressWarnings({ "DuplicatedCode", "unused" })
 public final class Dates {
-    private static final PGResourceBundle              msgs          = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
-    private static final Map<String, SimpleDateFormat> formatters    = new TreeMap<>();
+    private static final PGResourceBundle              msgs       = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final Map<String, SimpleDateFormat> formatters = new TreeMap<>();
     private static final int[]                         DAYS_OF_MONTH = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
     private Dates() { }

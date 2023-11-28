@@ -21,7 +21,9 @@ package com.projectgalen.lib.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.macro.Macro;
+import com.projectgalen.lib.utils.streams.Streams;
+import com.projectgalen.lib.utils.text.Text;
+import com.projectgalen.lib.utils.text.macro.Macro;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.*;
@@ -65,7 +67,7 @@ public final class PGResourceBundle extends ResourceBundle {
     }
 
     public @NotNull Stream<String> getStreamOf(@NotNull @NonNls String key, @NotNull @RegExp @Language("RegExp") @NonNls String regexp) {
-        return Streams.splitStream(U.tr(getStringQuietly(key)), regexp);
+        return Streams.splitStream(Text.tr(getStringQuietly(key)), regexp);
     }
 
     public @NotNull String getString(@NotNull String key, boolean macroExpansion) {

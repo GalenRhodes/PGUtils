@@ -1,9 +1,15 @@
 package com.projectgalen.lib.utils.test;
 
-import com.projectgalen.lib.utils.*;
+import com.projectgalen.lib.utils.PGProperties;
+import com.projectgalen.lib.utils.PGResourceBundle;
+import com.projectgalen.lib.utils.U;
+import com.projectgalen.lib.utils.collections.PGArrays;
+import com.projectgalen.lib.utils.dates.Dates;
+import com.projectgalen.lib.utils.enums.Parts;
 import com.projectgalen.lib.utils.reflection.Reflection;
 import com.projectgalen.lib.utils.reflection.TypeInfo;
 import com.projectgalen.lib.utils.test.casting.TestClass;
+import com.projectgalen.lib.utils.text.Text;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -303,10 +309,10 @@ public class Main {
 
     private static void testGetPart() {
         String str = "com.projectgalen.lib.utils.test.test_messages";
-        System.out.printf("%s: \"%s\"\n", "    FIRST", U.getPart(str, "\\.", U.Parts.FIRST));
-        System.out.printf("%s: \"%s\"\n", "     LAST", U.getPart(str, "\\.", U.Parts.LAST));
-        System.out.printf("%s: \"%s\"\n", "NOT_FIRST", U.getPart(str, "\\.", U.Parts.NOT_FIRST));
-        System.out.printf("%s: \"%s\"\n", " NOT_LAST", U.getPart(str, "\\.", U.Parts.NOT_LAST));
+        System.out.printf("%s: \"%s\"\n", "    FIRST", Text.getPart(str, "\\.", Parts.FIRST));
+        System.out.printf("%s: \"%s\"\n", "     LAST", Text.getPart(str, "\\.", Parts.LAST));
+        System.out.printf("%s: \"%s\"\n", "NOT_FIRST", Text.getPart(str, "\\.", Parts.NOT_FIRST));
+        System.out.printf("%s: \"%s\"\n", " NOT_LAST", Text.getPart(str, "\\.", Parts.NOT_LAST));
     }
 
     private static void testGetRange() {

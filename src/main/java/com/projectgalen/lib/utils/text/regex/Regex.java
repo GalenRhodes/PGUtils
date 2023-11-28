@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils.regex;
+package com.projectgalen.lib.utils.text.regex;
 // ===========================================================================
 //     PROJECT: PGUtils
 //    FILENAME: Regex.java
@@ -20,9 +20,9 @@ package com.projectgalen.lib.utils.regex;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.ObjCache;
 import com.projectgalen.lib.utils.PGProperties;
-import com.projectgalen.lib.utils.Range;
+import com.projectgalen.lib.utils.collections.ObjCache;
+import com.projectgalen.lib.utils.math.Range;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NonNls;

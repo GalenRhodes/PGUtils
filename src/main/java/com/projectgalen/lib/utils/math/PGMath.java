@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.math;
 // ===========================================================================
 //     PROJECT: PGUtils
 //    FILENAME: PGMath.java

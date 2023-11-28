@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils;
+package com.projectgalen.lib.utils.jdbc;
 // ================================================================================================================================
 //     PROJECT: PGUtils
 //    FILENAME: JDBC.java

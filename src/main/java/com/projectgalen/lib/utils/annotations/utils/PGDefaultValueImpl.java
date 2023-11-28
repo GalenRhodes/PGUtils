@@ -22,10 +22,10 @@ package com.projectgalen.lib.utils.annotations.utils;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.Dates;
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
 import com.projectgalen.lib.utils.annotations.PGDefaultValue;
+import com.projectgalen.lib.utils.dates.Dates;
 import com.projectgalen.lib.utils.errors.PGDefaultValueError;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

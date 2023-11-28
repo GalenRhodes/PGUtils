@@ -22,9 +22,9 @@ package com.projectgalen.lib.utils.keypath;
 
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
-import com.projectgalen.lib.utils.Range;
+import com.projectgalen.lib.utils.math.Range;
 import com.projectgalen.lib.utils.reflection.Reflection;
-import com.projectgalen.lib.utils.regex.Regex;
+import com.projectgalen.lib.utils.text.regex.Regex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
