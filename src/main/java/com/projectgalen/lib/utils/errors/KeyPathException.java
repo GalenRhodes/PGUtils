@@ -1,4 +1,4 @@
-package com.projectgalen.lib.utils.keypath;
+package com.projectgalen.lib.utils.errors;
 // ===========================================================================
 //     PROJECT: PGUtils
 //    FILENAME: KeyPathException.java
@@ -20,20 +20,14 @@ package com.projectgalen.lib.utils.keypath;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.NotNull;
+
 public class KeyPathException extends RuntimeException {
-    public KeyPathException() {
-        super();
-    }
+    public KeyPathException()                                                  { super(); }
 
-    public KeyPathException(String message) {
-        super(message);
-    }
+    public KeyPathException(@NotNull String message)                           { super(message); }
 
-    public KeyPathException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    public KeyPathException(@NotNull String message, @NotNull Throwable cause) { super(message, cause); }
 
-    public KeyPathException(Throwable cause) {
-        super(cause);
-    }
+    public KeyPathException(@NotNull Throwable cause)                          { super(cause); }
 }

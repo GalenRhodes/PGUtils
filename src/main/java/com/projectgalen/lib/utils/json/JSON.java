@@ -2,7 +2,7 @@ package com.projectgalen.lib.utils.json;
 
 // ===========================================================================
 //     PROJECT: PGBudget
-//    FILENAME: JsonTools.java
+//    FILENAME: JSON.java
 //         IDE: IntelliJ IDEA
 //      AUTHOR: Galen Rhodes
 //        DATE: May 18, 2023
@@ -35,8 +35,8 @@ import java.io.OutputStream;
 import java.util.TimeZone;
 
 @SuppressWarnings({ "unused", "ResultOfMethodCallIgnored" })
-public final class JsonTools {
-    private JsonTools() { }
+public final class JSON {
+    private JSON() { }
 
     public static @NotNull ObjectMapper getObjectMapper() {
         return new ObjectMapper().setTimeZone(TimeZone.getDefault()).enable(JsonParser.Feature.IGNORE_UNDEFINED, JsonParser.Feature.AUTO_CLOSE_SOURCE).enable(SerializationFeature.INDENT_OUTPUT);

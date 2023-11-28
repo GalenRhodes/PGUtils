@@ -229,6 +229,16 @@ public final class Text {
         return sb.toString();
     }
 
+    public static @NotNull String join(String @NotNull [] array, int start, int end, @NotNull String joiner) {
+        if((start < 0) || (end < 0) || (end > array.length) || (start > end)) throw new IllegalArgumentException();
+        if(start == end) return "";
+        String first = array[start++];
+        if(start == end) return first;
+        StringBuilder sb = new StringBuilder().append(first);
+        while(start < end) sb.append(joiner).append(array[start++]);
+        return sb.toString();
+    }
+
     @Contract("!null -> !null; null -> null")
     public static String lc(@Nullable String str) {
         return ((str == null) ? null : str.toLowerCase());

@@ -39,6 +39,7 @@ import java.util.stream.StreamSupport;
 
 import static java.sql.Types.*;
 
+@SuppressWarnings("unused")
 public final class JDBC {
 
     private static final ThrowingQuadConsumer<PreparedStatement, ParameterMetaData, Integer, Object, SQLException> DEFAULT_OTHER_HANDLER = (s, m, i, o) -> s.setObject(i, o, m.getParameterType(i));
@@ -162,7 +163,7 @@ public final class JDBC {
         private final @NotNull ResultSet                                                                _resultSet;
         private final @NotNull ResultSetMetaData                                                        _metaData;
         private final @NotNull ThrowingTriFunction<ResultSet, ResultSetMetaData, Long, R, SQLException> _function;
-        private                Boolean                                                                  _hasNext   = null;
+        private                Boolean                                                                  _hasNext;
         private                long                                                                     _rowNumber = 0;
 
         public ResultSetIterator(@NotNull ResultSet resultSet, @NotNull ThrowingTriFunction<ResultSet, ResultSetMetaData, Long, R, SQLException> function) {

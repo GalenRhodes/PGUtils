@@ -23,11 +23,12 @@ package com.projectgalen.lib.utils.keypath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings({ "unused", "unchecked" })
 public interface KeyPathCompliant {
 
-    boolean doesKeyPathExist(@NotNull String keyPath);
+    default <T> T getValueForKeyPath(@NotNull String keyPath)                          { return (T)KeyPathImpl.getValueForKeyPath(Object.class, keyPath, this); }
 
-    @Nullable <T> T getValueForKeyPath(@NotNull String keyPath);
+    default <T> T getValueForKeyPath(@NotNull Class<T> clazz, @NotNull String keyPath) { return KeyPathImpl.getValueForKeyPath(clazz, keyPath, this); }
 
-    void setValueForKeyPath(@NotNull String keyPath, @Nullable Object value);
+    default void setValueForKeyPath(@NotNull String keyPath, @Nullable Object value)   { KeyPathImpl.setValueForKeyPath(keyPath, this, value); }
 }
