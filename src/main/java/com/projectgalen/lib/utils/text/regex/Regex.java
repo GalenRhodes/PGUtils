@@ -27,6 +27,7 @@ import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -85,7 +86,7 @@ public final class Regex {
         return rangeOfLastMatch(getMatcher(pattern, input));
     }
 
-    public static Range rangeOfFirstMatch(@NotNull Matcher matcher) {
+    public static @Nullable Range rangeOfFirstMatch(@NotNull Matcher matcher) {
         return (matcher.find() ? Range.valueOf(matcher) : null);
     }
 
