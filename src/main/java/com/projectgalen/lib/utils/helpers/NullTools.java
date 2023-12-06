@@ -42,16 +42,16 @@ public interface NullTools extends IfTools {
         return ofNullable(obj).map(mapFunc1).map(mapFunc2).orElseGet(defaultSupplier);
     }
 
-    default <T, E extends Throwable> @Contract("null, _ -> fail; !null, _ -> param1") @NotNull T requireOrThrow(@Nullable T obj, @NotNull Supplier<E> exceptionSupplier) throws E {
-        return Null.requireOrThrow(obj, exceptionSupplier);
-    }
-
     default <O, P, R> R from2V(@Nullable O obj, @NotNull Function<O, P> mapFunc1, @NotNull Function<P, R> mapFunc2, R defaultValue) {
         return from2(obj, mapFunc1, mapFunc2, () -> defaultValue);
     }
 
     default <O, R> R fromV(@Nullable O obj, @NotNull Function<O, R> function, R defaultValue) {
         return from(obj, function, () -> defaultValue);
+    }
+
+    default <T, E extends Throwable> @Contract("null, _ -> fail; !null, _ -> param1") @NotNull T requireOrThrow(@Nullable T obj, @NotNull Supplier<E> exceptionSupplier) throws E {
+        return Null.requireOrThrow(obj, exceptionSupplier);
     }
 
     default <O> void with(@Nullable O obj, @NotNull Consumer<O> consumer) {

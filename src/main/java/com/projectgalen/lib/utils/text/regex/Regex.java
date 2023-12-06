@@ -28,9 +28,12 @@ import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.regex.Pattern.UNICODE_CASE;
 import static java.util.regex.Pattern.UNICODE_CHARACTER_CLASS;
@@ -100,31 +103,22 @@ public final class Regex {
         return r;
     }
 
-    public static String replaceUsingDelegate(@NotNull @Language("RegExp") @NonNls String pattern, CharSequence input, @NotNull Function<Matcher, String> delegate) {
-        return ((input == null) ? null : replaceUsingDelegate(pattern, 0, input, delegate));
+    public static @NotNull Stream<MatchPoint> streamMatches(@NotNull Pattern pattern, @NotNull CharSequence input) {
+        return streamMatches(pattern.matcher(input), input);
     }
 
-    public static String replaceUsingDelegate(@Language("RegExp") @NonNls @NotNull String pattern,
-                                              @MagicConstant(flagsFromClass = Pattern.class) int flags,
-                                              CharSequence input,
-                                              @NotNull Function<Matcher, String> delegate) {
-        return ((input == null) ? null : replaceUsingDelegate(getMatcher(pattern, flags, input), delegate));
+    public static @NotNull Stream<MatchPoint> streamMatches(@NotNull @NonNls @Language("RegExp") String pattern, @NotNull CharSequence input) {
+        return streamMatches(pattern, 0, input);
     }
 
-    public static String replaceUsingDelegate(@NotNull Pattern regex, CharSequence input, @NotNull Function<Matcher, String> delegate) {
-        return ((input == null) ? null : replaceUsingDelegate(regex.matcher(input), delegate));
+    public static @NotNull Stream<MatchPoint> streamMatches(@NotNull @NonNls @Language("RegExp") String pattern,
+                                                            @MagicConstant(flagsFromClass = Pattern.class) int flags,
+                                                            @NotNull CharSequence input) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new MatchIterator(pattern, flags, input), Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED), false);
     }
 
-    public static @NotNull String replaceUsingDelegate(@NotNull Matcher matcher, @NotNull Function<Matcher, String> delegate) {
-        StringBuilder sb = new StringBuilder();
-
-        while(matcher.find()) {
-            String repl = delegate.apply(matcher);
-            matcher.appendReplacement(sb, Matcher.quoteReplacement((repl == null) ? matcher.group() : repl));
-        }
-
-        matcher.appendTail(sb);
-        return sb.toString();
+    public static @NotNull Stream<MatchPoint> streamMatches(@NotNull Matcher matcher, @NotNull CharSequence input) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new MatchIterator(matcher, input), Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED), false);
     }
 
     private static final class CacheHolder {

@@ -10,6 +10,7 @@ import com.projectgalen.lib.utils.reflection.Reflection;
 import com.projectgalen.lib.utils.reflection.TypeInfo;
 import com.projectgalen.lib.utils.test.casting.TestClass;
 import com.projectgalen.lib.utils.text.Text;
+import com.projectgalen.lib.utils.text.regex.Regex;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -19,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
 
 @SuppressWarnings({ "SameParameterValue", "MismatchedQueryAndUpdateOfCollection", "unused" })
 public class Main {
@@ -34,23 +36,18 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            String[] strs = {
-                    "galen-rhodes-🤣-was-here-2023",
-                    "GALEN-RHODES-🤣-WAS-HERE-2023",
-                    "-galen-rhodes-🤣-was-here-2023-",
-                    "-GALEN-RHODES-🤣-WAS-HERE-2023-",
-                    "--galen--rhodes--🤣--was--here--2023--",
-                    "--GALEN--RHODES--🤣--WAS--HERE--2023--",
-                    };
-            System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
-            for(String str : strs) {
-                System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertKebabCaseToCamelCase(str));
+            String  str = "Galen Rhodes💞 was here\r\n in \t the 🇺🇸 and 🤜🏼🧔🏼🧟‍";
+            Matcher m   = Regex.getMatcher("\\X", str);
+
+            while(m.find()) {
+                str.substring(m.start(), m.end()).codePoints().mapToObj(cp -> switch(cp) {
+                    case '\r' -> "\\r";
+                    case '\n' -> "\\n";
+                    case '\t' -> "\\t";
+                    default -> String.valueOf(Character.toChars(cp));
+                }).forEach(s -> System.out.printf("[%s]", s));
             }
-            System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
-            for(String str : strs) {
-                System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertKebabCaseToPascalCase(str));
-            }
-            System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
+            System.out.print("\n");
         }
         catch(Exception e) {
             System.err.printf(String.format("\n\nERROR: %s\n", e));
@@ -58,50 +55,24 @@ public class Main {
         }
     }
 
-    private static void rangeIterationTest() {
-        for(int i = 0; i < 100; i++) {
-            int start = (int)(Math.random() * 1000);
-            int end   = (int)(Math.random() * 1000);
-            int step  = (int)(Math.random() * 20);
-
-            if(start != end && step > 0) {
-                if(start < end) {
-                    int count1 = (int)Math.ceil(((double)end - (double)start) / (double)step);
-                    int count2 = 0;
-                    int z1     = start;
-
-                    while(z1 <= end) {
-                        count2++;
-                        z1 += step;
-                    }
-
-                    if(count1 != count2) {
-                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d ***\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
-                    }
-                    else {
-                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
-                    }
-                }
-                else {
-                    step = (-step);
-                    int count1 = (int)Math.ceil(((double)start - (double)end) / (double)Math.abs(step));
-                    int count2 = 0;
-                    int z1     = start;
-
-                    while(z1 >= end) {
-                        count2++;
-                        z1 += step;
-                    }
-
-                    if(count1 != count2) {
-                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d ***\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
-                    }
-                    else {
-                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
-                    }
-                }
-            }
+    private static void caseChangeTest() {
+        String[] strs = {
+                "galen-rhodes-🤣-was-here-2023",
+                "GALEN-RHODES-🤣-WAS-HERE-2023",
+                "-galen-rhodes-🤣-was-here-2023-",
+                "-GALEN-RHODES-🤣-WAS-HERE-2023-",
+                "--galen--rhodes--🤣--was--here--2023--",
+                "--GALEN--RHODES--🤣--WAS--HERE--2023--",
+                };
+        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
+        for(String str : strs) {
+            System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertKebabCaseToCamelCase(str));
         }
+        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
+        for(String str : strs) {
+            System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertKebabCaseToPascalCase(str));
+        }
+        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
     }
 
     private static void checkAssignability(Field @NotNull [] fields) {
@@ -191,24 +162,50 @@ public class Main {
         propsTest(bundle, props);
     }
 
-    private static void testSnakeCaseToCamelCaseAndPascalCase() {
-        String[] strs = {
-                "galen_rhodes_🤣_was_here_2023",
-                "GALEN_RHODES_🤣_WAS_HERE_2023",
-                "_galen_rhodes_🤣_was_here_2023_",
-                "_GALEN_RHODES_🤣_WAS_HERE_2023_",
-                "__galen__rhodes__🤣__was__here__2023__",
-                "__GALEN__RHODES__🤣__WAS__HERE__2023__",
-                };
-        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
-        for(String str : strs) {
-            System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertSnakeCaseToCamelCase(str));
+    private static void rangeIterationTest() {
+        for(int i = 0; i < 100; i++) {
+            int start = (int)(Math.random() * 1000);
+            int end   = (int)(Math.random() * 1000);
+            int step  = (int)(Math.random() * 20);
+
+            if(start != end && step > 0) {
+                if(start < end) {
+                    int count1 = (int)Math.ceil(((double)end - (double)start) / (double)step);
+                    int count2 = 0;
+                    int z1     = start;
+
+                    while(z1 <= end) {
+                        count2++;
+                        z1 += step;
+                    }
+
+                    if(count1 != count2) {
+                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d ***\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                    }
+                    else {
+                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                    }
+                }
+                else {
+                    step = (-step);
+                    int count1 = (int)Math.ceil(((double)start - (double)end) / (double)Math.abs(step));
+                    int count2 = 0;
+                    int z1     = start;
+
+                    while(z1 >= end) {
+                        count2++;
+                        z1 += step;
+                    }
+
+                    if(count1 != count2) {
+                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d ***\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                    }
+                    else {
+                        System.out.printf("start: %4d; end: %4d; step: %3d; count: %4d; actual: %4d; z1: %4d; z2: %4d\n", start, end, step, count1, count2, z1, (start + (count1 * step)));
+                    }
+                }
+            }
         }
-        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
-        for(String str : strs) {
-            System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertSnakeCaseToPascalCase(str));
-        }
-        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
     }
 
     private static void showMethods() {
@@ -367,6 +364,26 @@ public class Main {
                 System.out.printf("\nstart = %3d; end = %3d; step = %2d; calculated = %3.3f; actual = %3d; result = %s\n\n", start, end, step * -1, cf, cx, cc == cx ? "ok" : "MISMATCH");
             }
         }
+    }
+
+    private static void testSnakeCaseToCamelCaseAndPascalCase() {
+        String[] strs = {
+                "galen_rhodes_🤣_was_here_2023",
+                "GALEN_RHODES_🤣_WAS_HERE_2023",
+                "_galen_rhodes_🤣_was_here_2023_",
+                "_GALEN_RHODES_🤣_WAS_HERE_2023_",
+                "__galen__rhodes__🤣__was__here__2023__",
+                "__GALEN__RHODES__🤣__WAS__HERE__2023__",
+                };
+        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
+        for(String str : strs) {
+            System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertSnakeCaseToCamelCase(str));
+        }
+        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
+        for(String str : strs) {
+            System.out.printf("%50s - \"%s\"\n", '"' + str + '"', Text.convertSnakeCaseToPascalCase(str));
+        }
+        System.out.print("-----------------------------------------------------------------------------------------------------------------\n");
     }
 
     private static void testTypeInfo() {
