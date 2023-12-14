@@ -48,8 +48,6 @@ import static com.projectgalen.lib.utils.text.regex.Regex.getUnicodeMatcher;
 public final class Text {
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
-    private static final String sss = "␀␁␂␃␄␅␆␇␈␉␊␌␌␍␎␏␐␑␒␓␔␕␖␗␘␙␚␛␜␝␞␟␡";
-
     private Text() { }
 
     public static @NotNull StringBuilder appendFormat(@NotNull StringBuilder sb, @NotNull String format, @Nullable Object... args) {
