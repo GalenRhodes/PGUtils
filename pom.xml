@@ -11,8 +11,6 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <intellij.version>232.8660.185</intellij.version>
-        <intellij.annotations.version>24.0.1</intellij.annotations.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <github.global.server>github</github.global.server>
@@ -83,19 +81,19 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>${intellij.annotations.version}</version>
+            <version>24.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.jetbrains.intellij.java</groupId>
             <artifactId>java-gui-forms-rt</artifactId>
-            <version>${intellij.version}</version>
+            <version>233.11799.286</version>
         </dependency>
 
         <dependency>
             <groupId>com.jetbrains.intellij.java</groupId>
             <artifactId>java-compiler-ant-tasks</artifactId>
-            <version>${intellij.version}</version>
+            <version>233.11799.286</version>
         </dependency>
 
         <dependency>

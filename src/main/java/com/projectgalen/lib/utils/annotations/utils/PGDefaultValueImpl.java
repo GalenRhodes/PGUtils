@@ -1,6 +1,6 @@
 package com.projectgalen.lib.utils.annotations.utils;
 
-// ===========================================================================
+// ===============================================================================================================================
 //     PROJECT: PGUtils
 //    FILENAME: DefaultValueImpl.java
 //         IDE: IntelliJ IDEA
@@ -9,18 +9,14 @@ package com.projectgalen.lib.utils.annotations.utils;
 //
 // Copyright © 2023 Project Galen. All rights reserved.
 //
-// Permission to use, copy, modify, and distribute this software for any
-// purpose with or without fee is hereby granted, provided that the above
-// copyright notice and this permission notice appear in all copies.
+// Permission to use, copy, modify, and distribute this software for any purpose with or without fee is hereby granted, provided
+// that the above copyright notice and this permission notice appear in all copies.
 //
-// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
-// SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
-// IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-// ===========================================================================
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+// CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+// NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+// ===============================================================================================================================
 
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
@@ -48,7 +44,7 @@ public final class PGDefaultValueImpl {
     private PGDefaultValueImpl() { }
 
     public static @NotNull Object getDefaultValue(@NotNull PGDefaultValue dv, @NotNull Class<?> type) throws PGDefaultValueError {
-        if((dv.value().length() == 0) && !String.class.isAssignableFrom(type)) throw new PGDefaultValueError(msgs.getString("msg.err.def.val.empty_string"));
+        if((dv.value().isEmpty()) && !String.class.isAssignableFrom(type)) throw new PGDefaultValueError(msgs.getString("msg.err.def.val.empty_string"));
         try {
             if(String.class.isAssignableFrom(type)) return dv.value();
             else if(Date.class.isAssignableFrom(type) || Calendar.class.isAssignableFrom(type)) return getDate(dv, type);
@@ -66,10 +62,7 @@ public final class PGDefaultValueImpl {
         PGDefaultValue dv = method.getAnnotation(PGDefaultValue.class);
         if((obj != null) && (dv != null)) {
             try { method.invoke(obj, getDefaultValue(dv, params[0])); }
-            catch(InvocationTargetException | IllegalAccessException e) {
-                throw new PGDefaultValueError(msgs.format("msg.err.def.exception",
-                                                          e), e);
-            }
+            catch(InvocationTargetException | IllegalAccessException e) { throw new PGDefaultValueError(msgs.format("msg.err.def.exception", e), e); }
         }
     }
 
@@ -89,15 +82,12 @@ public final class PGDefaultValueImpl {
     }
 
     private static @NotNull Object getDate(@NotNull PGDefaultValue dv, @NotNull Class<?> type) throws ParseException {
-        return dateByMilliseconds(type, ((dv.format().length() == 0) ? Long.parseLong(dv.value()) : new SimpleDateFormat(dv.format()).parse(dv.value()).getTime()));
+        return dateByMilliseconds(type, ((dv.format().isEmpty()) ? Long.parseLong(dv.value()) : new SimpleDateFormat(dv.format()).parse(dv.value()).getTime()));
     }
 
     private static @NotNull Object getDefaultByConstructor(@NotNull PGDefaultValue dv, @NotNull Class<?> type) throws PGDefaultValueError {
         try { return type.getConstructor(String.class).newInstance(dv.value()); }
-        catch(NoSuchMethodException e) {
-            throw new PGDefaultValueError(msgs.format("msg.err.def.no_way",
-                                                      VALUE_OF_METHOD_NAME));
-        }
+        catch(NoSuchMethodException e) { throw new PGDefaultValueError(msgs.format("msg.err.def.no_way", VALUE_OF_METHOD_NAME)); }
         catch(Exception e) { throw new PGDefaultValueError(msgs.format("msg.err.def.exception", e), e); }
     }
 
@@ -109,9 +99,6 @@ public final class PGDefaultValueImpl {
         }
         catch(PGDefaultValueError e) { throw e; }
         catch(NoSuchMethodException e) { return getDefaultByConstructor(dv, type); }
-        catch(Exception e) {
-            throw new PGDefaultValueError(msgs.format("msg.err.def.exception",
-                                                      e), e);
-        }
+        catch(Exception e) { throw new PGDefaultValueError(msgs.format("msg.err.def.exception", e), e); }
     }
 }

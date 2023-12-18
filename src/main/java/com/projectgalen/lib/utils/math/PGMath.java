@@ -33,12 +33,12 @@ public final class PGMath {
 
     @Contract("null -> null; !null -> !null")
     public static BigDecimal getBigDecimal(@Nullable Number num) {
-        return ((num == null) ? null : ((num instanceof BigDecimal) ? (BigDecimal)num : ((num instanceof BigInteger) ? new BigDecimal((BigInteger)num) : BigDecimal.valueOf(num.doubleValue()))));
+        return ((num == null) ? null : ((num instanceof BigDecimal b) ? b : ((num instanceof BigInteger b) ? new BigDecimal(b) : BigDecimal.valueOf(num.doubleValue()))));
     }
 
     @Contract("null -> null; !null -> !null")
     public static BigInteger getBigInteger(@Nullable Number num) {
-        return ((num == null) ? null : ((num instanceof BigInteger) ? (BigInteger)num : ((num instanceof BigDecimal) ? ((BigDecimal)num).toBigInteger() : BigInteger.valueOf(num.longValue()))));
+        return ((num == null) ? null : ((num instanceof BigInteger b) ? b : ((num instanceof BigDecimal b) ? b.toBigInteger() : BigInteger.valueOf(num.longValue()))));
     }
 
     /**

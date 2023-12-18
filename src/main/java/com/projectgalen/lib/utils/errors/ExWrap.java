@@ -1,7 +1,7 @@
 package com.projectgalen.lib.utils.errors;
 // ================================================================================================================================
 //     PROJECT: PGUtils
-//    FILENAME: WrappedException.java
+//    FILENAME: ExWrap.java
 //         IDE: IntelliJ IDEA
 //      AUTHOR: Galen Rhodes
 //        DATE: November 28, 2023
@@ -21,15 +21,17 @@ import com.projectgalen.lib.utils.delegates.ThrowingRunnable;
 import com.projectgalen.lib.utils.delegates.ThrowingSupplier;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.Future;
+
 @SuppressWarnings("unused")
-public class WrappedException extends RuntimeException {
-    public WrappedException()                                                                   { }
+public class ExWrap extends RuntimeException {
+    public ExWrap()                                                                   { }
 
-    public WrappedException(@NotNull String message)                                            { super(message); }
+    public ExWrap(@NotNull String message)                                            { super(message); }
 
-    public WrappedException(@NotNull String message, @NotNull Throwable cause)                  { super(message, cause); }
+    public ExWrap(@NotNull String message, @NotNull Throwable cause)                  { super(message, cause); }
 
-    public WrappedException(@NotNull Throwable cause)                                           { super(cause); }
+    public ExWrap(@NotNull Throwable cause)                                           { super(cause); }
 
     public static void exec(@NotNull ThrowingRunnable runner)                                   { exec(runner, () -> { }); }
 
@@ -39,5 +41,9 @@ public class WrappedException extends RuntimeException {
 
     public static <R> R get(@NotNull ThrowingSupplier<R> runner, @NotNull Runnable thenFinally) { try { return runner.get(); } catch(Throwable t) { throw wrap(t); } finally { thenFinally.run(); } }
 
-    public static @NotNull WrappedException wrap(@NotNull Throwable t)                          { return ((t instanceof WrappedException) ? ((WrappedException)t) : new WrappedException(t)); }
+    public static <R> R get(@NotNull Future<R> future)                                { return get(future, () -> { }); }
+
+    public static <R> R get(@NotNull Future<R> future, @NotNull Runnable thenFinally) { return get(future::get, thenFinally); }
+
+    public static @NotNull ExWrap wrap(@NotNull Throwable t)                          { return ((t instanceof ExWrap) ? ((ExWrap)t) : new ExWrap(t)); }
 }

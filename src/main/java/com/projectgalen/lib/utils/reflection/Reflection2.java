@@ -73,7 +73,7 @@ public final class Reflection2 extends Reflection {
         }, Spliterator.IMMUTABLE | Spliterator.DISTINCT | Spliterator.NONNULL), false);
     }
 
-    public static Field getField(@NotNull Class<?> clazz, @NotNull String name) {
+    public static @NotNull Field getField(@NotNull Class<?> clazz, @NotNull String name) {
         return getField(clazz, name, true);
     }
 

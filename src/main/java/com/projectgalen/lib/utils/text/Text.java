@@ -1,6 +1,6 @@
 package com.projectgalen.lib.utils.text;
 
-// ===========================================================================
+// ===============================================================================================================================
 //     PROJECT: PGUtils
 //    FILENAME: Text.java
 //         IDE: IntelliJ IDEA
@@ -9,18 +9,14 @@ package com.projectgalen.lib.utils.text;
 //
 // Copyright © 2023 Project Galen. All rights reserved.
 //
-// Permission to use, copy, modify, and distribute this software for any
-// purpose with or without fee is hereby granted, provided that the above
-// copyright notice and this permission notice appear in all copies.
+// Permission to use, copy, modify, and distribute this software for any purpose with or without fee is hereby granted, provided
+// that the above copyright notice and this permission notice appear in all copies.
 //
-// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
-// SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
-// IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-// ===========================================================================
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+// CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+// NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+// ===============================================================================================================================
 
 import com.projectgalen.lib.utils.PGResourceBundle;
 import com.projectgalen.lib.utils.collections.PGArrays;
@@ -47,6 +43,25 @@ import static com.projectgalen.lib.utils.text.regex.Regex.getUnicodeMatcher;
 @SuppressWarnings({ "unused", "SpellCheckingInspection" })
 public final class Text {
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+
+    public static final String[] REPL = { /*@f0*/
+    /* 0x00 ... 0x0f */ "␀", "␁", "␂", "␃", "␄", "␅", "␆", "␇", "␈", "␉", "␊", "␋", "␌", "␍", "␎", "␏",
+    /* 0x10 ... 0x1f */ "␐", "␑", "␒", "␓", "␔", "␕", "␖", "␗", "␘", "␙", "␚", "␛", "␜", "␝", "␞", "␟",
+    /* 0x20 ... 0x2f */ " ", "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/",
+    /* 0x30 ... 0x3f */ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?",
+    /* 0x40 ... 0x4f */ "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+    /* 0x50 ... 0x5f */ "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_",
+    /* 0x60 ... 0x6f */ "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+    /* 0x70 ... 0x7f */ "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~", "␡",
+    /* 0x80 ... 0x8f */ "Ç", "ü", "é", "â", "ä", "à", "å", "ç", "ê", "ë", "è", "ï", "î", "ì", "Ä", "Å",
+    /* 0x90 ... 0x9f */ "É", "æ", "Æ", "ô", "ö", "ò", "û", "ù", "ÿ", "Ö", "Ü", "¢", "£", "¥", "₧", "ƒ",
+    /* 0xa0 ... 0xaf */ "á", "í", "ó", "ú", "ñ", "Ñ", "ª", "°", "¿", "⌐", "¬", "½", "¼", "¡", "«", "»",
+    /* 0xb0 ... 0xbf */ "░", "▒", "▓", "│", "┤", "╡", "╢", "╖", "╕", "╣", "║", "╗", "╝", "╜", "╛", "┐",
+    /* 0xc0 ... 0xcf */ " ", "┴", "┬", "├", "─", "┼", "╞", "╟", "╚", "╔", "╩", "╦", "╠", "═", "╬", "╧",
+    /* 0xd0 ... 0xdf */ "╨", "╤", "╥", "╙", "╘", "╒", "╓", "╫", "╪", "┘", "┌", "█", "▄", "▌", "▐", "▀",
+    /* 0xe0 ... 0xef */ "α", "β", "Γ", "π", "Σ", "σ", "μ", "τ", "Φ", "Θ", "Ω", "δ", "∞", "φ", "ε", "∩",
+    /* 0xf0 ... 0xff */ "≡", "±", "≥", "≤", "⌠", "⌡", "÷", "≈", "°", "∙", "·", "√", "ⁿ", "²", "■", "ÿ"
+    };/*@f1*/
 
     private Text() { }
 

@@ -20,59 +20,73 @@ package com.projectgalen.lib.utils.text.macro;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
-import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
 import com.projectgalen.lib.utils.errors.InvalidPropertyMacro;
-import com.projectgalen.lib.utils.text.regex.Regex;
-import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.regex.Matcher;
+
+import static java.util.Optional.ofNullable;
 
 public final class Macro {
-    private static final                     PGProperties     props = PGProperties.getXMLProperties("pg_properties.xml", PGProperties.class);
-    private static final                     PGResourceBundle msgs;
-    private static final @Language("RegExp") String           rx1;
-    private static final                     String           rx2;
-    private static final                     String           rx3;
-    private static final                     String           rx4;
-    private static final @Language("RegExp") String           rx5;
+    private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
 
     private Macro() { }
 
-    public static String replaceMacros(String input, @NotNull Function<String, String> stringFunction) {
-        return ((input == null) ? null : replaceMacros(input, new TreeSet<>(), stringFunction));
+    public static @Contract("null,_->null;!null,_->!null") String replaceMacros(String input, @NotNull Function<String, String> macroFunc) {
+        return ofNullable(input).map(s -> processMacros(s, new TreeSet<>(), macroFunc)).orElse(null);
     }
 
-    private static String getMacroReplacement(@NotNull String macroName, @NotNull Set<String> deadManSet, @NotNull Function<String, String> stringFunction) {
-        if(deadManSet.contains(macroName)) throw new InvalidPropertyMacro(msgs.format("msg.err.macro.key_circular_ref", macroName));
-        try {
-            deadManSet.add(macroName);
-            String input = stringFunction.apply(macroName);
-            return ((input == null) ? null : replaceMacros(input, deadManSet, stringFunction));
+    private static @NotNull String processMacros(@NotNull String input, Set<String> deadManSet, Function<String, String> macroFunc) {
+        StringBuilder sb   = new StringBuilder();
+        int           len  = input.length();
+        int           pos  = 0;
+        int           last = 0;
+
+        while(pos < len) {
+            switch(input.charAt(pos++)) {
+                case '\\' -> { if(pos < len) last = pos = prom1(sb, input, last, pos); }
+                case '$' -> last = pos = prom2(sb.append(input, last, pos - 1), input, pos, len, deadManSet, macroFunc);
+            }
         }
-        finally {
-            deadManSet.remove(macroName);
-        }
+
+        return sb.append(input, last, len).toString();
     }
 
-    private static @NotNull String replaceMacros(String input, @NotNull Set<String> deadManSet, @NotNull Function<String, String> stringFunction) {
-        String        str = Regex.replaceUsingDelegate(rx1, input.replace(rx2, rx3), m -> getMacroReplacement(m.group(1), deadManSet, stringFunction));
-        StringBuilder sb  = new StringBuilder();
-        Matcher       m   = Regex.getMatcher(rx5, str);
-        while(m.find()) m.appendReplacement(sb, Matcher.quoteReplacement(m.group(1)));
-        return m.appendTail(sb).toString().replace(rx3, rx4);
+    private static int prom1(@NotNull StringBuilder sb, String input, int last, int pos) {
+        sb.append(input, last, pos - 1).append(input.charAt(pos));
+        return (pos + 1);
     }
 
-    static {
-        msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
-        rx1  = props.getProperty("macro.regexp", false);
-        rx2  = props.getProperty("macro.double_slash", false);
-        rx3  = props.getProperty("macro.double_slash.repl", false);
-        rx4  = props.getProperty("macro.single_slash", false);
-        rx5  = props.getProperty("macro.regexp.quiet", false);
+    private static int prom2(StringBuilder sb, @NotNull String input, int pos, int inputLen, Set<String> deadManSet, Function<String, String> macroFunc) {
+        return ((input.charAt(pos++) == '{') ? prom3(sb, input, pos, inputLen, deadManSet, macroFunc) : prom5(sb, input, pos));
+    }
+
+    private static int prom3(StringBuilder sb, @NotNull String input, int pos, int inputLen, Set<String> deadManSet, Function<String, String> macroFunc) {
+        int start = pos;
+        while(pos < inputLen) if(input.charAt(pos++) == '}') return prom4(sb, input, start, pos, deadManSet, macroFunc);
+        return prom5(sb, input, inputLen);
+    }
+
+    private static @Contract("_, _, _, _, _, _ -> param4") int prom4(StringBuilder sb, @NotNull String input, int start, int pos, Set<String> deadManSet, Function<String, String> macroFunc) {
+        String name = input.substring(start, pos - 1).trim();
+        if(name.isEmpty()) sb.append("${}");
+        else if(deadManSet.contains(name)) throw new InvalidPropertyMacro(msgs.format("msg.err.macro.key_circular_ref", name));
+        else ofNullable(macroFunc.apply(name)).ifPresentOrElse(r -> prom6(sb, name, r, deadManSet, macroFunc), () -> sb.append(input, start - 2, pos));
+        return pos;
+    }
+
+    private static @Contract("_, _, _ -> param3") int prom5(@NotNull StringBuilder sb, @NotNull String input, int pos) {
+        sb.append(input, pos - 2, pos);
+        return pos;
+    }
+
+    private static void prom6(@NotNull StringBuilder sb, String name, String rep, @NotNull Set<String> deadManSet, Function<String, String> macroFunc) {
+        deadManSet.add(name);
+        sb.append(processMacros(rep, deadManSet, macroFunc));
+        deadManSet.remove(name);
     }
 }
