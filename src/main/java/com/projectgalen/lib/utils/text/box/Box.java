@@ -28,6 +28,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class Box {
+
+    /**
+     * I know there's a lot of duplication here but hopefully that will make life easier.
+     */
+    public static final String[][] BOX_CHARS = {/*@f0*/
+        { "╔", "═", "╦", "═", "╗" },
+        { "║", " ", "║", " ", "║" },
+        { "╠", "═", "╬", "═", "╣" },
+        { "║", " ", "║", " ", "║" },
+        { "╚", "═", "╩", "═", "╝" },
+
+        { "┌", "─", "┬", "─", "┐" },
+        { "│", " ", "│", " ", "│" },
+        { "├", "─", "┼", "─", "┤" },
+        { "│", " ", "│", " ", "│" },
+        { "└", "─", "┴", "─", "┘" },
+
+        { "╓", "─", "╥", "─", "╖" },
+        { "║", " ", "║", " ", "║" },
+        { "╟", "─", "╫", "─", "╢" },
+        { "║", " ", "║", " ", "║" },
+        { "╙", "─", "╨", "─", "╜" },
+
+        { "╒", "═", "╤", "═", "╕" },
+        { "│", " ", "│", " ", "│" },
+        { "╞", "═", "╪", "═", "╡" },
+        { "│", " ", "│", " ", "│" },
+        { "╘", "═", "╧", "═", "╛" }
+    };/*@f1*/
+
     private Box() { }
 
     public static void box(@NotNull Writer writer, @NotNull Reader reader) throws IOException {

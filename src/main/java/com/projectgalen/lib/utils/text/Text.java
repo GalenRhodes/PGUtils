@@ -29,6 +29,8 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.*;
+import java.nio.charset.Charset;
 import java.text.BreakIterator;
 import java.util.*;
 import java.util.function.Function;
@@ -39,6 +41,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static com.projectgalen.lib.utils.text.regex.Regex.getUnicodeMatcher;
+import static java.util.Optional.ofNullable;
 
 @SuppressWarnings({ "unused", "SpellCheckingInspection" })
 public final class Text {
@@ -89,8 +92,7 @@ public final class Text {
         return toNonEmptyString(Objects.toString(numberString, "0").replaceAll("[^0-9.+-]", ""), "0");
     }
 
-    @Contract(value = "_, _, _ -> new", pure = true)
-    public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx, boolean backwards) {
+    @Contract(value = "_, _, _ -> new", pure = true) public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx, boolean backwards) {
         if(!backwards) return codePointAt(chars, idx);
         if(idx < 1 || idx > chars.length) return new int[] { -1, idx };
         char c2 = chars[--idx];
@@ -101,8 +103,7 @@ public final class Text {
         return new int[] { c2, idx };
     }
 
-    @Contract(value = "_, _ -> new", pure = true)
-    public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx) {
+    @Contract(value = "_, _ -> new", pure = true) public static int @NotNull [] codePointAt(char @NotNull [] chars, int idx) {
         if(idx < 0 || idx >= chars.length) return new int[] { -1, idx };
         char c1 = chars[idx++];
         if(Character.isHighSurrogate(c1) && (idx < chars.length)) {
@@ -112,14 +113,12 @@ public final class Text {
         return new int[] { c1, idx };
     }
 
-    @Contract("_, _ -> param1")
-    public static @NotNull StringBuffer concat(@NotNull StringBuffer sb, Object @NotNull ... args) {
+    @Contract("_, _ -> param1") public static @NotNull StringBuffer concat(@NotNull StringBuffer sb, Object @NotNull ... args) {
         for(Object o : args) sb.append(o);
         return sb;
     }
 
-    @Contract("_, _ -> param1")
-    public static @NotNull StringBuilder concat(@NotNull StringBuilder sb, Object @NotNull ... args) {
+    @Contract("_, _ -> param1") public static @NotNull StringBuilder concat(@NotNull StringBuilder sb, Object @NotNull ... args) {
         for(Object o : args) sb.append(o);
         return sb;
     }
@@ -202,6 +201,59 @@ public final class Text {
         return getUnicodeMatcher("^_*[^_]", convertSnakeCaseToCamelCase(charSequence)).replaceAll(m -> m.group().toUpperCase());
     }
 
+    public static @NotNull String escape(@NotNull String input) {
+        try(StringWriter sw = new StringWriter()) { return escape(new StringReader(input), sw).toString(); } catch(IOException e) { throw new RuntimeException(e); }
+    }
+
+    public static @NotNull StringBuilder escape(@NotNull String input, @NotNull StringBuilder sb) {
+        try(StringWriter sw = new StringWriter()) { return sb.append(escape(new StringReader(input), sw).getBuffer()); } catch(IOException e) { throw new RuntimeException(e); }
+    }
+
+    public static @NotNull StringBuffer escape(@NotNull String input, @NotNull StringBuffer sb) {
+        try(StringWriter sw = new StringWriter()) { return sb.append(escape(new StringReader(input), sw).getBuffer()); } catch(IOException e) { throw new RuntimeException(e); }
+    }
+
+    public static <O extends OutputStream> O escape(@NotNull InputStream inputStream, @NotNull String inputCsName, @NotNull O outputStream, @NotNull String outputCsName) throws IOException {
+        return escape(inputStream, Charset.forName(inputCsName), outputStream, Charset.forName(outputCsName));
+    }
+
+    public static <O extends OutputStream> O escape(@NotNull InputStream inputStream, Charset inputCS, @NotNull O outputStream, Charset outputCS) throws IOException {
+        try(Reader r = new BufferedReader(new InputStreamReader(inputStream, ofNullable(inputCS).orElse(Charset.defaultCharset())));
+            Writer w = new OutputStreamWriter(outputStream, ofNullable(outputCS).orElse(Charset.defaultCharset()))) {
+            escape(r, w);
+            return outputStream;
+        }
+        finally { outputStream.flush(); }
+    }
+
+    public static <W extends Writer> W escape(@NotNull Reader reader, @NotNull W writer) throws IOException {
+        try {
+            int ch1 = reader.read();
+
+            while(ch1 >= 0) {
+                if(Character.isHighSurrogate((char)ch1)) {
+                    writer.write((char)ch1);
+                    ch1 = reader.read();
+
+                    if((ch1 >= 0) && Character.isLowSurrogate((char)ch1)) {
+                        writer.write((char)ch1);
+                        ch1 = reader.read();
+                    }
+                }
+                else {
+                    if((ch1 < ' ') || (ch1 == 127)) writer.write(REPL[ch1]);
+                    else writer.write((char)ch1);
+                    ch1 = reader.read();
+                }
+            }
+
+            return writer;
+        }
+        finally {
+            writer.flush();
+        }
+    }
+
     public static @NotNull String getPart(@NotNull String str, @NotNull @NonNls @Language("RegExp") String separator, @NotNull Parts part) {
         Matcher m = Regex.getMatcher(separator, str);
         return switch(part) {/*@f0*/
@@ -254,13 +306,11 @@ public final class Text {
         return sb.toString();
     }
 
-    @Contract("!null -> !null; null -> null")
-    public static String lc(@Nullable String str) {
+    @Contract("!null -> !null; null -> null") public static String lc(@Nullable String str) {
         return ((str == null) ? null : str.toLowerCase());
     }
 
-    @Contract(pure = true)
-    public static @Nullable String nullIfEmpty(@Nullable String str) {
+    @Contract(pure = true) public static @Nullable String nullIfEmpty(@Nullable String str) {
         return (z(str) ? null : str);
     }
 
@@ -349,16 +399,14 @@ public final class Text {
     }
 
     public static String toString(@Nullable String str, @NotNull Supplier<String> supplier) {
-        return Optional.ofNullable(str).orElseGet(supplier);
+        return ofNullable(str).orElseGet(supplier);
     }
 
-    @Contract("!null -> !null; null -> null")
-    public static String tr(@Nullable String str) {
+    @Contract("!null -> !null; null -> null") public static String tr(@Nullable String str) {
         return ((str == null) ? null : str.trim());
     }
 
-    @Contract("!null -> !null; null -> null")
-    public static String uc(@Nullable String str) {
+    @Contract("!null -> !null; null -> null") public static String uc(@Nullable String str) {
         return ((str == null) ? null : str.toUpperCase());
     }
 
