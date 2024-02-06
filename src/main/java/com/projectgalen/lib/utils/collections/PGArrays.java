@@ -148,6 +148,123 @@ public final class PGArrays {
         return array;
     }
 
+    public static <T> T @NotNull [] ensureSize(T @NotNull [] array, int size) {
+        return ensureSize(array, size, null);
+    }
+
+    public static <T> T @NotNull [] ensureSize(T @NotNull [] array, int size, T fill) {
+        if(array.length < size) {
+            T[] a = Arrays.copyOf(array, szz(array.length, size));
+            if(fill != null) Arrays.fill(a, array.length, a.length, fill);
+            return a;
+        }
+        return array;
+    }
+
+    public static int @NotNull [] ensureSize(int @NotNull [] array, int size) {
+        return ensureSize(array, size, 0);
+    }
+
+    public static int @NotNull [] ensureSize(int @NotNull [] array, int size, int fill) {
+        if(array.length < size) {
+            int[] a = Arrays.copyOf(array, szz(array.length, size));
+            if(fill != 0) Arrays.fill(a, array.length, a.length, fill);
+            return a;
+        }
+        return array;
+    }
+
+    public static long @NotNull [] ensureSize(long @NotNull [] array, int size) {
+        return ensureSize(array, size, 0);
+    }
+
+    public static long @NotNull [] ensureSize(long @NotNull [] array, int size, long fill) {
+        if(array.length < size) {
+            long[] a = Arrays.copyOf(array, szz(array.length, size));
+            if(fill != 0) Arrays.fill(a, array.length, a.length, fill);
+            return a;
+        }
+        return array;
+    }
+
+    public static short @NotNull [] ensureSize(short @NotNull [] array, int size) {
+        return ensureSize(array, size, (short)0);
+    }
+
+    public static short @NotNull [] ensureSize(short @NotNull [] array, int size, short fill) {
+        if(array.length < size) {
+            short[] a = Arrays.copyOf(array, szz(array.length, size));
+            if(fill != 0) Arrays.fill(a, array.length, a.length, fill);
+            return a;
+        }
+        return array;
+    }
+
+    public static byte @NotNull [] ensureSize(byte @NotNull [] array, int size) {
+        return ensureSize(array, size, (byte)0);
+    }
+
+    public static byte @NotNull [] ensureSize(byte @NotNull [] array, int size, byte fill) {
+        if(array.length < size) {
+            byte[] a = Arrays.copyOf(array, szz(array.length, size));
+            if(fill != 0) Arrays.fill(a, array.length, a.length, fill);
+            return a;
+        }
+        return array;
+    }
+
+    public static boolean @NotNull [] ensureSize(boolean @NotNull [] array, int size) {
+        return ensureSize(array, size, false);
+    }
+
+    public static boolean @NotNull [] ensureSize(boolean @NotNull [] array, int size, boolean fill) {
+        if(array.length < size) {
+            boolean[] a = Arrays.copyOf(array, szz(array.length, size));
+            if(fill) Arrays.fill(a, array.length, a.length, fill);
+            return a;
+        }
+        return array;
+    }
+
+    public static char @NotNull [] ensureSize(char @NotNull [] array, int size) {
+        return ensureSize(array, size, (char)0);
+    }
+
+    public static char @NotNull [] ensureSize(char @NotNull [] array, int size, char fill) {
+        if(array.length < size) {
+            char[] a = Arrays.copyOf(array, szz(array.length, size));
+            if(fill != 0) Arrays.fill(a, array.length, a.length, fill);
+            return a;
+        }
+        return array;
+    }
+
+    public static double @NotNull [] ensureSize(double @NotNull [] array, int size) {
+        return ensureSize(array, size, 0);
+    }
+
+    public static double @NotNull [] ensureSize(double @NotNull [] array, int size, double fill) {
+        if(array.length < size) {
+            double[] a = Arrays.copyOf(array, szz(array.length, size));
+            if(fill != 0) Arrays.fill(a, array.length, a.length, fill);
+            return a;
+        }
+        return array;
+    }
+
+    public static float @NotNull [] ensureSize(float @NotNull [] array, int size) {
+        return ensureSize(array, size, 0);
+    }
+
+    public static float @NotNull [] ensureSize(float @NotNull [] array, int size, float fill) {
+        if(array.length < size) {
+            float[] a = Arrays.copyOf(array, szz(array.length, size));
+            if(fill != 0) Arrays.fill(a, array.length, a.length, fill);
+            return a;
+        }
+        return array;
+    }
+
     @Contract(pure = true)
     public static int @NotNull [] filter(int @NotNull [] array, @NotNull IntPredicate predicate) {
         int[] out = new int[array.length];
@@ -332,6 +449,11 @@ public final class PGArrays {
 
     public static boolean z(char[] chars) {
         return ((chars == null) || (chars.length == 0) || (tr1(chars)[1] == 0));
+    }
+
+    private static int szz(int currSize, int newSize) {
+        do currSize *= 2; while(currSize < newSize);
+        return currSize;
     }
 
     private static int @NotNull [] tr1(char @NotNull [] chars) {

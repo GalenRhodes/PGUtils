@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @SuppressWarnings({ "unused", "SameParameterValue", "unchecked" })
 public final class U {
@@ -60,6 +61,13 @@ public final class U {
 
     public static <T extends Comparable<T>> int compare(@Nullable T lhs, @Nullable T rhs) {
         return compare(true, lhs, rhs);
+    }
+
+    public static @SafeVarargs int compare(@NotNull Supplier<Integer> firstComparator, Supplier<Integer> @NotNull ... comparators) {
+        int c = firstComparator.get();
+        if(c != 0) return c;
+        for(Supplier<Integer> comparator : comparators) if((c = comparator.get()) != 0) return c;
+        return 0;
     }
 
     public static <T extends Comparable<T>> int compare(boolean sortNullFirst, @Nullable T lhs, @Nullable T rhs) {

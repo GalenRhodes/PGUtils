@@ -62,13 +62,14 @@ public final class Macro {
     }
 
     private static int prom2(StringBuilder sb, @NotNull String input, int pos, int inputLen, Set<String> deadManSet, Function<String, String> macroFunc) {
-        return ((input.charAt(pos++) == '{') ? prom3(sb, input, pos, inputLen, deadManSet, macroFunc) : prom5(sb, input, pos));
+        int x = pos++;
+        return (((x < inputLen) && (input.charAt(x) == '{')) ? prom3(sb, input, pos, inputLen, deadManSet, macroFunc) : prom5(sb, input, pos, inputLen));
     }
 
     private static int prom3(StringBuilder sb, @NotNull String input, int pos, int inputLen, Set<String> deadManSet, Function<String, String> macroFunc) {
         int start = pos;
         while(pos < inputLen) if(input.charAt(pos++) == '}') return prom4(sb, input, start, pos, deadManSet, macroFunc);
-        return prom5(sb, input, inputLen);
+        return prom5(sb, input, inputLen, inputLen);
     }
 
     private static @Contract("_, _, _, _, _, _ -> param4") int prom4(StringBuilder sb, @NotNull String input, int start, int pos, Set<String> deadManSet, Function<String, String> macroFunc) {
@@ -79,9 +80,10 @@ public final class Macro {
         return pos;
     }
 
-    private static @Contract("_, _, _ -> param3") int prom5(@NotNull StringBuilder sb, @NotNull String input, int pos) {
-        sb.append(input, pos - 2, pos);
-        return pos;
+    private static @Contract("_, _, _, _ -> param3") int prom5(@NotNull StringBuilder sb, @NotNull String input, int pos, int inputLen) {
+        int l = Math.min(pos, inputLen);
+        sb.append(input, pos - 2, l);
+        return l;
     }
 
     private static void prom6(@NotNull StringBuilder sb, String name, String rep, @NotNull Set<String> deadManSet, Function<String, String> macroFunc) {
