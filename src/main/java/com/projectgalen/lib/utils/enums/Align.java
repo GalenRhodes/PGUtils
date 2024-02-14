@@ -22,6 +22,25 @@ package com.projectgalen.lib.utils.enums;
 // IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===========================================================================
 
+import org.jetbrains.annotations.NotNull;
+
 public enum Align {
-    Left, Right, Center
+    Left('<'), Right('>'), Center('^');
+
+    private final char code;
+
+    Align(char code) { this.code = code; }
+
+    public char getCode() {
+        return code;
+    }
+
+    public static @NotNull Align toAlign(char code) {
+        for(Align align : values()) if(code == align.code) return align;
+        return Left;
+    }
+
+    public static @NotNull Align toAlign(@NotNull CharSequence str) {
+        return (str.isEmpty() ? Left : toAlign(str.charAt(0)));
+    }
 }

@@ -38,8 +38,9 @@ public class CharArraySequence implements CharSequence {
     }
 
     public @Override char charAt(int index) {
-        if((start + index) >= buffer.length) throw new IndexOutOfBoundsException(getErrorMessage("msg.name.index", index, length, ">="));
-        return buffer[start + index];
+        int idx = (start + index);
+        if(idx >= buffer.length) throw new IndexOutOfBoundsException(getErrorMessage("msg.name.index", index, length, ">="));
+        return buffer[idx];
     }
 
     public @Override int length() {
@@ -58,20 +59,20 @@ public class CharArraySequence implements CharSequence {
         return String.copyValueOf(buffer, start, length);
     }
 
-    @Contract(value = "_ -> new", pure = true) public static @NotNull CharArraySequence noCopyValueOf(char @NotNull [] buffer) {
+    public static @Contract(value = "_ -> new", pure = true) @NotNull CharArraySequence noCopyValueOf(char @NotNull [] buffer) {
         return new CharArraySequence(buffer, 0, buffer.length);
     }
 
-    @Contract("_, _, _ -> new") public static @NotNull CharArraySequence noCopyValueOf(char @NotNull [] buffer, int start, int length) {
+    public static @Contract("_, _, _ -> new") @NotNull CharArraySequence noCopyValueOf(char @NotNull [] buffer, int start, int length) {
         validateParameters(start, length, buffer.length);
         return new CharArraySequence(buffer, start, length);
     }
 
-    @Contract(value = "_ -> new", pure = true) public static @NotNull CharArraySequence valueOf(char @NotNull [] buffer) {
+    public static @Contract(value = "_ -> new", pure = true) @NotNull CharArraySequence valueOf(char @NotNull [] buffer) {
         return new CharArraySequence(Arrays.copyOf(buffer, buffer.length), 0, buffer.length);
     }
 
-    @Contract("_, _, _ -> new") public static @NotNull CharArraySequence valueOf(char @NotNull [] buffer, int start, int length) {
+    public static @Contract("_, _, _ -> new") @NotNull CharArraySequence valueOf(char @NotNull [] buffer, int start, int length) {
         validateParameters(start, length, buffer.length);
         return new CharArraySequence(Arrays.copyOfRange(buffer, start, (start + length)), 0, length);
     }

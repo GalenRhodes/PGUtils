@@ -24,6 +24,7 @@ import com.projectgalen.lib.utils.enums.Align;
 import com.projectgalen.lib.utils.enums.Parts;
 import com.projectgalen.lib.utils.text.regex.Regex;
 import org.intellij.lang.annotations.Language;
+import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +46,8 @@ import static java.util.Optional.ofNullable;
 
 @SuppressWarnings({ "unused", "SpellCheckingInspection" })
 public final class Text {
-    private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final PGResourceBundle  msgs          = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+    private static final ArrayList<String> TEMP_STR_LIST = new ArrayList<>();
 
     public static final String[] REPL = { /*@f0*/
     /* 0x00 ... 0x0f */ "␀", "␁", "␂", "␃", "␄", "␅", "␆", "␇", "␈", "␉", "␊", "␋", "␌", "␍", "␎", "␏",
@@ -254,6 +256,13 @@ public final class Text {
         }
     }
 
+    public static char @NotNull [] getChars(@NotNull CharSequence src, int srcBegin, int srcEnd, char @NotNull [] dst, int dstBegin) {
+        if((srcBegin < 0) || (srcBegin > srcEnd) || (srcEnd > src.length())) throw new IndexOutOfBoundsException();
+        if((dstBegin < 0) || ((dstBegin + (srcEnd - srcBegin)) > dst.length)) throw new IndexOutOfBoundsException();
+        while(srcBegin < srcEnd) dst[dstBegin++] = src.charAt(srcBegin++);
+        return dst;
+    }
+
     public static @NotNull String getPart(@NotNull String str, @NotNull @NonNls @Language("RegExp") String separator, @NotNull Parts part) {
         Matcher m = Regex.getMatcher(separator, str);
         return switch(part) {/*@f0*/
@@ -269,7 +278,7 @@ public final class Text {
     }
 
     public static boolean isAllWhitespace(@NotNull CharSequence charSequence, int startIndex, int endIndex) {
-        return streamCodePoints(charSequence, startIndex, endIndex).allMatch(cp -> Character.isWhitespace(cp.codePoint));
+        return streamCodePoints(charSequence, startIndex, endIndex).allMatch(cp -> Character.isWhitespace(cp.codePoint()));
     }
 
     public static boolean isAllWhitespace(@NotNull CharSequence charSequence) {
@@ -365,6 +374,33 @@ public final class Text {
         return out.toArray(new String[0]);
     }
 
+    public static String @NotNull [] split(@NotNull CharSequence cs, @NotNull @NonNls @Language("RegExp") @RegExp String regex) {
+        return split(cs, regex, 0);
+    }
+
+    public static String @NotNull [] split(@NotNull CharSequence cs, @NotNull @NonNls @Language("RegExp") @RegExp String regex, int limit) {
+        synchronized(TEMP_STR_LIST) {
+            try {
+                Matcher m = Regex.getMatcher(regex, cs);
+                int     p = 0;
+
+                while(m.find()) {
+                    TEMP_STR_LIST.add(cs.subSequence(p, m.start()).toString());
+                    if((limit > 0) && (limit == TEMP_STR_LIST.size())) return TEMP_STR_LIST.toArray(new String[0]);
+                    p = m.end();
+                }
+
+                TEMP_STR_LIST.add(cs.subSequence(p, cs.length()).toString());
+                if(limit == 0) while(!TEMP_STR_LIST.isEmpty() && TEMP_STR_LIST.getLast().isEmpty()) TEMP_STR_LIST.removeLast();
+                return TEMP_STR_LIST.toArray(new String[0]);
+            }
+            finally {
+                TEMP_STR_LIST.clear();
+                TEMP_STR_LIST.trimToSize();
+            }
+        }
+    }
+
     public static @NotNull String @NotNull [] splitDotPath(@NotNull String path) {
         int i = path.lastIndexOf('.');
         return ((i >= 0) ? new String[] { path.substring(0, i), path.substring(i + 1) } : new String[] { path });
@@ -387,6 +423,38 @@ public final class Text {
 
     public static @NotNull Stream<CodePointPosition> streamCodePoints(@NotNull CharSequence charSequence, int startIndex, int endIndex) {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new MyCodePointIterator(charSequence, startIndex, endIndex), Spliterator.IMMUTABLE | Spliterator.ORDERED), false);
+    }
+
+    public static @Contract("null->null;!null->!null") CharSequence strip(CharSequence cs) {
+        if(cs == null) return null;
+        CodePointEnumerator e = CodePointEnumerator.getForward(cs);
+
+        while(e.hasNext()) {
+            int lIdx = e.getNextIdx();
+
+            if(!Character.isWhitespace(e.next())) {
+                e = CodePointEnumerator.getReverse(cs, (cs.length() - 1), (lIdx - 1));
+
+                while(e.hasNext()) {
+                    int rIdx = (e.getNextIdx() + 1);
+
+                    if(!Character.isWhitespace(e.next())) return cs.subSequence(lIdx, rIdx);
+                }
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * Simple shortcut for cs.codePoints().toArray().
+     *
+     * @param cs The CharSequence.
+     *
+     * @return An int array of the code points.
+     */
+    public static int @NotNull [] toCodePoints(@NotNull CharSequence cs) {
+        return cs.codePoints().toArray();
     }
 
     public static @NotNull String toNonEmptyString(@Nullable String str, @NotNull String defaultString) {
@@ -548,12 +616,6 @@ public final class Text {
         if(endIndex > len) arr.add(msgs.format("msg.err.text.code_point_iterator.end_index_greater_than_input_length", endIndex, len));
         if(startIndex > endIndex) arr.add(msgs.format("msg.err.text.code_point_iterator.start_index_greater_than_end_index", startIndex, endIndex));
         return arr;
-    }
-
-    public record CodePointPosition(int codePoint, int index) implements Comparable<CodePointPosition> {
-        public @Override int compareTo(@NotNull Text.CodePointPosition o) {
-            return Integer.compare(codePoint, o.codePoint);
-        }
     }
 
     private static final class MyCodePointIterator implements Iterator<CodePointPosition> {

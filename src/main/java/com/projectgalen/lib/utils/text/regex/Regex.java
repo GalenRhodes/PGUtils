@@ -25,6 +25,7 @@ import com.projectgalen.lib.utils.collections.ObjCache;
 import com.projectgalen.lib.utils.math.Range;
 import org.intellij.lang.annotations.Language;
 import org.intellij.lang.annotations.MagicConstant;
+import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,11 +47,13 @@ public final class Regex {
 
     private Regex() { }
 
-    public static @NotNull Matcher getMatcher(@NotNull @NonNls @Language("RegExp") String pattern, @NotNull @NonNls CharSequence input) {
+    public static @NotNull Matcher getMatcher(@NotNull @NonNls @Language("RegExp") @RegExp String pattern, @NotNull @NonNls CharSequence input) {
         return getMatcher(pattern, 0, input);
     }
 
-    public static @NotNull Matcher getMatcher(@NotNull @NonNls @Language("RegExp") String pattern, @MagicConstant(flagsFromClass = Pattern.class) int flags, @NotNull @NonNls CharSequence input) {
+    public static @NotNull Matcher getMatcher(@NotNull @NonNls @Language("RegExp") @RegExp String pattern,
+                                              @MagicConstant(flagsFromClass = Pattern.class) int flags,
+                                              @NotNull @NonNls CharSequence input) {
         synchronized(CacheHolder.CACHE) {
             String  key = String.format(props.getProperty("regex.cache.key.format", false), pattern, flags);
             Pattern p   = CacheHolder.CACHE.get(key, Pattern.class);

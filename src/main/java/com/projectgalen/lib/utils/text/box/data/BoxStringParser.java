@@ -18,123 +18,156 @@ package com.projectgalen.lib.utils.text.box.data;
 // ================================================================================================================================
 
 import com.projectgalen.lib.utils.enums.Align;
-import org.jetbrains.annotations.Contract;
+import com.projectgalen.lib.utils.text.regex.Regex;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+import static com.projectgalen.lib.utils.collections.PGArrays.*;
+import static com.projectgalen.lib.utils.streams.Streams.arrayStream;
+import static com.projectgalen.lib.utils.text.Text.split;
 
 public final class BoxStringParser {
 
-    private final Pattern        colPattern = Pattern.compile("\\t");
-    private final List<String>   temp       = new ArrayList<>();
-    private final List<String[]> lines      = new ArrayList<>();
-    private       String[]       headers    = new String[0];
-    private       int[]          colWidths  = new int[20];
-    private       int            colCount   = 0;
-    private       int            last       = 0;
+    private final CharSequence         input;
+    private final List<CharSequence[]> lines;
+    private final boolean              hasHdr;
+    private       Align[]              columnAligns = null;
+    private       CharSequence[]       hdrs         = new CharSequence[0];
+    private       int[]                colWidths    = new int[20];
+    private       int                  startIdx     = 0;
 
-    public BoxStringParser(@NotNull CharSequence data, boolean hasHeader) {
-        Matcher m = Pattern.compile("\\R").matcher(data);
-        Arrays.fill(colWidths, 0);
+    public BoxStringParser(@NotNull CharSequence inputString, boolean hasHeader) {
+        lines  = new ArrayList<>();
+        input  = inputString;
+        hasHdr = hasHeader;
 
-        if(m.find()) {
-            if(hasHeader) {
-                headers  = splitColumns(get(data, m.start(), m.end()));
-                colCount = headers.length;
-                updateColumnWidths(headers);
-                while(m.find()) doNext(get(data, m.start(), m.end()));
-            }
-            else {
-                do doNext(get(data, m.start(), m.end())); while(m.find());
-            }
-            doLast(data);
+        int cCount = parse();
+
+        columnAligns = overlay(Stream.of(hdrs).map(Align::toAlign).toArray(Align[]::new), createAndFill(cCount, Align.Left));
+        colWidths    = Arrays.copyOf(colWidths, cCount);
+    }
+
+    public BoxStringParser(@NotNull List<String[]> rows, Align @NotNull [] alignments, String @NotNull [] headers) {
+        lines = new ArrayList<>();
+        hdrs  = headers;
+        input = "";
+
+        int cCount = hdrs.length;
+        hasHdr = (cCount > 0);
+
+        if(hasHdr) {
+            colWidths = ensureSize(colWidths, cCount);
+            for(int i = 0; i < cCount; ++i) colWidths[i] = hdrs[i].length();
         }
+
+        for(CharSequence[] line : rows) {
+            lines.add(line);
+            cCount    = Math.max(cCount, line.length);
+            colWidths = ensureSize(colWidths, cCount);
+            for(int i = 0; i < line.length; ++i) colWidths[i] = Math.max(colWidths[i], line[i].length());
+        }
+
+        colWidths    = copyOf(colWidths, cCount, 0);
+        columnAligns = copyOf(alignments, cCount, Align.Left);
     }
 
     public int getColCount() {
-        return colCount;
+        return colWidths.length;
     }
 
-    public @Contract(value = " -> new", pure = true) int @NotNull [] getColWidths() {
-        return Arrays.copyOf(colWidths, colCount);
+    public int @NotNull [] getColWidths() {
+        return colWidths;
     }
 
-    public Align @NotNull [] getColumnAlignments() {
-        Align[] alignments = new Align[colCount];
-        Arrays.fill(alignments, Align.Left);
-        for(int i = 0, j = Math.min(colCount, headers.length); i < j; ++i) {
-            String header = headers[i];
-            if(!header.isEmpty()) alignments[i] = switch(header.charAt(0)) {/*@f0*/
-                case '<' -> { headers[i] = header.substring(1); yield Align.Left;   }
-                case '>' -> { headers[i] = header.substring(1); yield Align.Right;  }
-                case '^' -> { headers[i] = header.substring(1); yield Align.Center; }
-                default  -> Align.Left;
-            };/*@f1*/
-        }
-        return alignments;
+    public Align @NotNull [] getColumnAligns() {
+        return columnAligns;
     }
 
-    public String[] getHeaders() {
-        return headers;
+    public CharSequence[] getHeaders() {
+        return hdrs;
     }
 
-    public List<String[]> getLines() {
+    public List<CharSequence[]> getLines() {
         return lines;
     }
 
-    private void checkColWidthsArray(int ll) {
-        if(colWidths.length < ll) {
-            int l = (colWidths.length * 2);
-            while(l < ll) l *= 2;
-            colWidths = Arrays.copyOf(colWidths, l);
+    public boolean hasHeader() {
+        return (hasHdr && (hdrs.length > 0));
+    }
+
+    private int doLine(int endIdx, int nextIdx) {
+        String[] line = getNext(endIdx, nextIdx);
+        if(line.length > 0) {
+            lines.add(line);
+            colWidths = overlay(arrayStream(line).mapToInt(i -> Math.max(i.item.length(), colWidths[i.index])).toArray(), ensureSize(colWidths, line.length, 0));
         }
+        return line.length;
     }
 
-    private void doLast(@NotNull CharSequence data) {
-        int          l = data.length();
-        CharSequence s = get(data, l, l);
-        if(!s.isEmpty()) doNext(s);
+    private int doNext(@NotNull Matcher matcher) {
+        return doLine(matcher.start(), matcher.end());
     }
 
-    private void doNext(@NotNull CharSequence s) {
-        String[] l = splitColumns(s);
-        if(l.length > 0) {
-            lines.add(l);
-            colCount = Math.max(colCount, l.length);
-            updateColumnWidths(l);
-        }
+    private String @NotNull [] getNext(int endIdx, int nextIdx) {
+        String[] line = split(input.subSequence(startIdx, endIdx), "\\t");
+        startIdx = nextIdx;
+        return line;
     }
 
-    private @NotNull CharSequence get(@NotNull CharSequence data, int a, int b) {
-        CharSequence s = data.subSequence(last, a);
-        last = b;
-        return s;
-    }
+    private int parse() {
+        Matcher matcher = Regex.getMatcher("\\R", input);
 
-    private String @NotNull [] splitColumns(@NotNull CharSequence line) {
-        try {
-            Matcher m    = colPattern.matcher(line);
-            int     last = 0;
+        if(matcher.find()) {
+            int cCount = 0;
 
-            while(m.find()) {
-                temp.add(line.subSequence(last, m.start()).toString().strip());
-                last = m.end();
+            if(hasHdr) {
+                String[] rawHeaders = getNext(matcher.start(), matcher.end());
+                cCount = rawHeaders.length;
+
+                if(cCount > 0) {
+                    colWidths    = ensureSize(colWidths, cCount);
+                    columnAligns = new Align[cCount];
+                    hdrs         = new String[cCount];
+
+                    for(int i = 0; i < cCount; ++i) parseHeader(i, rawHeaders[i]);
+                }
+
+                while(matcher.find()) cCount = Math.max(cCount, doNext(matcher));
             }
-            temp.add(line.subSequence(last, line.length()).toString().strip());
+            else {
+                do cCount = Math.max(cCount, doNext(matcher)); while(matcher.find());
+            }
 
-            return temp.toArray(new String[0]);
+            cCount = Math.max(cCount, doLine(input.length(), input.length()));
+            if(columnAligns == null) columnAligns = createAndFill(cCount, Align.Left);
+            return cCount;
         }
-        finally {
-            temp.clear();
-        }
+
+        return 0;
     }
 
-    private void updateColumnWidths(String @NotNull [] line) {
-        checkColWidthsArray(line.length);
-        for(int i = 0; i < line.length; ++i) colWidths[i] = Math.max(colWidths[i], line[i].length());
+    private void parseHeader(int idx, @NotNull String header) {
+        switch(header.isEmpty() ? '?' : header.charAt(0)) {
+            case '<' -> {
+                columnAligns[idx] = Align.Left;
+                hdrs[idx]         = header.substring(1);
+            }
+            case '>' -> {
+                columnAligns[idx] = Align.Right;
+                hdrs[idx]         = header.substring(1);
+            }
+            case '^' -> {
+                columnAligns[idx] = Align.Center;
+                hdrs[idx]         = header.substring(1);
+            }
+            default -> columnAligns[idx] = Align.Left;
+        }
+
+        colWidths[idx] = hdrs[idx].length();
     }
 }

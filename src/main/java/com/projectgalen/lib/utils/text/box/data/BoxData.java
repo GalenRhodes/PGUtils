@@ -17,32 +17,34 @@ package com.projectgalen.lib.utils.text.box.data;
 // NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ================================================================================================================================
 
-import com.projectgalen.lib.utils.collections.PGArrays;
 import com.projectgalen.lib.utils.enums.Align;
 import com.projectgalen.lib.utils.text.box.Box.BoxType;
 import com.projectgalen.lib.utils.text.box.Box.HdrDivType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.projectgalen.lib.utils.collections.PGArrays.ensureSize;
 
 public final class BoxData {
 
     public static final String NULL_DEFAULT = "<null>";
 
-    private final List<String[]> data;
-    private final String[]       headers;
-    private final Align[]        alignments;
-    private final int[]          colWidths;
-    private final int            colCount;
-    private final BoxType        boxType;
-    private final HdrDivType     hdrDivType;
+    private final List<CharSequence[]> data;
+    private final CharSequence[]       headers;
+    private final Align[]              alignments;
+    private final int[]                colWidths;
+    private final int                  colCount;
+    private final BoxType              boxType;
+    private final HdrDivType           hdrDivType;
 
     public BoxData(@NotNull CharSequence data, boolean hasHeader, @NotNull BoxType boxType, @NotNull HdrDivType hdrDivType) {
         BoxStringParser foo = new BoxStringParser(data, hasHeader);
         this.data       = foo.getLines();
         this.headers    = foo.getHeaders();
-        this.alignments = foo.getColumnAlignments();
+        this.alignments = foo.getColumnAligns();
         this.colWidths  = foo.getColWidths();
         this.colCount   = foo.getColCount();
         this.boxType    = boxType;
@@ -50,18 +52,19 @@ public final class BoxData {
     }
 
     public BoxData(String @NotNull [] headers, @NotNull List<String[]> data, Align[] alignments, BoxType boxType, HdrDivType hdrDivType) {
-        this.data       = data;
+        this.data = new ArrayList<>();
         this.headers    = headers;
         this.alignments = alignments;
         this.boxType    = boxType;
         this.hdrDivType = hdrDivType;
 
         int   cc = headers.length;
-        int[] cw = PGArrays.ensureSize(new int[16], cc);
+        int[] cw = ensureSize(new int[16], cc);
 
         for(String[] r : data) {
+            this.data.add(r);
             cc = Math.max(cc, r.length);
-            cw = PGArrays.ensureSize(cw, r.length);
+            cw = ensureSize(cw, r.length);
             for(int i = 0; i < r.length; ++i) {
                 String str = r[i];
                 if(str == null) r[i] = str = NULL_DEFAULT;
@@ -89,7 +92,7 @@ public final class BoxData {
         return colWidths;
     }
 
-    public List<String[]> getData() {
+    public List<CharSequence[]> getData() {
         return data;
     }
 
@@ -97,7 +100,7 @@ public final class BoxData {
         return hdrDivType;
     }
 
-    public String[] getHeaders() {
+    public CharSequence[] getHeaders() {
         return headers;
     }
 }

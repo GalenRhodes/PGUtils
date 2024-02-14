@@ -10,6 +10,9 @@ import com.projectgalen.lib.utils.reflection.Reflection;
 import com.projectgalen.lib.utils.reflection.TypeInfo;
 import com.projectgalen.lib.utils.test.casting.TestClass;
 import com.projectgalen.lib.utils.text.Text;
+import com.projectgalen.lib.utils.text.box.Box;
+import com.projectgalen.lib.utils.text.box.Box.BoxType;
+import com.projectgalen.lib.utils.text.box.Box.HdrDivType;
 import com.projectgalen.lib.utils.text.regex.Regex;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,18 +39,10 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            String  str = "Galen Rhodes💞 was here\r\n in \t the 🇺🇸 and 🤜🏼🧔🏼🧟‍";
-            Matcher m   = Regex.getMatcher("\\X", str);
-
-            while(m.find()) {
-                str.substring(m.start(), m.end()).codePoints().mapToObj(cp -> switch(cp) {
-                    case '\r' -> "\\r";
-                    case '\n' -> "\\n";
-                    case '\t' -> "\\t";
-                    default -> String.valueOf(Character.toChars(cp));
-                }).forEach(s -> System.out.printf("[%s]", s));
-            }
-            System.out.print("\n");
+            String   str  = "\t\t\t\t";
+            String[] aStr = str.split("\\t", 0);
+            System.out.printf("Array Length: %d\n\n", aStr.length);
+            for(int i = 0; i < aStr.length; ++i) System.out.printf("%d> \"%s\"\n", i, aStr[i]);
         }
         catch(Exception e) {
             System.err.printf(String.format("\n\nERROR: %s\n", e));
@@ -248,6 +243,10 @@ public class Main {
         System.out.print(msgs.format("form02", msgs.getString("long_field"), obj.getLongField()));
     }
 
+    private static void testBox() {
+        System.out.print(Box.box("^One\t>Two\t<Three\nGalen\twas\there\nHomer 😆 Simpson\twas not\tanywhere\nThis\tis\ta test", true, BoxType.DoubleBoth, HdrDivType.Single));
+    }
+
     private static void testCalendar1() {
         System.out.println();
         Calendar c = Calendar.getInstance();
@@ -274,6 +273,21 @@ public class Main {
 
             System.out.printf("Input: \"%s\"; Output: \"%s\"\n", inStr, outStr);
         }
+    }
+
+    private static void testCodePoints() {
+        String  str = "Galen Rhodes💞 was here\r\n in \t the 🇺🇸 and 🤜🏼🧔🏼🧟‍";
+        Matcher m   = Regex.getMatcher("\\X", str);
+
+        while(m.find()) {
+            str.substring(m.start(), m.end()).codePoints().mapToObj(cp -> switch(cp) {
+                case '\r' -> "\\r";
+                case '\n' -> "\\n";
+                case '\t' -> "\\t";
+                default -> String.valueOf(Character.toChars(cp));
+            }).forEach(s -> System.out.printf("[%s]", s));
+        }
+        System.out.print("\n");
     }
 
     private static void testDashReplacement() {

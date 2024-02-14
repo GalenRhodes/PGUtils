@@ -24,7 +24,10 @@ package com.projectgalen.lib.utils.streams;
 
 import com.projectgalen.lib.utils.PGProperties;
 import com.projectgalen.lib.utils.PGResourceBundle;
-import com.projectgalen.lib.utils.collections.CollectionItem;
+import com.projectgalen.lib.utils.collections.items.CollectionItem;
+import com.projectgalen.lib.utils.collections.items.IntCollectionItem;
+import com.projectgalen.lib.utils.collections.items.iterators.ArrayIterator;
+import com.projectgalen.lib.utils.collections.items.iterators.IntArrayIterator;
 import com.projectgalen.lib.utils.math.Range;
 import com.projectgalen.lib.utils.refs.BooleanRef;
 import com.projectgalen.lib.utils.refs.IntegerRef;
@@ -44,12 +47,22 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static java.util.Spliterator.*;
+import static java.util.Spliterators.spliterator;
 import static java.util.stream.Collector.Characteristics.CONCURRENT;
 import static java.util.stream.Collector.Characteristics.UNORDERED;
+import static java.util.stream.StreamSupport.stream;
 
 @SuppressWarnings({ "unused", "SpellCheckingInspection" })
 public class Streams {
     private static final PGResourceBundle msgs = PGResourceBundle.getXMLPGBundle("com.projectgalen.lib.utils.pg_messages");
+
+    private static final String ERR_MSG_01      = msgs.getString("msg.err.index_out_of_range");
+    private static final String TEXT_START      = msgs.getString("text.start");
+    private static final String TEXT_END        = msgs.getString("text.end");
+    private static final String FMT_LT          = msgs.getString("fmt.lt");
+    private static final String FMT_GT          = msgs.getString("fmt.gt");
+    private static final int    CHARACTERISTICS = (IMMUTABLE | ORDERED | DISTINCT);
 
     /**
      * A summing collector for {@link BigDecimal} values that maintains precision.
@@ -90,9 +103,28 @@ public class Streams {
      * @return A stream of {@link CollectionItem}.
      */
     public static @SafeVarargs <T> @NotNull Stream<CollectionItem<T>> arrayStream(T @NotNull ... array) {
-        ArrayIterator<T>               iterator    = new ArrayIterator<>(array);
-        Spliterator<CollectionItem<T>> spliterator = Spliterators.spliterator(iterator, array.length, Spliterator.IMMUTABLE | Spliterator.ORDERED | Spliterator.DISTINCT);
-        return StreamSupport.stream(spliterator, false);
+        return arrayStream(array, 0, array.length);
+    }
+
+    public static <T> @NotNull Stream<CollectionItem<T>> arrayStream(T @NotNull [] array, int startIndex, int endIndex) {
+        validateIndexes(array.length, startIndex, endIndex);
+        return stream(spliterator(new ArrayIterator<T>(array, startIndex, endIndex), (endIndex - startIndex), CHARACTERISTICS), false);
+    }
+
+    /**
+     * Create a stream of {@link IntCollectionItem} from the elements of an array.
+     *
+     * @param array The elements of the array.
+     *
+     * @return A stream of {@link IntCollectionItem}.
+     */
+    public static @NotNull Stream<IntCollectionItem> arrayStream(int... array) {
+        return arrayStream(array, 0, array.length);
+    }
+
+    public static @NotNull Stream<IntCollectionItem> arrayStream(int @NotNull [] array, int startIndex, int endIndex) {
+        validateIndexes(array.length, startIndex, endIndex);
+        return stream(spliterator(new IntArrayIterator(array, startIndex, endIndex), (endIndex - startIndex), CHARACTERISTICS), false);
     }
 
     public static @Contract(pure = true) @NotNull IntStream closedIntRange(int startInclusive, int endInclusive) {
@@ -156,32 +188,19 @@ public class Streams {
     }
 
     public static @NotNull <T> Stream<T> streamWith(@NotNull Streams.StreamItemProvider<T> provider) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new LambdaIterator<>(provider), Spliterator.IMMUTABLE), false);
+        return stream(Spliterators.spliteratorUnknownSize(new LambdaIterator<>(provider), IMMUTABLE), false);
+    }
+
+    private static <T> void validateIndexes(int arrayLength, int startIndex, int endIndex) {
+        if(startIndex < 0) throw new IllegalArgumentException(ERR_MSG_01.formatted(TEXT_START, FMT_LT.formatted(startIndex, 0)));
+        if(endIndex > arrayLength) throw new IllegalArgumentException(ERR_MSG_01.formatted(TEXT_END, FMT_GT.formatted(endIndex, arrayLength)));
+        if(startIndex > endIndex) throw new IllegalArgumentException(ERR_MSG_01.formatted(TEXT_START, FMT_GT.formatted(startIndex, endIndex)));
     }
 
     private enum LambdaIteratorState {Yes, No, Unkown}
 
     public interface StreamItemProvider<T> {
         T provide(@NotNull BooleanRef done);
-    }
-
-    private static final class ArrayIterator<T> implements Iterator<CollectionItem<T>> {
-        private final T[] array;
-        private       int idx = 0;
-
-        public ArrayIterator(T[] array) {
-            this.array = array;
-        }
-
-        public @Override boolean hasNext() {
-            return (idx < array.length);
-        }
-
-        @Contract(" -> new") public @Override @NotNull CollectionItem<T> next() {
-            if(!hasNext()) throw new NoSuchElementException();
-            int i = idx++;
-            return new CollectionItem<>(i, array[i]);
-        }
     }
 
     private static class ClosedRangeIterator extends Spliterators.AbstractIntSpliterator {

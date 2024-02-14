@@ -19,6 +19,7 @@ package com.projectgalen.lib.utils.collections;
 // ===============================================================================================================================
 
 import com.projectgalen.lib.utils.PGResourceBundle;
+import com.projectgalen.lib.utils.collections.items.CollectionItem;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

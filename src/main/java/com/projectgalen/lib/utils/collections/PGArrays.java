@@ -18,12 +18,14 @@ package com.projectgalen.lib.utils.collections;
 // NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ===============================================================================================================================
 
+import com.projectgalen.lib.utils.collections.items.CollectionItem;
 import com.projectgalen.lib.utils.delegates.*;
 import com.projectgalen.lib.utils.streams.Streams;
 import com.projectgalen.lib.utils.text.Text;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -92,6 +94,60 @@ public final class PGArrays {
 
     public static <U, T> T @NotNull [] copyAs(@NotNull Class<? extends T[]> cls, U @NotNull ... array) {
         return Arrays.copyOf(array, array.length, cls);
+    }
+
+    public static <T> T @NotNull [] copyOf(T @NotNull [] original, @Range(from = 0, to = Integer.MAX_VALUE) int newLength, @NotNull T fillValue) {
+        T[] copy = Arrays.copyOf(original, newLength);
+        if(original.length < copy.length) Arrays.fill(copy, original.length, copy.length, fillValue);
+        return copy;
+    }
+
+    public static int @NotNull [] copyOf(int @NotNull [] original, @Range(from = 0, to = Integer.MAX_VALUE) int newLength, int fillValue) {
+        int[] copy = Arrays.copyOf(original, newLength);
+        if(original.length < copy.length) Arrays.fill(copy, original.length, copy.length, fillValue);
+        return copy;
+    }
+
+    public static long @NotNull [] copyOf(long @NotNull [] original, @Range(from = 0, to = Integer.MAX_VALUE) int newLength, long fillValue) {
+        long[] copy = Arrays.copyOf(original, newLength);
+        if(original.length < copy.length) Arrays.fill(copy, original.length, copy.length, fillValue);
+        return copy;
+    }
+
+    public static char @NotNull [] copyOf(char @NotNull [] original, @Range(from = 0, to = Integer.MAX_VALUE) int newLength, char fillValue) {
+        char[] copy = Arrays.copyOf(original, newLength);
+        if(original.length < copy.length) Arrays.fill(copy, original.length, copy.length, fillValue);
+        return copy;
+    }
+
+    public static boolean @NotNull [] copyOf(boolean @NotNull [] original, @Range(from = 0, to = Integer.MAX_VALUE) int newLength, boolean fillValue) {
+        boolean[] copy = Arrays.copyOf(original, newLength);
+        if(original.length < copy.length) Arrays.fill(copy, original.length, copy.length, fillValue);
+        return copy;
+    }
+
+    public static short @NotNull [] copyOf(short @NotNull [] original, @Range(from = 0, to = Integer.MAX_VALUE) int newLength, short fillValue) {
+        short[] copy = Arrays.copyOf(original, newLength);
+        if(original.length < copy.length) Arrays.fill(copy, original.length, copy.length, fillValue);
+        return copy;
+    }
+
+    public static byte @NotNull [] copyOf(byte @NotNull [] original, @Range(from = 0, to = Integer.MAX_VALUE) int newLength, byte fillValue) {
+        byte[] copy = Arrays.copyOf(original, newLength);
+        if(original.length < copy.length) Arrays.fill(copy, original.length, copy.length, fillValue);
+        return copy;
+    }
+
+    public static float @NotNull [] copyOf(float @NotNull [] original, @Range(from = 0, to = Integer.MAX_VALUE) int newLength, float fillValue) {
+        float[] copy = Arrays.copyOf(original, newLength);
+        if(original.length < copy.length) Arrays.fill(copy, original.length, copy.length, fillValue);
+        return copy;
+    }
+
+    public static double @NotNull [] copyOf(double @NotNull [] original, @Range(from = 0, to = Integer.MAX_VALUE) int newLength, double fillValue) {
+        double[] copy = Arrays.copyOf(original, newLength);
+        if(original.length < copy.length) Arrays.fill(copy, original.length, copy.length, fillValue);
+        return copy;
     }
 
     public static <T> T @NotNull [] createAndFill(int length, @NotNull T value) {
@@ -351,6 +407,51 @@ public final class PGArrays {
         return ((arrayType == Object[].class) ? (T[])new Object[length] : (T[])Array.newInstance(arrayType.getComponentType(), length));
     }
 
+    public static @Contract("_, _ -> param2") <T> T @NotNull [] overlay(T @NotNull [] source, T @NotNull [] destination) {
+        System.arraycopy(source, 0, destination, 0, Math.min(destination.length, source.length));
+        return destination;
+    }
+
+    public static int @NotNull [] overlay(int @NotNull [] source, int @NotNull [] destination) {
+        System.arraycopy(source, 0, destination, 0, Math.min(source.length, destination.length));
+        return destination;
+    }
+
+    public static long @NotNull [] overlay(long @NotNull [] source, long @NotNull [] destination) {
+        System.arraycopy(source, 0, destination, 0, Math.min(source.length, destination.length));
+        return destination;
+    }
+
+    public static byte @NotNull [] overlay(byte @NotNull [] source, byte @NotNull [] destination) {
+        System.arraycopy(source, 0, destination, 0, Math.min(source.length, destination.length));
+        return destination;
+    }
+
+    public static short @NotNull [] overlay(short @NotNull [] source, short @NotNull [] destination) {
+        System.arraycopy(source, 0, destination, 0, Math.min(source.length, destination.length));
+        return destination;
+    }
+
+    public static float @NotNull [] overlay(float @NotNull [] source, float @NotNull [] destination) {
+        System.arraycopy(source, 0, destination, 0, Math.min(source.length, destination.length));
+        return destination;
+    }
+
+    public static double @NotNull [] overlay(double @NotNull [] source, double @NotNull [] destination) {
+        System.arraycopy(source, 0, destination, 0, Math.min(source.length, destination.length));
+        return destination;
+    }
+
+    public static char @NotNull [] overlay(char @NotNull [] source, char @NotNull [] destination) {
+        System.arraycopy(source, 0, destination, 0, Math.min(source.length, destination.length));
+        return destination;
+    }
+
+    public static boolean @NotNull [] overlay(boolean @NotNull [] source, boolean @NotNull [] destination) {
+        System.arraycopy(source, 0, destination, 0, Math.min(source.length, destination.length));
+        return destination;
+    }
+
     public static <T> T @NotNull [] prepend(T obj, T @NotNull [] array) {
         T[] copy = newArray(array.getClass(), (array.length + 1));
         System.arraycopy(array, 0, copy, 1, array.length);
@@ -452,6 +553,7 @@ public final class PGArrays {
     }
 
     private static int szz(int currSize, int newSize) {
+        if(currSize == 0) currSize = 1;
         do currSize *= 2; while(currSize < newSize);
         return currSize;
     }
